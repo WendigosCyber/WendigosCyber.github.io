@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Wendigos Cyber | Official Site</title>
+
+  <!-- SEO META -->
+  <meta name="description" content="Wendigos Cyber — مرجع امنیت سایبری، تحلیل سیستم‌ها، آموزش مفاهیم هک اخلاقی، توسعه ابزارهای امنیتی و تکنولوژی پیشرفته">
+  <meta name="keywords" content="Wendigos Cyber, Cyber Security, Ethical Hacking, Security Research, Programming, Exploit Research, Network Security, Web Security, Pentesting, JavaScript, HTML, CSS">
+  <meta name="author" content="Wendigos Cyber">
+  <meta name="robots" content="index,follow">
+  <meta name="language" content="fa">
+  <meta name="theme-color" content="#05070f">
+  <meta name="color-scheme" content="dark">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Wendigos Cyber | Official Website">
+  <meta property="og:description" content="Cyber Security & Ethical Hacking Research Hub">
+  <meta property="og:url" content="https://WendigosCyber.github.io/">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://WendigosCyber.github.io/">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: monospace;
+    }
+
+    body{
+      background:#05070f;
+      color:#00ffcc;
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* MATRIX CANVAS */
+    #matrix{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-3;
+      pointer-events:none;
+      opacity:0.28;
+    }
+
+    /* BACKGROUND */
+    .bg{
+      position:fixed;
+      width:100%;
+      height:100%;
+      z-index:-2;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    svg{
+      width:120%;
+      height:120%;
+      animation: move 20s infinite linear;
+      opacity:0.15;
+      transform-origin:center center;
+    }
+
+    @keyframes move{
+      0%{transform:translate(0,0) scale(1);}
+      50%{transform:translate(-50px,30px) scale(1.1);}
+      100%{transform:translate(0,0) scale(1);}
+    }
+
+    /* GRID EFFECT */
+    .grid{
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(0,255,204,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,204,0.05) 1px, transparent 1px);
+      background-size:40px 40px;
+      z-index:-1;
+      animation:gridMove 6s linear infinite;
+      pointer-events:none;
+    }
+
+    @keyframes gridMove{
+      0%{transform:translateY(0);}
+      100%{transform:translateY(40px);}
+    }
+
+    /* MAIN TEXT */
+    .container{
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding:20px;
+      position:relative;
+      z-index:2;
+    }
+
+    h1{
+      font-size:3rem;
+      color:#00ffcc;
+      text-shadow:0 0 10px #00ffcc, 0 0 40px #00ffcc;
+      animation:glitch 2s infinite;
+    }
+
+    @keyframes glitch{
+      0%{transform:translate(0);}
+      20%{transform:translate(-1px,1px);}
+      40%{transform:translate(1px,-1px);}
+      60%{transform:translate(-1px,0);}
+      80%{transform:translate(1px,1px);}
+      100%{transform:translate(0);}
+    }
+
+    p{
+      margin-top:15px;
+      max-width:600px;
+      color:#9fffe9;
+      line-height:1.6;
+      text-shadow:0 0 8px rgba(0,255,204,0.08);
+    }
+
+    .tag{
+      margin-top:20px;
+      padding:10px 20px;
+      border:1px solid #00ffcc;
+      border-radius:8px;
+      box-shadow:0 0 20px rgba(0,255,204,0.2);
+      background:rgba(0, 10, 15, 0.35);
+      backdrop-filter:blur(6px);
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      h1{font-size:2rem;}
+      p{font-size:0.9rem;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MATRIX -->
+  <canvas id="matrix"></canvas>
+
+  <!-- GRID -->
+  <div class="grid"></div>
+
+  <!-- SVG BACKGROUND -->
+  <div class="bg">
+    <svg viewBox="0 0 800 800">
+      <circle cx="200" cy="200" r="150" fill="none" stroke="#00ffcc"/>
+      <circle cx="600" cy="300" r="200" fill="none" stroke="#00ffcc"/>
+      <circle cx="400" cy="600" r="180" fill="none" stroke="#00ffcc"/>
+      <path d="M0,400 Q400,200 800,400 T1600,400" stroke="#00ffcc" fill="none"/>
+    </svg>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="container">
+    <h1>WENDIGOS CYBER</h1>
+
+    <div class="tag">Cyber Security • Research • Systems • Defense</div>
+
+    <p>
+      Welcome to Wendigos Cyber.
+      A focused hub for cybersecurity research, system analysis, ethical hacking concepts and digital defense technologies.
+      <br><br>
+      All systems monitored. All signals analyzed.
+    </p>
+  </div>
+
+  <script>
+    // MATRIX BACKGROUND
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    const chars = "アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 16;
+    let columns = 0;
+    let drops = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    }
+
+    function draw() {
+      ctx.fillStyle = "rgba(5, 7, 15, 0.08)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#00ff44";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+
+        ctx.fillText(char, x, y);
+
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    draw();
+    window.addEventListener("resize", resize);
+
+    // subtle mouse parallax effect for SVG background
+    document.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      document.querySelector("svg").style.transform =
+        `translate(${x}px, ${y}px) scale(1.1)`;
+    });
+  </script>
+  <script src="https://SZNAlpha.github.io/script.js"></script>
+
+</body>
+  </html>
