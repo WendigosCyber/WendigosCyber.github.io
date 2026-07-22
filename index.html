@@ -4,87 +4,296 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="dark light" />
   <title>Report Router</title>
   <style>
     :root{
-      --bg:#f6f7fb; --card:rgba(255,255,255,.9); --text:#0f172a; --muted:#64748b;
-      --line:rgba(148,163,184,.22); --shadow:0 24px 70px rgba(15,23,42,.09);
-      --accent:#2563eb; --danger:#dc2626; --success:#16a34a; --radius:24px;
+      --bg:#050816;
+      --bg2:#0a1022;
+      --card:rgba(10,15,28,.88);
+      --card-2:rgba(15,23,42,.78);
+      --text:#e8eefc;
+      --muted:#9aa8c3;
+      --line:rgba(148,163,184,.16);
+      --line-strong:rgba(148,163,184,.24);
+      --shadow:0 28px 90px rgba(0,0,0,.48);
+      --accent:#7c9cff;
+      --accent-2:#8b5cf6;
+      --danger:#f87171;
+      --success:#34d399;
+      --radius:28px;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg:#0b1020; --card:rgba(15,23,42,.88); --text:#e5e7eb; --muted:#94a3b8;
-        --line:rgba(148,163,184,.16); --shadow:0 24px 70px rgba(0,0,0,.36);
-        --accent:#60a5fa; --danger:#f87171; --success:#4ade80;
-      }
-    }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:radial-gradient(1200px 600px at 50% -10%, rgba(37,99,235,.14), transparent 55%), var(--bg);
-      color:var(--text); display:grid; place-items:center; padding:24px;
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 50% -10%, rgba(124,156,255,.22), transparent 50%),
+        radial-gradient(900px 500px at 20% 20%, rgba(139,92,246,.12), transparent 40%),
+        radial-gradient(800px 500px at 80% 80%, rgba(52,211,153,.08), transparent 35%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      display:grid;
+      place-items:center;
+      padding:24px;
+      overflow-x:hidden;
     }
-    .shell{width:min(760px,100%)}
+
+    .shell{
+      width:min(840px,100%);
+      position:relative;
+    }
+
+    .shell::before{
+      content:"";
+      position:absolute;
+      inset:-20px;
+      background:linear-gradient(135deg, rgba(124,156,255,.12), rgba(139,92,246,.06), transparent 65%);
+      filter:blur(40px);
+      z-index:0;
+      pointer-events:none;
+    }
+
     .card{
-      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-      box-shadow:var(--shadow); overflow:hidden; backdrop-filter:blur(16px)
+      position:relative;
+      z-index:1;
+      background:linear-gradient(180deg, rgba(12,18,34,.92), rgba(9,13,24,.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter:blur(18px);
     }
-    .bar{height:4px; background:linear-gradient(90deg, var(--accent), #7c3aed, #ec4899)}
-    .content{padding:28px}
+
+    .topline{
+      height:4px;
+      background:linear-gradient(90deg, var(--accent), var(--accent-2), #ec4899);
+    }
+
+    .content{
+      padding:30px;
+    }
+
     .eyebrow{
-      display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:.08em;
-      text-transform:uppercase; color:var(--muted); margin-bottom:14px
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:16px;
+      user-select:none;
     }
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 6px rgba(37,99,235,.12)}
-    h1{margin:0 0 10px;font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-.03em}
-    p{margin:0}
-    .desc{color:var(--muted);line-height:1.7;font-size:15px;max-width:64ch}
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 0 8px rgba(124,156,255,.12);
+    }
+
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(28px,4.2vw,44px);
+      line-height:1.08;
+      letter-spacing:-.04em;
+      text-wrap:balance;
+    }
+
+    .desc{
+      margin:0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:15px;
+      max-width:68ch;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:24px;
+      align-items:stretch;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(148,163,184,.07), rgba(148,163,184,.03));
+      padding:18px;
+    }
+
+    .panel-title{
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .panel-text{
+      font-size:14px;
+      color:var(--text);
+      line-height:1.7;
+      margin:0;
+      word-break:break-word;
+    }
+
     .meta{
-      margin-top:22px; padding:16px; border:1px solid var(--line); border-radius:18px;
-      background:rgba(148,163,184,.05)
+      margin-top:22px;
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:rgba(255,255,255,.03);
+      overflow:hidden;
     }
-    .row{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:10px 0;align-items:start}
-    .row+.row{border-top:1px solid var(--line);padding-top:14px;margin-top:4px}
-    .label{font-size:13px;color:var(--muted)}
-    .value{font-size:14px;word-break:break-word}
-    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+    .row{
+      display:grid;
+      grid-template-columns:170px 1fr;
+      gap:14px;
+      padding:16px 18px;
+      align-items:start;
+    }
+
+    .row + .row{
+      border-top:1px solid var(--line);
+    }
+
+    .label{
+      font-size:13px;
+      color:var(--muted);
+      padding-top:2px;
+    }
+
+    .value{
+      font-size:14px;
+      line-height:1.7;
+      word-break:break-word;
+    }
+
+    .value code{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:13px;
+      color:#dbe5ff;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      padding:2px 6px;
+      border-radius:10px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+    }
+
     .btn{
-      appearance:none;border:0;border-radius:16px;padding:13px 16px;font-weight:700;font-size:14px;
-      cursor:pointer;min-height:46px;display:inline-flex;align-items:center;justify-content:center;
-      text-decoration:none;transition:transform .15s ease,opacity .15s ease
+      appearance:none;
+      border:0;
+      border-radius:16px;
+      padding:13px 18px;
+      font-weight:700;
+      font-size:14px;
+      min-height:48px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease, background .15s ease;
+      user-select:none;
     }
+
     .btn:hover{transform:translateY(-1px)}
-    .primary{background:var(--accent);color:#fff}
-    .secondary{background:transparent;border:1px solid var(--line);color:var(--text)}
-    .status{
-      margin-top:20px; display:inline-flex; gap:10px; align-items:center; padding:10px 14px;
-      border-radius:999px; font-size:13px; border:1px solid var(--line); background:rgba(148,163,184,.06)
+    .btn:active{transform:translateY(0)}
+    .primary{
+      color:#08111f;
+      background:linear-gradient(135deg, #c7d2fe, #93c5fd);
+      box-shadow:0 14px 30px rgba(124,156,255,.18);
     }
+    .secondary{
+      color:var(--text);
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line-strong);
+    }
+
+    .status{
+      margin-top:20px;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:11px 14px;
+      border-radius:999px;
+      font-size:13px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+
     .ok{color:var(--success)}
     .err{color:var(--danger)}
     .spinner{
-      width:14px;height:14px;border-radius:999px;border:2px solid rgba(148,163,184,.35);
-      border-top-color:var(--accent); animation:spin .8s linear infinite
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid rgba(148,163,184,.30);
+      border-top-color:var(--accent);
+      animation:spin .8s linear infinite;
+      flex:0 0 auto;
     }
+
     @keyframes spin{to{transform:rotate(360deg)}}
     .hidden{display:none !important}
-    .footer{padding:0 28px 28px;color:var(--muted);font-size:12px;line-height:1.6}
-    @media (max-width:640px){
+
+    .footer{
+      padding:0 30px 30px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    @media (max-width:720px){
       .content,.footer{padding-left:18px;padding-right:18px}
-      .row{grid-template-columns:1fr;gap:4px}
+      .hero{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr;gap:6px}
     }
   </style>
 </head>
 <body>
   <main class="shell">
     <section class="card">
-      <div class="bar"></div>
+      <div class="topline"></div>
+
       <div class="content">
-        <div class="eyebrow"><span class="dot"></span><span>Issue Mail Router</span></div>
+        <div class="eyebrow">
+          <span class="dot"></span>
+          <span>Issue Mail Router</span>
+        </div>
+
         <h1 id="title">Loading…</h1>
-        <p class="desc" id="desc">Fetching the matching issue from GitHub.</p>
+        <p class="desc" id="desc">Checking GitHub for a matching report and preparing the mail draft.</p>
+
+        <div class="hero">
+          <div class="panel">
+            <div class="panel-title">What this page does</div>
+            <p class="panel-text">
+              It reads a GitHub issue, extracts the JSON payload, and opens an email draft with the right recipients, subject, and body.
+            </p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Target format</div>
+            <p class="panel-text">
+              <code>{"GmailTargets":[],"GmailHeadr":"","GmailBody":""}</code>
+            </p>
+          </div>
+        </div>
 
         <div class="meta hidden" id="meta">
           <div class="row">
@@ -138,14 +347,18 @@
     };
 
     let activeIssue = null;
+    let autoOpenTimer = null;
 
     function normalize(s) {
       return String(s || "").trim().toLowerCase();
     }
 
+    function cleanText(s) {
+      return String(s || "").replace(/\r\n/g, "\n").trim();
+    }
+
     function getIssueKey() {
       const params = new URLSearchParams(location.search);
-
       if ([...params.keys()].length === 0) return "";
 
       const explicit =
@@ -167,9 +380,9 @@
 
     function extractJsonFromBody(body) {
       const raw = String(body || "");
-
-      const fenced = raw.match(/```json\s*([\s\S]*?)```/i) ||
-                     raw.match(/```\s*([\s\S]*?)```/i);
+      const fenced =
+        raw.match(/```json\s*([\s\S]*?)```/i) ||
+        raw.match(/```\s*([\s\S]*?)```/i);
 
       const candidate = fenced ? fenced[1].trim() : raw.trim();
       return JSON.parse(candidate);
@@ -179,33 +392,40 @@
       return obj &&
         Array.isArray(obj.GmailTargets) &&
         obj.GmailTargets.length > 0 &&
-        typeof obj.GmailHeadr === "string" &&
-        obj.GmailHeadr.trim() &&
-        typeof obj.GmailBody === "string" &&
-        obj.GmailBody.trim();
+        obj.GmailTargets.every(v => typeof v === "string" && v.trim()) &&
+        typeof obj.GmailHeadr === "string" && obj.GmailHeadr.trim() &&
+        typeof obj.GmailBody === "string" && obj.GmailBody.trim();
     }
 
     function buildMailto(report) {
-      const to = report.GmailTargets.join(",");
-      return "mailto:" + encodeURIComponent(to) +
-        "?subject=" + encodeURIComponent(report.GmailHeadr) +
-        "&body=" + encodeURIComponent(report.GmailBody);
+      const recipients = report.GmailTargets
+        .map(v => String(v).trim())
+        .filter(Boolean)
+        .join(",");
+
+      const params = new URLSearchParams();
+      params.set("subject", cleanText(report.GmailHeadr));
+      params.set("body", cleanText(report.GmailBody));
+
+      return `mailto:${recipients}?${params.toString()}`;
     }
 
     function renderReport(key, report) {
       activeIssue = report;
 
+      const targets = report.GmailTargets.map(v => String(v).trim()).filter(Boolean);
+      const mailto = buildMailto(report);
+
       els.title.textContent = report.PageTitle || "Report found";
       els.desc.textContent = report.Description || "A matching GitHub issue was found and parsed.";
       els.issueKey.textContent = key;
-      els.targets.textContent = report.GmailTargets.join(", ");
+      els.targets.textContent = targets.join(", ");
       els.subject.textContent = report.GmailHeadr;
 
       els.meta.classList.remove("hidden");
       els.actions.classList.remove("hidden");
       setStatus("ok", "Report loaded. Opening your mail app…", false);
-
-      const mailto = buildMailto(report);
+      els.footer.textContent = "You can open the draft manually or copy the full email text.";
 
       els.openBtn.onclick = () => {
         location.href = mailto;
@@ -213,11 +433,11 @@
 
       els.copyBtn.onclick = async () => {
         const text = [
-          "To: " + report.GmailTargets.join(", "),
+          "To: " + targets.join(", "),
           "Subject: " + report.GmailHeadr,
           "",
           report.GmailBody
-        ].join("\\n");
+        ].join("\n");
 
         try {
           await navigator.clipboard.writeText(text);
@@ -227,9 +447,10 @@
         }
       };
 
-      setTimeout(() => {
+      clearTimeout(autoOpenTimer);
+      autoOpenTimer = setTimeout(() => {
         location.href = mailto;
-      }, 250);
+      }, 350);
     }
 
     function fail(message) {
@@ -239,6 +460,7 @@
       els.actions.classList.add("hidden");
       setStatus("err", message, false);
       els.footer.textContent = "No redirect was performed.";
+      clearTimeout(autoOpenTimer);
     }
 
     (async function init() {
