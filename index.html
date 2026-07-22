@@ -1,333 +1,370 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="color-scheme" content="dark light" />
-  <title>Report Router</title>
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#02030a" />
+  <title>Wendigos_Cyber</title>
   <style>
     :root{
-      --bg:#050816;
-      --bg2:#0a1022;
-      --card:rgba(10,15,28,.88);
-      --card-2:rgba(15,23,42,.78);
-      --text:#e8eefc;
-      --muted:#9aa8c3;
-      --line:rgba(148,163,184,.16);
+      --bg0:#010205;
+      --bg1:#02050b;
+      --bg2:#050916;
+      --text:#e7edf9;
+      --muted:#8c97b1;
+      --muted-2:#667086;
+      --line:rgba(148,163,184,.14);
       --line-strong:rgba(148,163,184,.24);
-      --shadow:0 28px 90px rgba(0,0,0,.48);
-      --accent:#7c9cff;
-      --accent-2:#8b5cf6;
-      --danger:#f87171;
-      --success:#34d399;
+      --accent:#8aa4ff;
+      --accent-2:#9b7bff;
+      --good:#5ee6a8;
+      --bad:#ff7d7d;
+      --shadow:0 24px 80px rgba(0,0,0,.36);
       --radius:28px;
-    }
+    }*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(138,164,255,.10), transparent 55%),
+    radial-gradient(900px 500px at 12% 20%, rgba(155,123,255,.07), transparent 42%),
+    radial-gradient(800px 500px at 88% 82%, rgba(94,230,168,.05), transparent 38%),
+    linear-gradient(180deg, var(--bg0), var(--bg1) 42%, var(--bg2));
+  overflow-x:hidden;
+}
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 700px at 50% -10%, rgba(124,156,255,.22), transparent 50%),
-        radial-gradient(900px 500px at 20% 20%, rgba(139,92,246,.12), transparent 40%),
-        radial-gradient(800px 500px at 80% 80%, rgba(52,211,153,.08), transparent 35%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
-      display:grid;
-      place-items:center;
-      padding:24px;
-      overflow-x:hidden;
-    }
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.02) 62%, transparent);
+  pointer-events:none;
+  opacity:.22;
+}
 
-    .shell{
-      width:min(840px,100%);
-      position:relative;
-    }
+.wrap{
+  min-height:100%;
+  display:grid;
+  place-items:center;
+  padding:28px;
+}
 
-    .shell::before{
-      content:"";
-      position:absolute;
-      inset:-20px;
-      background:linear-gradient(135deg, rgba(124,156,255,.12), rgba(139,92,246,.06), transparent 65%);
-      filter:blur(40px);
-      z-index:0;
-      pointer-events:none;
-    }
+.page{
+  width:min(920px,100%);
+  position:relative;
+  z-index:1;
+}
 
-    .card{
-      position:relative;
-      z-index:1;
-      background:linear-gradient(180deg, rgba(12,18,34,.92), rgba(9,13,24,.92));
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      backdrop-filter:blur(18px);
-    }
+.topline{
+  height:1px;
+  width:100%;
+  background:linear-gradient(90deg, transparent, rgba(138,164,255,.65), rgba(155,123,255,.45), transparent);
+  margin-bottom:28px;
+  opacity:.7;
+}
 
-    .topline{
-      height:4px;
-      background:linear-gradient(90deg, var(--accent), var(--accent-2), #ec4899);
-    }
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
 
-    .content{
-      padding:30px;
-    }
+.brand-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
 
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:16px;
-      user-select:none;
-    }
+.mark{
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow:0 0 0 8px rgba(138,164,255,.08);
+  flex:0 0 auto;
+}
 
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      background:var(--accent);
-      box-shadow:0 0 0 8px rgba(124,156,255,.12);
-    }
+.brand-name{
+  font-size:13px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+  white-space:nowrap;
+}
 
-    h1{
-      margin:0 0 12px;
-      font-size:clamp(28px,4.2vw,44px);
-      line-height:1.08;
-      letter-spacing:-.04em;
-      text-wrap:balance;
-    }
+.tag{
+  font-size:12px;
+  color:var(--muted-2);
+  border:1px solid var(--line);
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.015);
+  backdrop-filter:blur(8px);
+}
 
-    .desc{
-      margin:0;
-      color:var(--muted);
-      line-height:1.8;
-      font-size:15px;
-      max-width:68ch;
-    }
+.hero{
+  padding:6px 0 12px;
+  max-width:72ch;
+}
 
-    .hero{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:18px;
-      margin-top:24px;
-      align-items:stretch;
-    }
+h1{
+  margin:0;
+  font-size:clamp(30px,6vw,58px);
+  line-height:1.02;
+  letter-spacing:-.05em;
+  text-wrap:balance;
+}
 
-    .panel{
-      border:1px solid var(--line);
-      border-radius:22px;
-      background:linear-gradient(180deg, rgba(148,163,184,.07), rgba(148,163,184,.03));
-      padding:18px;
-    }
+.desc{
+  margin:14px 0 0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.9;
+  max-width:68ch;
+}
 
-    .panel-title{
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:10px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:18px;
+  margin-top:28px;
+  align-items:stretch;
+}
 
-    .panel-text{
-      font-size:14px;
-      color:var(--text);
-      line-height:1.7;
-      margin:0;
-      word-break:break-word;
-    }
+.panel{
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:rgba(255,255,255,.012);
+  box-shadow:none;
+  backdrop-filter:blur(8px);
+  padding:18px;
+  min-height:100%;
+}
 
-    .meta{
-      margin-top:22px;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:rgba(255,255,255,.03);
-      overflow:hidden;
-    }
+.panel-title{
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
 
-    .row{
-      display:grid;
-      grid-template-columns:170px 1fr;
-      gap:14px;
-      padding:16px 18px;
-      align-items:start;
-    }
+.panel-body{
+  margin:0;
+  color:var(--text);
+  line-height:1.8;
+  font-size:14px;
+  word-break:break-word;
+}
 
-    .row + .row{
-      border-top:1px solid var(--line);
-    }
+.panel code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:12px;
+  color:#dfe7ff;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  padding:2px 6px;
+  border-radius:8px;
+}
 
-    .label{
-      font-size:13px;
-      color:var(--muted);
-      padding-top:2px;
-    }
+.meta{
+  margin-top:22px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
 
-    .value{
-      font-size:14px;
-      line-height:1.7;
-      word-break:break-word;
-    }
+.row{
+  display:grid;
+  grid-template-columns:160px 1fr;
+  gap:14px;
+  padding:16px 0;
+  align-items:start;
+}
 
-    .value code{
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;
-      color:#dbe5ff;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
-      padding:2px 6px;
-      border-radius:10px;
-    }
+.row + .row{
+  border-top:1px solid rgba(148,163,184,.10);
+}
 
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      margin-top:22px;
-    }
+.label{
+  color:var(--muted);
+  font-size:13px;
+  padding-top:1px;
+}
 
-    .btn{
-      appearance:none;
-      border:0;
-      border-radius:16px;
-      padding:13px 18px;
-      font-weight:700;
-      font-size:14px;
-      min-height:48px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      cursor:pointer;
-      text-decoration:none;
-      transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease, background .15s ease;
-      user-select:none;
-    }
+.value{
+  font-size:14px;
+  line-height:1.8;
+  word-break:break-word;
+}
 
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
-    .primary{
-      color:#08111f;
-      background:linear-gradient(135deg, #c7d2fe, #93c5fd);
-      box-shadow:0 14px 30px rgba(124,156,255,.18);
-    }
-    .secondary{
-      color:var(--text);
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line-strong);
-    }
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:22px;
+}
 
-    .status{
-      margin-top:20px;
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      padding:11px 14px;
-      border-radius:999px;
-      font-size:13px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-    }
+.btn{
+  appearance:none;
+  border:1px solid var(--line-strong);
+  background:rgba(255,255,255,.02);
+  color:var(--text);
+  border-radius:16px;
+  padding:13px 18px;
+  min-height:48px;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.01em;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease, opacity .15s ease;
+  user-select:none;
+}
 
-    .ok{color:var(--success)}
-    .err{color:var(--danger)}
-    .spinner{
-      width:14px;
-      height:14px;
-      border-radius:999px;
-      border:2px solid rgba(148,163,184,.30);
-      border-top-color:var(--accent);
-      animation:spin .8s linear infinite;
-      flex:0 0 auto;
-    }
+.btn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(138,164,255,.34);
+  background:rgba(255,255,255,.04);
+}
 
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .hidden{display:none !important}
+.btn:active{transform:translateY(0)}
+.primary{
+  background:linear-gradient(135deg, rgba(138,164,255,.18), rgba(155,123,255,.18));
+  border-color:rgba(138,164,255,.28);
+}
 
-    .footer{
-      padding:0 30px 30px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.7;
-    }
+.status{
+  margin-top:20px;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  padding:10px 14px;
+  color:var(--text);
+  font-size:13px;
+  max-width:100%;
+}
 
-    @media (max-width:720px){
-      .content,.footer{padding-left:18px;padding-right:18px}
-      .hero{grid-template-columns:1fr}
-      .row{grid-template-columns:1fr;gap:6px}
-    }
+.ok{color:var(--good)}
+.err{color:var(--bad)}
+
+.spinner{
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  border:2px solid rgba(148,163,184,.26);
+  border-top-color:var(--accent);
+  animation:spin .8s linear infinite;
+  flex:0 0 auto;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none !important}
+
+.footer{
+  margin-top:18px;
+  color:var(--muted-2);
+  font-size:12px;
+  line-height:1.8;
+  min-height:22px;
+}
+
+@media (max-width:760px){
+  .wrap{padding:18px}
+  .grid{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr;gap:6px}
+  .tag{width:100%;text-align:center}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="card">
-      <div class="topline"></div>
+  <main class="wrap">
+    <section class="page">
+      <div class="topline"></div>  <div class="brand">
+    <div class="brand-left">
+      <span class="mark" aria-hidden="true"></span>
+      <div class="brand-name">Wendigos_Cyber</div>
+    </div>
+    <div class="tag">Dark mode · Minimal router</div>
+  </div>
 
-      <div class="content">
-        <div class="eyebrow">
-          <span class="dot"></span>
-          <span>Issue Mail Router</span>
-        </div>
+  <div class="hero">
+    <h1 id="title">Loading…</h1>
+    <p class="desc" id="desc">
+      Checking GitHub for a matching report and preparing the email draft.
+    </p>
+  </div>
 
-        <h1 id="title">Loading…</h1>
-        <p class="desc" id="desc">Checking GitHub for a matching report and preparing the mail draft.</p>
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-title">What this page does</div>
+      <p class="panel-body">
+        It reads a GitHub issue, extracts the JSON payload, and opens an email draft with the correct recipients, subject, and body.
+      </p>
+    </div>
 
-        <div class="hero">
-          <div class="panel">
-            <div class="panel-title">What this page does</div>
-            <p class="panel-text">
-              It reads a GitHub issue, extracts the JSON payload, and opens an email draft with the right recipients, subject, and body.
-            </p>
-          </div>
+    <div class="panel">
+      <div class="panel-title">Expected JSON</div>
+      <p class="panel-body">
+        <code>{"GmailTargets":[],"GmailHeadr":"","GmailBody":""}</code>
+      </p>
+    </div>
+  </div>
 
-          <div class="panel">
-            <div class="panel-title">Target format</div>
-            <p class="panel-text">
-              <code>{"GmailTargets":[],"GmailHeadr":"","GmailBody":""}</code>
-            </p>
-          </div>
-        </div>
+  <div class="meta hidden" id="meta">
+    <div class="row">
+      <div class="label">Issue key</div>
+      <div class="value" id="issueKey"></div>
+    </div>
+    <div class="row">
+      <div class="label">Recipients</div>
+      <div class="value" id="targets"></div>
+    </div>
+    <div class="row">
+      <div class="label">Subject</div>
+      <div class="value" id="subject"></div>
+    </div>
+  </div>
 
-        <div class="meta hidden" id="meta">
-          <div class="row">
-            <div class="label">Issue key</div>
-            <div class="value" id="issueKey"></div>
-          </div>
-          <div class="row">
-            <div class="label">Recipients</div>
-            <div class="value" id="targets"></div>
-          </div>
-          <div class="row">
-            <div class="label">Subject</div>
-            <div class="value" id="subject"></div>
-          </div>
-        </div>
+  <div class="actions hidden" id="actions">
+    <button class="btn primary" id="openBtn">Open email draft</button>
+    <button class="btn" id="copyBtn">Copy email text</button>
+  </div>
 
-        <div class="actions hidden" id="actions">
-          <button class="btn primary" id="openBtn">Open email draft</button>
-          <button class="btn secondary" id="copyBtn">Copy email text</button>
-        </div>
+  <div class="status" id="status">
+    <span class="spinner" id="spin"></span>
+    <span id="statusText">Checking repository issues…</span>
+  </div>
 
-        <div class="status" id="status">
-          <span class="spinner" id="spin"></span>
-          <span id="statusText">Checking repository issues…</span>
-        </div>
-      </div>
+  <div class="footer" id="footer">
+    No redirect happens unless a valid issue is found and parsed.
+  </div>
+</section>
 
-      <div class="footer" id="footer">
-        No redirect happens unless a valid issue is found and parsed.
-      </div>
-    </section>
-  </main>
-
-  <script>
+  </main>  <script>
     const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
 
     const els = {
@@ -346,7 +383,6 @@
       footer: document.getElementById("footer")
     };
 
-    let activeIssue = null;
     let autoOpenTimer = null;
 
     function normalize(s) {
@@ -357,8 +393,27 @@
       return String(s || "").replace(/\r\n/g, "\n").trim();
     }
 
+    function encodeMailValue(value) {
+      return encodeURIComponent(cleanText(value))
+        .replace(/%20/g, "%20")
+        .replace(/%0A/g, "%0A");
+    }
+
+    function buildMailto(report) {
+      const recipients = (Array.isArray(report.GmailTargets) ? report.GmailTargets : [])
+        .map(v => String(v).trim())
+        .filter(Boolean)
+        .join(",");
+
+      const subject = encodeMailValue(report.GmailHeadr);
+      const body = encodeMailValue(report.GmailBody);
+
+      return `mailto:${recipients}?subject=${subject}&body=${body}`;
+    }
+
     function getIssueKey() {
       const params = new URLSearchParams(location.search);
+
       if ([...params.keys()].length === 0) return "";
 
       const explicit =
@@ -397,22 +452,17 @@
         typeof obj.GmailBody === "string" && obj.GmailBody.trim();
     }
 
-    function buildMailto(report) {
-      const recipients = report.GmailTargets
-        .map(v => String(v).trim())
-        .filter(Boolean)
-        .join(",");
-
-      const params = new URLSearchParams();
-      params.set("subject", cleanText(report.GmailHeadr));
-      params.set("body", cleanText(report.GmailBody));
-
-      return `mailto:${recipients}?${params.toString()}`;
+    function copyPlainText(report) {
+      const targets = report.GmailTargets.map(v => String(v).trim()).filter(Boolean);
+      return [
+        "To: " + targets.join(", "),
+        "Subject: " + report.GmailHeadr,
+        "",
+        report.GmailBody
+      ].join("\n");
     }
 
     function renderReport(key, report) {
-      activeIssue = report;
-
       const targets = report.GmailTargets.map(v => String(v).trim()).filter(Boolean);
       const mailto = buildMailto(report);
 
@@ -432,15 +482,8 @@
       };
 
       els.copyBtn.onclick = async () => {
-        const text = [
-          "To: " + targets.join(", "),
-          "Subject: " + report.GmailHeadr,
-          "",
-          report.GmailBody
-        ].join("\n");
-
         try {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(copyPlainText(report));
           setStatus("ok", "Copied to clipboard.", false);
         } catch {
           setStatus("err", "Clipboard access was blocked.", false);
@@ -450,7 +493,7 @@
       clearTimeout(autoOpenTimer);
       autoOpenTimer = setTimeout(() => {
         location.href = mailto;
-      }, 350);
+      }, 250);
     }
 
     function fail(message) {
@@ -509,6 +552,5 @@
         fail("The issue feed is unavailable or malformed.");
       }
     })();
-  </script>
-</body>
-  </html>
+  </script></body>
+      </html>
