@@ -1,1 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Redirecting...</title>
+  <script>
+    (function () {
+      const reports = {
+        ReportFastOne: {
+          GmailTargets: ["security@telegram.org", "abuse@telegram.org"],
+          GmailHeadr: "Urgent Report: Doxxing and Unauthorized Publication of Private Personal Information",
+          GmailBody:
+`Dear Telegram Abuse Team,
 
+I am writing to report a serious and ongoing case of doxxing and the unauthorized publication of private personal information.
+
+Please review the issue as soon as possible.
+
+Best regards,`
+        },
+
+        ReportFastTwo: {
+          GmailTargets: ["security@telegram.org", "abuse@telegram.org"],
+          GmailHeadr: "Urgent Report: Harmful Content and Private Data Exposure",
+          GmailBody:
+`Dear Telegram Abuse Team,
+
+I am writing to report harmful content involving the exposure of private personal information.
+
+Please investigate this matter urgently.
+
+Best regards,`
+        }
+      };
+
+      function getIssueKey() {
+        const raw = window.location.search.replace(/^\?/, "");
+        if (!raw) return "ReportFastOne";
+
+        const firstPart = raw.split("&")[0];
+        const key = decodeURIComponent(firstPart.split("=")[0].trim());
+
+        return key || "ReportFastOne";
+      }
+
+      const issueKey = getIssueKey();
+      const report = reports[issueKey] || reports.ReportFastOne;
+
+      const to = report.GmailTargets.join(",");
+      const subject = report.GmailHeadr;
+      const body = report.GmailBody;
+
+      const mailto =
+        "mailto:" +
+        encodeURIComponent(to) +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+
+      window.location.replace(mailto);
+    })();
+  </script>
+</head>
+<body></body>
+</html>
