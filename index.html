@@ -4,65 +4,289 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Redirecting...</title>
+  <meta name="color-scheme" content="light dark" />
+  <title>Report Router</title>
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:rgba(255,255,255,.9); --text:#0f172a; --muted:#64748b;
+      --line:rgba(148,163,184,.22); --shadow:0 24px 70px rgba(15,23,42,.09);
+      --accent:#2563eb; --danger:#dc2626; --success:#16a34a; --radius:24px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1020; --card:rgba(15,23,42,.88); --text:#e5e7eb; --muted:#94a3b8;
+        --line:rgba(148,163,184,.16); --shadow:0 24px 70px rgba(0,0,0,.36);
+        --accent:#60a5fa; --danger:#f87171; --success:#4ade80;
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:radial-gradient(1200px 600px at 50% -10%, rgba(37,99,235,.14), transparent 55%), var(--bg);
+      color:var(--text); display:grid; place-items:center; padding:24px;
+    }
+    .shell{width:min(760px,100%)}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      box-shadow:var(--shadow); overflow:hidden; backdrop-filter:blur(16px)
+    }
+    .bar{height:4px; background:linear-gradient(90deg, var(--accent), #7c3aed, #ec4899)}
+    .content{padding:28px}
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:.08em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:14px
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 6px rgba(37,99,235,.12)}
+    h1{margin:0 0 10px;font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-.03em}
+    p{margin:0}
+    .desc{color:var(--muted);line-height:1.7;font-size:15px;max-width:64ch}
+    .meta{
+      margin-top:22px; padding:16px; border:1px solid var(--line); border-radius:18px;
+      background:rgba(148,163,184,.05)
+    }
+    .row{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:10px 0;align-items:start}
+    .row+.row{border-top:1px solid var(--line);padding-top:14px;margin-top:4px}
+    .label{font-size:13px;color:var(--muted)}
+    .value{font-size:14px;word-break:break-word}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+    .btn{
+      appearance:none;border:0;border-radius:16px;padding:13px 16px;font-weight:700;font-size:14px;
+      cursor:pointer;min-height:46px;display:inline-flex;align-items:center;justify-content:center;
+      text-decoration:none;transition:transform .15s ease,opacity .15s ease
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .primary{background:var(--accent);color:#fff}
+    .secondary{background:transparent;border:1px solid var(--line);color:var(--text)}
+    .status{
+      margin-top:20px; display:inline-flex; gap:10px; align-items:center; padding:10px 14px;
+      border-radius:999px; font-size:13px; border:1px solid var(--line); background:rgba(148,163,184,.06)
+    }
+    .ok{color:var(--success)}
+    .err{color:var(--danger)}
+    .spinner{
+      width:14px;height:14px;border-radius:999px;border:2px solid rgba(148,163,184,.35);
+      border-top-color:var(--accent); animation:spin .8s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .hidden{display:none !important}
+    .footer{padding:0 28px 28px;color:var(--muted);font-size:12px;line-height:1.6}
+    @media (max-width:640px){
+      .content,.footer{padding-left:18px;padding-right:18px}
+      .row{grid-template-columns:1fr;gap:4px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <div class="bar"></div>
+      <div class="content">
+        <div class="eyebrow"><span class="dot"></span><span>Issue Mail Router</span></div>
+        <h1 id="title">Loading…</h1>
+        <p class="desc" id="desc">Fetching the matching issue from GitHub.</p>
+
+        <div class="meta hidden" id="meta">
+          <div class="row">
+            <div class="label">Issue key</div>
+            <div class="value" id="issueKey"></div>
+          </div>
+          <div class="row">
+            <div class="label">Recipients</div>
+            <div class="value" id="targets"></div>
+          </div>
+          <div class="row">
+            <div class="label">Subject</div>
+            <div class="value" id="subject"></div>
+          </div>
+        </div>
+
+        <div class="actions hidden" id="actions">
+          <button class="btn primary" id="openBtn">Open email draft</button>
+          <button class="btn secondary" id="copyBtn">Copy email text</button>
+        </div>
+
+        <div class="status" id="status">
+          <span class="spinner" id="spin"></span>
+          <span id="statusText">Checking repository issues…</span>
+        </div>
+      </div>
+
+      <div class="footer" id="footer">
+        No redirect happens unless a valid issue is found and parsed.
+      </div>
+    </section>
+  </main>
+
   <script>
-    (function () {
-      const reports = {
-        ReportFastOne: {
-          GmailTargets: ["security@telegram.org", "abuse@telegram.org"],
-          GmailHeadr: "Urgent Report: Doxxing and Unauthorized Publication of Private Personal Information",
-          GmailBody:
-`Dear Telegram Abuse Team,
+    const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
 
-I am writing to report a serious and ongoing case of doxxing and the unauthorized publication of private personal information.
+    const els = {
+      title: document.getElementById("title"),
+      desc: document.getElementById("desc"),
+      meta: document.getElementById("meta"),
+      issueKey: document.getElementById("issueKey"),
+      targets: document.getElementById("targets"),
+      subject: document.getElementById("subject"),
+      actions: document.getElementById("actions"),
+      openBtn: document.getElementById("openBtn"),
+      copyBtn: document.getElementById("copyBtn"),
+      status: document.getElementById("status"),
+      statusText: document.getElementById("statusText"),
+      spin: document.getElementById("spin"),
+      footer: document.getElementById("footer")
+    };
 
-Please review the issue as soon as possible.
+    let activeIssue = null;
 
-Best regards,`
-        },
+    function normalize(s) {
+      return String(s || "").trim().toLowerCase();
+    }
 
-        ReportFastTwo: {
-          GmailTargets: ["security@telegram.org", "abuse@telegram.org"],
-          GmailHeadr: "Urgent Report: Harmful Content and Private Data Exposure",
-          GmailBody:
-`Dear Telegram Abuse Team,
+    function getIssueKey() {
+      const params = new URLSearchParams(location.search);
 
-I am writing to report harmful content involving the exposure of private personal information.
+      if ([...params.keys()].length === 0) return "";
 
-Please investigate this matter urgently.
+      const explicit =
+        params.get("issue") ||
+        params.get("report") ||
+        params.get("r");
 
-Best regards,`
+      if (explicit) return explicit.trim();
+
+      const firstKey = [...params.keys()][0];
+      return (firstKey || "").trim();
+    }
+
+    function setStatus(kind, text, loading = false) {
+      els.status.className = "status" + (kind ? " " + kind : "");
+      els.statusText.textContent = text;
+      els.spin.classList.toggle("hidden", !loading);
+    }
+
+    function extractJsonFromBody(body) {
+      const raw = String(body || "");
+
+      const fenced = raw.match(/```json\s*([\s\S]*?)```/i) ||
+                     raw.match(/```\s*([\s\S]*?)```/i);
+
+      const candidate = fenced ? fenced[1].trim() : raw.trim();
+      return JSON.parse(candidate);
+    }
+
+    function validateReport(obj) {
+      return obj &&
+        Array.isArray(obj.GmailTargets) &&
+        obj.GmailTargets.length > 0 &&
+        typeof obj.GmailHeadr === "string" &&
+        obj.GmailHeadr.trim() &&
+        typeof obj.GmailBody === "string" &&
+        obj.GmailBody.trim();
+    }
+
+    function buildMailto(report) {
+      const to = report.GmailTargets.join(",");
+      return "mailto:" + encodeURIComponent(to) +
+        "?subject=" + encodeURIComponent(report.GmailHeadr) +
+        "&body=" + encodeURIComponent(report.GmailBody);
+    }
+
+    function renderReport(key, report) {
+      activeIssue = report;
+
+      els.title.textContent = report.PageTitle || "Report found";
+      els.desc.textContent = report.Description || "A matching GitHub issue was found and parsed.";
+      els.issueKey.textContent = key;
+      els.targets.textContent = report.GmailTargets.join(", ");
+      els.subject.textContent = report.GmailHeadr;
+
+      els.meta.classList.remove("hidden");
+      els.actions.classList.remove("hidden");
+      setStatus("ok", "Report loaded. Opening your mail app…", false);
+
+      const mailto = buildMailto(report);
+
+      els.openBtn.onclick = () => {
+        location.href = mailto;
+      };
+
+      els.copyBtn.onclick = async () => {
+        const text = [
+          "To: " + report.GmailTargets.join(", "),
+          "Subject: " + report.GmailHeadr,
+          "",
+          report.GmailBody
+        ].join("\\n");
+
+        try {
+          await navigator.clipboard.writeText(text);
+          setStatus("ok", "Copied to clipboard.", false);
+        } catch {
+          setStatus("err", "Clipboard access was blocked.", false);
         }
       };
 
-      function getIssueKey() {
-        const raw = window.location.search.replace(/^\?/, "");
-        if (!raw) return "ReportFastOne";
+      setTimeout(() => {
+        location.href = mailto;
+      }, 250);
+    }
 
-        const firstPart = raw.split("&")[0];
-        const key = decodeURIComponent(firstPart.split("=")[0].trim());
+    function fail(message) {
+      els.title.textContent = "Report not found";
+      els.desc.textContent = message;
+      els.meta.classList.add("hidden");
+      els.actions.classList.add("hidden");
+      setStatus("err", message, false);
+      els.footer.textContent = "No redirect was performed.";
+    }
 
-        return key || "ReportFastOne";
+    (async function init() {
+      const key = getIssueKey();
+
+      if (!key) {
+        fail("No issue key was provided in the link.");
+        return;
       }
 
-      const issueKey = getIssueKey();
-      const report = reports[issueKey] || reports.ReportFastOne;
+      try {
+        const res = await fetch(API, {
+          headers: { "Accept": "application/vnd.github+json" }
+        });
 
-      const to = report.GmailTargets.join(",");
-      const subject = report.GmailHeadr;
-      const body = report.GmailBody;
+        if (!res.ok) {
+          fail("GitHub issues could not be loaded.");
+          return;
+        }
 
-      const mailto =
-        "mailto:" +
-        encodeURIComponent(to) +
-        "?subject=" +
-        encodeURIComponent(subject) +
-        "&body=" +
-        encodeURIComponent(body);
+        const issues = await res.json();
+        const match = issues.find(item =>
+          !item.pull_request && normalize(item.title) === normalize(key)
+        );
 
-      window.location.replace(mailto);
+        if (!match) {
+          fail("No matching issue title was found.");
+          return;
+        }
+
+        let report;
+        try {
+          report = extractJsonFromBody(match.body);
+        } catch {
+          fail("The issue body is not valid JSON.");
+          return;
+        }
+
+        if (!validateReport(report)) {
+          fail("The parsed JSON is missing GmailTargets, GmailHeadr, or GmailBody.");
+          return;
+        }
+
+        renderReport(match.title, report);
+      } catch {
+        fail("The issue feed is unavailable or malformed.");
+      }
     })();
   </script>
-</head>
-<body></body>
-</html>
+</body>
+  </html>
