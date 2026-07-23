@@ -364,193 +364,224 @@ h1{
   </div>
 </section>
 
-  </main>  <script>
-    const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
+  </main>
 
-    const els = {
-      title: document.getElementById("title"),
-      desc: document.getElementById("desc"),
-      meta: document.getElementById("meta"),
-      issueKey: document.getElementById("issueKey"),
-      targets: document.getElementById("targets"),
-      subject: document.getElementById("subject"),
-      actions: document.getElementById("actions"),
-      openBtn: document.getElementById("openBtn"),
-      copyBtn: document.getElementById("copyBtn"),
-      status: document.getElementById("status"),
-      statusText: document.getElementById("statusText"),
-      spin: document.getElementById("spin"),
-      footer: document.getElementById("footer")
+<script>
+  const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
+
+  const els = {
+    title: document.getElementById("title"),
+    desc: document.getElementById("desc"),
+    meta: document.getElementById("meta"),
+    issueKey: document.getElementById("issueKey"),
+    targets: document.getElementById("targets"),
+    subject: document.getElementById("subject"),
+    actions: document.getElementById("actions"),
+    openBtn: document.getElementById("openBtn"),
+    copyBtn: document.getElementById("copyBtn"),
+    status: document.getElementById("status"),
+    statusText: document.getElementById("statusText"),
+    spin: document.getElementById("spin"),
+    footer: document.getElementById("footer")
+  };
+
+  let autoOpenTimer = null;
+
+  function normalize(s) {
+    return String(s || "").trim().toLowerCase();
+  }
+
+  function cleanText(s) {
+    return String(s || "").replace(/\r\n/g, "\n").trim();
+  }
+
+  function encodeMailValue(value) {
+    return encodeURIComponent(cleanText(value))
+      .replace(/%20/g, "%20")
+      .replace(/%0A/g, "%0A");
+  }
+
+  function pickRandom(list) {
+    if (!Array.isArray(list) || list.length === 0) return "";
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function toStringArray(value) {
+    if (Array.isArray(value)) {
+      return value.map(v => String(v).trim()).filter(Boolean);
+    }
+    if (typeof value === "string" && value.trim()) {
+      return [value.trim()];
+    }
+    return [];
+  }
+
+  function pickTextField(value) {
+    if (Array.isArray(value)) return pickRandom(value);
+    if (typeof value === "string") return value.trim();
+    return "";
+  }
+
+  function buildMailto(report) {
+    const recipients = toStringArray(report.GmailTargets).join(",");
+    const subject = encodeMailValue(report.GmailHeadrSelected || "");
+    const body = encodeMailValue(report.GmailBodySelected || "");
+    return `mailto:${recipients}?subject=${subject}&body=${body}`;
+  }
+
+  function getIssueKey() {
+    const params = new URLSearchParams(location.search);
+
+    if ([...params.keys()].length === 0) return "";
+
+    const explicit =
+      params.get("issue") ||
+      params.get("report") ||
+      params.get("r");
+
+    if (explicit) return explicit.trim();
+
+    const firstKey = [...params.keys()][0];
+    return (firstKey || "").trim();
+  }
+
+  function setStatus(kind, text, loading = false) {
+    els.status.className = "status" + (kind ? " " + kind : "");
+    els.statusText.textContent = text;
+    els.spin.classList.toggle("hidden", !loading);
+  }
+
+  function extractJsonFromBody(body) {
+    const raw = String(body || "");
+    const fenced =
+      raw.match(/```json\s*([\s\S]*?)```/i) ||
+      raw.match(/```\s*([\s\S]*?)```/i);
+
+    const candidate = fenced ? fenced[1].trim() : raw.trim();
+    return JSON.parse(candidate);
+  }
+
+  function validateReport(obj) {
+    return obj &&
+      Array.isArray(obj.GmailTargets) &&
+      obj.GmailTargets.length > 0 &&
+      obj.GmailTargets.every(v => typeof v === "string" && v.trim()) &&
+      (
+        (typeof obj.GmailHeadr === "string" && obj.GmailHeadr.trim()) ||
+        (Array.isArray(obj.GmailHeadr) && obj.GmailHeadr.length > 0)
+      ) &&
+      (
+        (typeof obj.GmailBody === "string" && obj.GmailBody.trim()) ||
+        (Array.isArray(obj.GmailBody) && obj.GmailBody.length > 0)
+      );
+  }
+
+  function copyPlainText(report) {
+    const targets = toStringArray(report.GmailTargets);
+    return [
+      "To: " + targets.join(", "),
+      "Subject: " + (report.GmailHeadrSelected || ""),
+      "",
+      report.GmailBodySelected || ""
+    ].join("\n");
+  }
+
+  function renderReport(key, report) {
+    const targets = toStringArray(report.GmailTargets);
+
+    // انتخاب رندوم از قالب‌ها
+    report.GmailHeadrSelected = pickTextField(report.GmailHeadr);
+    report.GmailBodySelected = pickTextField(report.GmailBody);
+
+    const mailto = buildMailto(report);
+
+    els.title.textContent = report.PageTitle || "Report found";
+    els.desc.textContent = report.Description || "A matching GitHub issue was found and parsed.";
+    els.issueKey.textContent = key;
+    els.targets.textContent = targets.join(", ");
+    els.subject.textContent = report.GmailHeadrSelected;
+
+    els.meta.classList.remove("hidden");
+    els.actions.classList.remove("hidden");
+    setStatus("ok", "Report loaded. Opening your mail app…", false);
+    els.footer.textContent = "You can open the draft manually or copy the full email text.";
+
+    els.openBtn.onclick = () => {
+      location.href = mailto;
     };
 
-    let autoOpenTimer = null;
+    els.copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(copyPlainText(report));
+        setStatus("ok", "Copied to clipboard.", false);
+      } catch {
+        setStatus("err", "Clipboard access was blocked.", false);
+      }
+    };
 
-    function normalize(s) {
-      return String(s || "").trim().toLowerCase();
+    clearTimeout(autoOpenTimer);
+    autoOpenTimer = setTimeout(() => {
+      location.href = mailto;
+    }, 250);
+  }
+
+  function fail(message) {
+    els.title.textContent = "Report not found";
+    els.desc.textContent = message;
+    els.meta.classList.add("hidden");
+    els.actions.classList.add("hidden");
+    setStatus("err", message, false);
+    els.footer.textContent = "No redirect was performed.";
+    clearTimeout(autoOpenTimer);
+  }
+
+  (async function init() {
+    const key = getIssueKey();
+
+    if (!key) {
+      fail("No issue key was provided in the link.");
+      return;
     }
 
-    function cleanText(s) {
-      return String(s || "").replace(/\r\n/g, "\n").trim();
-    }
+    try {
+      const res = await fetch(API, {
+        headers: { "Accept": "application/vnd.github+json" }
+      });
 
-    function encodeMailValue(value) {
-      return encodeURIComponent(cleanText(value))
-        .replace(/%20/g, "%20")
-        .replace(/%0A/g, "%0A");
-    }
-
-    function buildMailto(report) {
-      const recipients = (Array.isArray(report.GmailTargets) ? report.GmailTargets : [])
-        .map(v => String(v).trim())
-        .filter(Boolean)
-        .join(",");
-
-      const subject = encodeMailValue(report.GmailHeadr);
-      const body = encodeMailValue(report.GmailBody);
-
-      return `mailto:${recipients}?subject=${subject}&body=${body}`;
-    }
-
-    function getIssueKey() {
-      const params = new URLSearchParams(location.search);
-
-      if ([...params.keys()].length === 0) return "";
-
-      const explicit =
-        params.get("issue") ||
-        params.get("report") ||
-        params.get("r");
-
-      if (explicit) return explicit.trim();
-
-      const firstKey = [...params.keys()][0];
-      return (firstKey || "").trim();
-    }
-
-    function setStatus(kind, text, loading = false) {
-      els.status.className = "status" + (kind ? " " + kind : "");
-      els.statusText.textContent = text;
-      els.spin.classList.toggle("hidden", !loading);
-    }
-
-    function extractJsonFromBody(body) {
-      const raw = String(body || "");
-      const fenced =
-        raw.match(/```json\s*([\s\S]*?)```/i) ||
-        raw.match(/```\s*([\s\S]*?)```/i);
-
-      const candidate = fenced ? fenced[1].trim() : raw.trim();
-      return JSON.parse(candidate);
-    }
-
-    function validateReport(obj) {
-      return obj &&
-        Array.isArray(obj.GmailTargets) &&
-        obj.GmailTargets.length > 0 &&
-        obj.GmailTargets.every(v => typeof v === "string" && v.trim()) &&
-        typeof obj.GmailHeadr === "string" && obj.GmailHeadr.trim() &&
-        typeof obj.GmailBody === "string" && obj.GmailBody.trim();
-    }
-
-    function copyPlainText(report) {
-      const targets = report.GmailTargets.map(v => String(v).trim()).filter(Boolean);
-      return [
-        "To: " + targets.join(", "),
-        "Subject: " + report.GmailHeadr,
-        "",
-        report.GmailBody
-      ].join("\n");
-    }
-
-    function renderReport(key, report) {
-      const targets = report.GmailTargets.map(v => String(v).trim()).filter(Boolean);
-      const mailto = buildMailto(report);
-
-      els.title.textContent = report.PageTitle || "Report found";
-      els.desc.textContent = report.Description || "A matching GitHub issue was found and parsed.";
-      els.issueKey.textContent = key;
-      els.targets.textContent = targets.join(", ");
-      els.subject.textContent = report.GmailHeadr;
-
-      els.meta.classList.remove("hidden");
-      els.actions.classList.remove("hidden");
-      setStatus("ok", "Report loaded. Opening your mail app…", false);
-      els.footer.textContent = "You can open the draft manually or copy the full email text.";
-
-      els.openBtn.onclick = () => {
-        location.href = mailto;
-      };
-
-      els.copyBtn.onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(copyPlainText(report));
-          setStatus("ok", "Copied to clipboard.", false);
-        } catch {
-          setStatus("err", "Clipboard access was blocked.", false);
-        }
-      };
-
-      clearTimeout(autoOpenTimer);
-      autoOpenTimer = setTimeout(() => {
-        location.href = mailto;
-      }, 250);
-    }
-
-    function fail(message) {
-      els.title.textContent = "Report not found";
-      els.desc.textContent = message;
-      els.meta.classList.add("hidden");
-      els.actions.classList.add("hidden");
-      setStatus("err", message, false);
-      els.footer.textContent = "No redirect was performed.";
-      clearTimeout(autoOpenTimer);
-    }
-
-    (async function init() {
-      const key = getIssueKey();
-
-      if (!key) {
-        fail("No issue key was provided in the link.");
+      if (!res.ok) {
+        fail("GitHub issues could not be loaded.");
         return;
       }
 
-      try {
-        const res = await fetch(API, {
-          headers: { "Accept": "application/vnd.github+json" }
-        });
+      const issues = await res.json();
+      const match = issues.find(item =>
+        !item.pull_request && normalize(item.title) === normalize(key)
+      );
 
-        if (!res.ok) {
-          fail("GitHub issues could not be loaded.");
-          return;
-        }
-
-        const issues = await res.json();
-        const match = issues.find(item =>
-          !item.pull_request && normalize(item.title) === normalize(key)
-        );
-
-        if (!match) {
-          fail("No matching issue title was found.");
-          return;
-        }
-
-        let report;
-        try {
-          report = extractJsonFromBody(match.body);
-        } catch {
-          fail("The issue body is not valid JSON.");
-          return;
-        }
-
-        if (!validateReport(report)) {
-          fail("The parsed JSON is missing GmailTargets, GmailHeadr, or GmailBody.");
-          return;
-        }
-
-        renderReport(match.title, report);
-      } catch {
-        fail("The issue feed is unavailable or malformed.");
+      if (!match) {
+        fail("No matching issue title was found.");
+        return;
       }
-    })();
-  </script></body>
+
+      let report;
+      try {
+        report = extractJsonFromBody(match.body);
+      } catch {
+        fail("The issue body is not valid JSON.");
+        return;
+      }
+
+      if (!validateReport(report)) {
+        fail("The parsed JSON is missing valid GmailTargets, GmailHeadr, or GmailBody.");
+        return;
+      }
+
+      renderReport(match.title, report);
+    } catch {
+      fail("The issue feed is unavailable or malformed.");
+    }
+  })();
+</script>
+  
+</body>
       </html>
