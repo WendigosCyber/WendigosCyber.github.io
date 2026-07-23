@@ -1,587 +1,280 @@
 <!doctype html>
-
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex,nofollow" />
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#02030a" />
-  <title>Wendigos_Cyber</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="گزارش" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4%20Wendigos%22%2C%22short_name%22%3A%22%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%2302030a%22%2C%22background_color%22%3A%22%23010205%22%7D" />
+  <title>گزارش</title>
   <style>
-    :root{
-      --bg0:#010205;
-      --bg1:#02050b;
-      --bg2:#050916;
-      --text:#e7edf9;
-      --muted:#8c97b1;
-      --muted-2:#667086;
-      --line:rgba(148,163,184,.14);
-      --line-strong:rgba(148,163,184,.24);
-      --accent:#8aa4ff;
-      --accent-2:#9b7bff;
-      --good:#5ee6a8;
-      --bad:#ff7d7d;
-      --shadow:0 24px 80px rgba(0,0,0,.36);
-      --radius:28px;
-    }*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  color:var(--text);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:
-    radial-gradient(1200px 700px at 50% -10%, rgba(138,164,255,.10), transparent 55%),
-    radial-gradient(900px 500px at 12% 20%, rgba(155,123,255,.07), transparent 42%),
-    radial-gradient(800px 500px at 88% 82%, rgba(94,230,168,.05), transparent 38%),
-    linear-gradient(180deg, var(--bg0), var(--bg1) 42%, var(--bg2));
-  overflow-x:hidden;
-}
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-  background-size:42px 42px;
-  mask-image:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.02) 62%, transparent);
-  pointer-events:none;
-  opacity:.22;
-}
-
-.wrap{
-  min-height:100%;
-  display:grid;
-  place-items:center;
-  padding:28px;
-}
-
-.page{
-  width:min(920px,100%);
-  position:relative;
-  z-index:1;
-}
-
-.topline{
-  height:1px;
-  width:100%;
-  background:linear-gradient(90deg, transparent, rgba(138,164,255,.65), rgba(155,123,255,.45), transparent);
-  margin-bottom:28px;
-  opacity:.7;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-
-.brand-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:0;
-}
-
-.mark{
-  width:14px;
-  height:14px;
-  border-radius:999px;
-  background:linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow:0 0 0 8px rgba(138,164,255,.08);
-  flex:0 0 auto;
-}
-
-.brand-name{
-  font-size:13px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--muted);
-  white-space:nowrap;
-}
-
-.tag{
-  font-size:12px;
-  color:var(--muted-2);
-  border:1px solid var(--line);
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.015);
-  backdrop-filter:blur(8px);
-}
-
-.hero{
-  padding:6px 0 12px;
-  max-width:72ch;
-}
-
-h1{
-  margin:0;
-  font-size:clamp(30px,6vw,58px);
-  line-height:1.02;
-  letter-spacing:-.05em;
-  text-wrap:balance;
-}
-
-.desc{
-  margin:14px 0 0;
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.9;
-  max-width:68ch;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:18px;
-  margin-top:28px;
-  align-items:stretch;
-}
-
-.panel{
-  border:1px solid var(--line);
-  border-radius:24px;
-  background:rgba(255,255,255,.012);
-  box-shadow:none;
-  backdrop-filter:blur(8px);
-  padding:18px;
-  min-height:100%;
-}
-
-.panel-title{
-  color:var(--muted);
-  font-size:12px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  margin-bottom:10px;
-}
-
-.panel-body{
-  margin:0;
-  color:var(--text);
-  line-height:1.8;
-  font-size:14px;
-  word-break:break-word;
-}
-
-.panel code{
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-  font-size:12px;
-  color:#dfe7ff;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  padding:2px 6px;
-  border-radius:8px;
-}
-
-.meta{
-  margin-top:22px;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-}
-
-.row{
-  display:grid;
-  grid-template-columns:160px 1fr;
-  gap:14px;
-  padding:16px 0;
-  align-items:start;
-}
-
-.row + .row{
-  border-top:1px solid rgba(148,163,184,.10);
-}
-
-.label{
-  color:var(--muted);
-  font-size:13px;
-  padding-top:1px;
-}
-
-.value{
-  font-size:14px;
-  line-height:1.8;
-  word-break:break-word;
-}
-
-.actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-top:22px;
-}
-
-.btn{
-  appearance:none;
-  border:1px solid var(--line-strong);
-  background:rgba(255,255,255,.02);
-  color:var(--text);
-  border-radius:16px;
-  padding:13px 18px;
-  min-height:48px;
-  font-size:14px;
-  font-weight:700;
-  letter-spacing:.01em;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  text-decoration:none;
-  transition:transform .15s ease, border-color .15s ease, background .15s ease, opacity .15s ease;
-  user-select:none;
-}
-
-.btn:hover{
-  transform:translateY(-1px);
-  border-color:rgba(138,164,255,.34);
-  background:rgba(255,255,255,.04);
-}
-
-.btn:active{transform:translateY(0)}
-.primary{
-  background:linear-gradient(135deg, rgba(138,164,255,.18), rgba(155,123,255,.18));
-  border-color:rgba(138,164,255,.28);
-}
-
-.status{
-  margin-top:20px;
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.02);
-  padding:10px 14px;
-  color:var(--text);
-  font-size:13px;
-  max-width:100%;
-}
-
-.ok{color:var(--good)}
-.err{color:var(--bad)}
-
-.spinner{
-  width:14px;
-  height:14px;
-  border-radius:999px;
-  border:2px solid rgba(148,163,184,.26);
-  border-top-color:var(--accent);
-  animation:spin .8s linear infinite;
-  flex:0 0 auto;
-}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-.hidden{display:none !important}
-
-.footer{
-  margin-top:18px;
-  color:var(--muted-2);
-  font-size:12px;
-  line-height:1.8;
-  min-height:22px;
-}
-
-@media (max-width:760px){
-  .wrap{padding:18px}
-  .grid{grid-template-columns:1fr}
-  .row{grid-template-columns:1fr;gap:6px}
-  .tag{width:100%;text-align:center}
-}
-
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
-}
-
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      background: #010205;
+      color: #e7edf9;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      direction: rtl;
+    }
+    body {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 16px;
+    }
+    /* نوار هشدار شناور */
+    .floating-alert {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 560px;
+      background: rgba(10, 14, 28, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(138, 164, 255, 0.25);
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 9999;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    .floating-alert.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .alert-message {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #e7edf9;
+      flex: 1 1 auto;
+    }
+    .alert-btn {
+      flex: 0 0 auto;
+      background: linear-gradient(135deg, rgba(138,164,255,0.22), rgba(155,123,255,0.22));
+      border: 1px solid rgba(138,164,255,0.4);
+      color: #fff;
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .alert-btn:hover {
+      background: rgba(138,164,255,0.3);
+      border-color: rgba(138,164,255,0.6);
+    }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #8aa4ff;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* وضعیت خطا: حاشیه قرمز */
+    .floating-alert.error {
+      border-color: rgba(255,125,125,0.5);
+      background: rgba(40,12,16,0.92);
+    }
+    .floating-alert.error .alert-btn {
+      background: rgba(255,125,125,0.2);
+      border-color: rgba(255,125,125,0.5);
+    }
+    .floating-alert.loading {
+      border-color: rgba(138,164,255,0.3);
+    }
+    @media (max-width: 480px) {
+      .floating-alert {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 16px;
+        gap: 10px;
+      }
+      .alert-btn {
+        align-self: flex-end;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="page">
-      <div class="topline"></div>  <div class="brand">
-    <div class="brand-left">
-      <span class="mark" aria-hidden="true"></span>
-      <div class="brand-name">Wendigos_Cyber</div>
-    </div>
-    <div class="tag">توجه: درصورتی که ایمیل های مقصد وارد نشد از مروگر گوگل کروماستفاده کنید یعنی سعی کنید از مرورگر داخلی تلگرام استفاده نکنید.</div>
+  <div id="floatingAlert" class="floating-alert">
+    <span id="alertText" class="alert-message"></span>
+    <button id="alertAction" class="alert-btn hidden">باز کردن</button>
   </div>
 
-  <div class="hero">
-    <h1 id="title">Loading…</h1>
-    <p class="desc" id="desc">
-      Checking GitHub for a matching report and preparing the email draft.
-    </p>
-  </div>
+  <script>
+    (function() {
+      const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
 
-  <div class="grid">
-    <div class="panel">
-      <div class="panel-title">What this page does</div>
-      <p class="panel-body">
-        It reads a GitHub issue, extracts the JSON payload, and opens an email draft with the correct recipients, subject, and body.
-      </p>
-    </div>
+      const alertEl = document.getElementById('floatingAlert');
+      const alertText = document.getElementById('alertText');
+      const alertAction = document.getElementById('alertAction');
 
-    <div class="panel">
-      <div class="panel-title">Expected JSON</div>
-      <p class="panel-body">
-        <code>{"GmailTargets":[],"GmailHeadr":"","GmailBody":""}</code>
-      </p>
-    </div>
-  </div>
+      let currentMailto = '';
+      let autoOpenTimer = null;
 
-  <div class="meta hidden" id="meta">
-    <div class="row">
-      <div class="label">Issue key</div>
-      <div class="value" id="issueKey"></div>
-    </div>
-    <div class="row">
-      <div class="label">Recipients</div>
-      <div class="value" id="targets"></div>
-    </div>
-    <div class="row">
-      <div class="label">Subject</div>
-      <div class="value" id="subject"></div>
-    </div>
-  </div>
+      // توابع کمکی
+      const normalize = s => String(s || '').trim().toLowerCase();
+      const cleanText = s => String(s || '').replace(/\r\n/g, '\n').trim();
+      const encodeMailValue = v => encodeURIComponent(cleanText(v)).replace(/%20/g, '%20').replace(/%0A/g, '%0A');
+      const pickRandom = list => Array.isArray(list) && list.length ? list[Math.floor(Math.random() * list.length)] : '';
+      const toStringArray = val => {
+        if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean);
+        if (typeof val === 'string' && val.trim()) return [val.trim()];
+        return [];
+      };
+      const pickTextField = val => Array.isArray(val) ? pickRandom(val) : (typeof val === 'string' ? val.trim() : '');
 
-  <div class="actions hidden" id="actions">
-    <button class="btn primary" id="openBtn">Open email draft</button>
-    <button class="btn" id="copyBtn">Copy email text</button>
-  </div>
-
-  <div class="status" id="status">
-    <span class="spinner" id="spin"></span>
-    <span id="statusText">Checking repository issues…</span>
-  </div>
-
-  <div class="footer" id="footer">
-    No redirect happens unless a valid issue is found and parsed.
-  </div>
-</section>
-
-  </main>
-
-<script>
-  const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
-
-  const els = {
-    title: document.getElementById("title"),
-    desc: document.getElementById("desc"),
-    meta: document.getElementById("meta"),
-    issueKey: document.getElementById("issueKey"),
-    targets: document.getElementById("targets"),
-    subject: document.getElementById("subject"),
-    actions: document.getElementById("actions"),
-    openBtn: document.getElementById("openBtn"),
-    copyBtn: document.getElementById("copyBtn"),
-    status: document.getElementById("status"),
-    statusText: document.getElementById("statusText"),
-    spin: document.getElementById("spin"),
-    footer: document.getElementById("footer")
-  };
-
-  let autoOpenTimer = null;
-
-  function normalize(s) {
-    return String(s || "").trim().toLowerCase();
-  }
-
-  function cleanText(s) {
-    return String(s || "").replace(/\r\n/g, "\n").trim();
-  }
-
-  function encodeMailValue(value) {
-    return encodeURIComponent(cleanText(value))
-      .replace(/%20/g, "%20")
-      .replace(/%0A/g, "%0A");
-  }
-
-  function pickRandom(list) {
-    if (!Array.isArray(list) || list.length === 0) return "";
-    return list[Math.floor(Math.random() * list.length)];
-  }
-
-  function toStringArray(value) {
-    if (Array.isArray(value)) {
-      return value.map(v => String(v).trim()).filter(Boolean);
-    }
-    if (typeof value === "string" && value.trim()) {
-      return [value.trim()];
-    }
-    return [];
-  }
-
-  function pickTextField(value) {
-    if (Array.isArray(value)) return pickRandom(value);
-    if (typeof value === "string") return value.trim();
-    return "";
-  }
-
-  function buildMailto(report) {
-    const recipients = toStringArray(report.GmailTargets).join(",");
-    const subject = encodeMailValue(report.GmailHeadrSelected || "");
-    const body = encodeMailValue(report.GmailBodySelected || "");
-    return `mailto:${recipients}?subject=${subject}&body=${body}`;
-  }
-
-  function getIssueKey() {
-    const params = new URLSearchParams(location.search);
-
-    if ([...params.keys()].length === 0) return "";
-
-    const explicit =
-      params.get("issue") ||
-      params.get("report") ||
-      params.get("r");
-
-    if (explicit) return explicit.trim();
-
-    const firstKey = [...params.keys()][0];
-    return (firstKey || "").trim();
-  }
-
-  function setStatus(kind, text, loading = false) {
-    els.status.className = "status" + (kind ? " " + kind : "");
-    els.statusText.textContent = text;
-    els.spin.classList.toggle("hidden", !loading);
-  }
-
-  function extractJsonFromBody(body) {
-    const raw = String(body || "");
-    const fenced =
-      raw.match(/```json\s*([\s\S]*?)```/i) ||
-      raw.match(/```\s*([\s\S]*?)```/i);
-
-    const candidate = fenced ? fenced[1].trim() : raw.trim();
-    return JSON.parse(candidate);
-  }
-
-  function validateReport(obj) {
-    return obj &&
-      Array.isArray(obj.GmailTargets) &&
-      obj.GmailTargets.length > 0 &&
-      obj.GmailTargets.every(v => typeof v === "string" && v.trim()) &&
-      (
-        (typeof obj.GmailHeadr === "string" && obj.GmailHeadr.trim()) ||
-        (Array.isArray(obj.GmailHeadr) && obj.GmailHeadr.length > 0)
-      ) &&
-      (
-        (typeof obj.GmailBody === "string" && obj.GmailBody.trim()) ||
-        (Array.isArray(obj.GmailBody) && obj.GmailBody.length > 0)
-      );
-  }
-
-  function copyPlainText(report) {
-    const targets = toStringArray(report.GmailTargets);
-    return [
-      "To: " + targets.join(", "),
-      "Subject: " + (report.GmailHeadrSelected || ""),
-      "",
-      report.GmailBodySelected || ""
-    ].join("\n");
-  }
-
-  function renderReport(key, report) {
-    const targets = toStringArray(report.GmailTargets);
-
-    // انتخاب رندوم از قالب‌ها
-    report.GmailHeadrSelected = pickTextField(report.GmailHeadr);
-    report.GmailBodySelected = pickTextField(report.GmailBody);
-
-    const mailto = buildMailto(report);
-
-    els.title.textContent = report.PageTitle || "Report found";
-    els.desc.textContent = report.Description || "A matching GitHub issue was found and parsed.";
-    els.issueKey.textContent = key;
-    els.targets.textContent = targets.join(", ");
-    els.subject.textContent = report.GmailHeadrSelected;
-
-    els.meta.classList.remove("hidden");
-    els.actions.classList.remove("hidden");
-    setStatus("ok", "Report loaded. Opening your mail app…", false);
-    els.footer.textContent = "You can open the draft manually or copy the full email text.";
-
-    els.openBtn.onclick = () => {
-      location.href = mailto;
-    };
-
-    els.copyBtn.onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(copyPlainText(report));
-        setStatus("ok", "Copied to clipboard.", false);
-      } catch {
-        setStatus("err", "Clipboard access was blocked.", false);
-      }
-    };
-
-    clearTimeout(autoOpenTimer);
-    autoOpenTimer = setTimeout(() => {
-      location.href = mailto;
-    }, 250);
-  }
-
-  function fail(message) {
-    els.title.textContent = "Report not found";
-    els.desc.textContent = message;
-    els.meta.classList.add("hidden");
-    els.actions.classList.add("hidden");
-    setStatus("err", message, false);
-    els.footer.textContent = "No redirect was performed.";
-    clearTimeout(autoOpenTimer);
-  }
-
-  (async function init() {
-    const key = getIssueKey();
-
-    if (!key) {
-      fail("No issue key was provided in the link.");
-      return;
-    }
-
-    try {
-      const res = await fetch(API, {
-        headers: { "Accept": "application/vnd.github+json" }
-      });
-
-      if (!res.ok) {
-        fail("GitHub issues could not be loaded.");
-        return;
+      function buildMailto(report) {
+        const recipients = toStringArray(report.GmailTargets).join(',');
+        const subject = encodeMailValue(report.GmailHeadrSelected || '');
+        const body = encodeMailValue(report.GmailBodySelected || '');
+        return `mailto:${recipients}?subject=${subject}&body=${body}`;
       }
 
-      const issues = await res.json();
-      const match = issues.find(item =>
-        !item.pull_request && normalize(item.title) === normalize(key)
-      );
-
-      if (!match) {
-        fail("No matching issue title was found.");
-        return;
+      function getIssueKey() {
+        if (!location.search || location.search.length <= 1) return null; // بدون علامت سوال
+        const params = new URLSearchParams(location.search);
+        const explicit = params.get('issue') || params.get('report') || params.get('r');
+        if (explicit) return explicit.trim();
+        // اولین کلید موجود
+        for (let key of params.keys()) {
+          if (key) return key.trim();
+        }
+        return null;
       }
 
-      let report;
-      try {
-        report = extractJsonFromBody(match.body);
-      } catch {
-        fail("The issue body is not valid JSON.");
-        return;
+      function setAlertState(state, message, mailto = null) {
+        alertEl.classList.remove('visible', 'error', 'loading');
+        alertAction.classList.add('hidden');
+        alertText.innerHTML = ''; // پاکسازی
+
+        if (state === 'loading') {
+          alertEl.classList.add('loading', 'visible');
+          alertText.innerHTML = '<span class="spinner"></span> ' + message;
+        } else if (state === 'success') {
+          alertEl.classList.add('visible');
+          alertText.textContent = message;
+          if (mailto) {
+            currentMailto = mailto;
+            alertAction.classList.remove('hidden');
+            alertAction.onclick = () => { window.location.href = currentMailto; };
+          }
+        } else if (state === 'error') {
+          alertEl.classList.add('error', 'visible');
+          alertText.textContent = message;
+          // دکمه مخفی بماند
+          currentMailto = '';
+        }
       }
 
-      if (!validateReport(report)) {
-        fail("The parsed JSON is missing valid GmailTargets, GmailHeadr, or GmailBody.");
-        return;
+      function clearAutoRedirect() {
+        if (autoOpenTimer) {
+          clearTimeout(autoOpenTimer);
+          autoOpenTimer = null;
+        }
       }
 
-      renderReport(match.title, report);
-    } catch {
-      fail("The issue feed is unavailable or malformed.");
-    }
-  })();
-</script>
-  
+      function extractJsonFromBody(body) {
+        const raw = String(body || '');
+        const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
+        const candidate = fenced ? fenced[1].trim() : raw.trim();
+        return JSON.parse(candidate);
+      }
+
+      function validateReport(obj) {
+        return obj &&
+          Array.isArray(obj.GmailTargets) &&
+          obj.GmailTargets.length > 0 &&
+          obj.GmailTargets.every(v => typeof v === 'string' && v.trim()) &&
+          ((typeof obj.GmailHeadr === 'string' && obj.GmailHeadr.trim()) || (Array.isArray(obj.GmailHeadr) && obj.GmailHeadr.length > 0)) &&
+          ((typeof obj.GmailBody === 'string' && obj.GmailBody.trim()) || (Array.isArray(obj.GmailBody) && obj.GmailBody.length > 0));
+      }
+
+      async function main() {
+        const key = getIssueKey();
+        if (!key) {
+          setAlertState('error', '❌ لینک نامعتبر: هیچ پارامتری برای جستجوی گزارش یافت نشد.');
+          return;
+        }
+
+        setAlertState('loading', 'در حال جستجوی گزارش در گیت‌هاب...');
+
+        try {
+          const res = await fetch(API, { headers: { 'Accept': 'application/vnd.github+json' } });
+          if (!res.ok) throw new Error('خطا در دریافت ایزیوهای گیت‌هاب');
+          const issues = await res.json();
+
+          const match = issues.find(item => !item.pull_request && normalize(item.title) === normalize(key));
+          if (!match) throw new Error('هیچ ایزیوی با عنوان مشابه یافت نشد.');
+
+          let report;
+          try {
+            report = extractJsonFromBody(match.body);
+          } catch {
+            throw new Error('بدنهٔ ایزیو حاوی JSON معتبر نیست.');
+          }
+
+          if (!validateReport(report)) {
+            throw new Error('فیلدهای GmailTargets، GmailHeadr یا GmailBody نامعتبر هستند.');
+          }
+
+          // انتخاب رندوم از فیلدهای آرایه‌ای
+          report.GmailHeadrSelected = pickTextField(report.GmailHeadr);
+          report.GmailBodySelected = pickTextField(report.GmailBody);
+          const mailto = buildMailto(report);
+
+          // نمایش پیام موفقیت و دکمهٔ دستی
+          setAlertState('success', '✅ گزارش یافت شد، باز کردن با ایمیل', mailto);
+
+          // ریدایرکت خودکار پس از ۳۰۰ میلی‌ثانیه
+          clearAutoRedirect();
+          autoOpenTimer = setTimeout(() => {
+            window.location.href = mailto;
+          }, 300);
+
+        } catch (err) {
+          clearAutoRedirect();
+          setAlertState('error', '⚠️ ' + (err.message || 'خطای ناشناخته در پردازش گزارش.'));
+        }
+      }
+
+      // شروع
+      main();
+    })();
+  </script>
 </body>
-      </html>
+</html>
