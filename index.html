@@ -2,278 +2,148 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="robots" content="noindex,nofollow" />
-  <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#02030a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="گزارش" />
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4%20Wendigos%22%2C%22short_name%22%3A%22%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%2302030a%22%2C%22background_color%22%3A%22%23010205%22%7D" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>گزارش</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root{
+      color-scheme: light;
+      --bg:#f6f8fc;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#dbe3f0;
+      --ok:#0f8a4a;
+      --err:#c2410c;
+      --btn:#2563eb;
+      --btnText:#ffffff;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
     }
-    html, body {
-      height: 100%;
-      background: #010205;
-      color: #e7edf9;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      overflow-x: hidden;
-      direction: rtl;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
     }
-    body {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 16px;
+    .box{
+      width:min(520px,100%);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:var(--shadow);
     }
-    /* نوار هشدار شناور */
-    .floating-alert {
-      position: fixed;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      max-width: 560px;
-      background: rgba(10, 14, 28, 0.92);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(138, 164, 255, 0.25);
-      border-radius: 20px;
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      z-index: 9999;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      transform: translateX(-50%) translateY(-10px);
+    #msg{
+      font-size:15px;
+      line-height:1.9;
+      color:var(--muted);
+      word-break:break-word;
     }
-    .floating-alert.visible {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
+    #msg.ok{color:var(--ok)}
+    #msg.err{color:var(--err)}
+    .actions{margin-top:16px}
+    button{
+      border:0;
+      background:var(--btn);
+      color:var(--btnText);
+      border-radius:12px;
+      padding:11px 16px;
+      font:600 14px system-ui;
+      cursor:pointer;
     }
-    .alert-message {
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.5;
-      color: #e7edf9;
-      flex: 1 1 auto;
-    }
-    .alert-btn {
-      flex: 0 0 auto;
-      background: linear-gradient(135deg, rgba(138,164,255,0.22), rgba(155,123,255,0.22));
-      border: 1px solid rgba(138,164,255,0.4);
-      color: #fff;
-      border-radius: 14px;
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s, border-color 0.2s;
-      backdrop-filter: blur(8px);
-    }
-    .alert-btn:hover {
-      background: rgba(138,164,255,0.3);
-      border-color: rgba(138,164,255,0.6);
-    }
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.2);
-      border-top-color: #8aa4ff;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    /* وضعیت خطا: حاشیه قرمز */
-    .floating-alert.error {
-      border-color: rgba(255,125,125,0.5);
-      background: rgba(40,12,16,0.92);
-    }
-    .floating-alert.error .alert-btn {
-      background: rgba(255,125,125,0.2);
-      border-color: rgba(255,125,125,0.5);
-    }
-    .floating-alert.loading {
-      border-color: rgba(138,164,255,0.3);
-    }
-    @media (max-width: 480px) {
-      .floating-alert {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 14px 16px;
-        gap: 10px;
-      }
-      .alert-btn {
-        align-self: flex-end;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
+    button:active{transform:translateY(1px)}
+    .hide{display:none}
   </style>
 </head>
 <body>
-  <div id="floatingAlert" class="floating-alert">
-    <span id="alertText" class="alert-message"></span>
-    <button id="alertAction" class="alert-btn hidden">باز کردن</button>
+  <div class="box">
+    <div id="msg">در حال بررسی لینک...</div>
+    <div class="actions">
+      <button id="openBtn" class="hide" type="button">باز کردن دستی</button>
+    </div>
   </div>
 
   <script>
-    (function() {
+    (() => {
       const API = "https://api.github.com/repos/WendigosCyber/WendigosCyber.github.io/issues?state=open&per_page=100";
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("openBtn");
 
-      const alertEl = document.getElementById('floatingAlert');
-      const alertText = document.getElementById('alertText');
-      const alertAction = document.getElementById('alertAction');
+      const text = v => String(v || "").trim();
+      const lower = v => text(v).toLowerCase();
+      const enc = v => encodeURIComponent(text(v));
+      const pick = v => Array.isArray(v) ? v[Math.floor(Math.random() * v.length)] : v;
 
-      let currentMailto = '';
-      let autoOpenTimer = null;
-
-      // توابع کمکی
-      const normalize = s => String(s || '').trim().toLowerCase();
-      const cleanText = s => String(s || '').replace(/\r\n/g, '\n').trim();
-      const encodeMailValue = v => encodeURIComponent(cleanText(v)).replace(/%20/g, '%20').replace(/%0A/g, '%0A');
-      const pickRandom = list => Array.isArray(list) && list.length ? list[Math.floor(Math.random() * list.length)] : '';
-      const toStringArray = val => {
-        if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean);
-        if (typeof val === 'string' && val.trim()) return [val.trim()];
+      const list = v => {
+        if (Array.isArray(v)) return v.map(text).filter(Boolean);
+        if (typeof v === "string" && text(v)) return [text(v)];
         return [];
       };
-      const pickTextField = val => Array.isArray(val) ? pickRandom(val) : (typeof val === 'string' ? val.trim() : '');
 
-      function buildMailto(report) {
-        const recipients = toStringArray(report.GmailTargets).join(',');
-        const subject = encodeMailValue(report.GmailHeadrSelected || '');
-        const body = encodeMailValue(report.GmailBodySelected || '');
-        return `mailto:${recipients}?subject=${subject}&body=${body}`;
+      const setMsg = (value, type = "") => {
+        msg.className = type;
+        msg.textContent = value;
+      };
+
+      const params = new URLSearchParams(location.search);
+      const key =
+        text(params.get("issue")) ||
+        text(params.get("report")) ||
+        text(params.get("r")) ||
+        "";
+
+      if (!location.search || location.search === "?" || !key) {
+        setMsg("خطا: لینک معتبر نیست یا اطلاعاتی برای جستجو وجود ندارد.", "err");
+        return;
       }
 
-      function getIssueKey() {
-        if (!location.search || location.search.length <= 1) return null; // بدون علامت سوال
-        const params = new URLSearchParams(location.search);
-        const explicit = params.get('issue') || params.get('report') || params.get('r');
-        if (explicit) return explicit.trim();
-        // اولین کلید موجود
-        for (let key of params.keys()) {
-          if (key) return key.trim();
-        }
-        return null;
-      }
+      fetch(API, { headers: { Accept: "application/vnd.github+json" } })
+        .then(r => {
+          if (!r.ok) throw new Error("GitHub unavailable");
+          return r.json();
+        })
+        .then(issues => {
+          const issue = issues.find(x => !x.pull_request && lower(x.title) === lower(key));
+          if (!issue) throw new Error("Issue not found");
 
-      function setAlertState(state, message, mailto = null) {
-        alertEl.classList.remove('visible', 'error', 'loading');
-        alertAction.classList.add('hidden');
-        alertText.innerHTML = ''; // پاکسازی
+          const raw = text(issue.body);
+          const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+          const jsonText = text(match ? match[1] : raw);
 
-        if (state === 'loading') {
-          alertEl.classList.add('loading', 'visible');
-          alertText.innerHTML = '<span class="spinner"></span> ' + message;
-        } else if (state === 'success') {
-          alertEl.classList.add('visible');
-          alertText.textContent = message;
-          if (mailto) {
-            currentMailto = mailto;
-            alertAction.classList.remove('hidden');
-            alertAction.onclick = () => { window.location.href = currentMailto; };
-          }
-        } else if (state === 'error') {
-          alertEl.classList.add('error', 'visible');
-          alertText.textContent = message;
-          // دکمه مخفی بماند
-          currentMailto = '';
-        }
-      }
-
-      function clearAutoRedirect() {
-        if (autoOpenTimer) {
-          clearTimeout(autoOpenTimer);
-          autoOpenTimer = null;
-        }
-      }
-
-      function extractJsonFromBody(body) {
-        const raw = String(body || '');
-        const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
-        const candidate = fenced ? fenced[1].trim() : raw.trim();
-        return JSON.parse(candidate);
-      }
-
-      function validateReport(obj) {
-        return obj &&
-          Array.isArray(obj.GmailTargets) &&
-          obj.GmailTargets.length > 0 &&
-          obj.GmailTargets.every(v => typeof v === 'string' && v.trim()) &&
-          ((typeof obj.GmailHeadr === 'string' && obj.GmailHeadr.trim()) || (Array.isArray(obj.GmailHeadr) && obj.GmailHeadr.length > 0)) &&
-          ((typeof obj.GmailBody === 'string' && obj.GmailBody.trim()) || (Array.isArray(obj.GmailBody) && obj.GmailBody.length > 0));
-      }
-
-      async function main() {
-        const key = getIssueKey();
-        if (!key) {
-          setAlertState('error', '❌ لینک نامعتبر: هیچ پارامتری برای جستجوی گزارش یافت نشد.');
-          return;
-        }
-
-        setAlertState('loading', 'در حال جستجوی گزارش در گیت‌هاب...');
-
-        try {
-          const res = await fetch(API, { headers: { 'Accept': 'application/vnd.github+json' } });
-          if (!res.ok) throw new Error('خطا در دریافت ایزیوهای گیت‌هاب');
-          const issues = await res.json();
-
-          const match = issues.find(item => !item.pull_request && normalize(item.title) === normalize(key));
-          if (!match) throw new Error('هیچ ایزیوی با عنوان مشابه یافت نشد.');
-
-          let report;
+          let data;
           try {
-            report = extractJsonFromBody(match.body);
+            data = JSON.parse(jsonText);
           } catch {
-            throw new Error('بدنهٔ ایزیو حاوی JSON معتبر نیست.');
+            throw new Error("Invalid JSON");
           }
 
-          if (!validateReport(report)) {
-            throw new Error('فیلدهای GmailTargets، GmailHeadr یا GmailBody نامعتبر هستند.');
+          const targets = list(data.GmailTargets);
+          const heads = list(data.GmailHeadr);
+          const bodies = list(data.GmailBody);
+
+          if (!targets.length || !heads.length || !bodies.length) {
+            throw new Error("Missing email fields");
           }
 
-          // انتخاب رندوم از فیلدهای آرایه‌ای
-          report.GmailHeadrSelected = pickTextField(report.GmailHeadr);
-          report.GmailBodySelected = pickTextField(report.GmailBody);
-          const mailto = buildMailto(report);
+          const mailto =
+            "mailto:" + targets.join(",") +
+            "?subject=" + enc(pick(heads)) +
+            "&body=" + enc(pick(bodies));
 
-          // نمایش پیام موفقیت و دکمهٔ دستی
-          setAlertState('success', '✅ گزارش یافت شد، باز کردن با ایمیل', mailto);
+          btn.classList.remove("hide");
+          btn.onclick = () => location.href = mailto;
 
-          // ریدایرکت خودکار پس از ۳۰۰ میلی‌ثانیه
-          clearAutoRedirect();
-          autoOpenTimer = setTimeout(() => {
-            window.location.href = mailto;
-          }, 300);
-
-        } catch (err) {
-          clearAutoRedirect();
-          setAlertState('error', '⚠️ ' + (err.message || 'خطای ناشناخته در پردازش گزارش.'));
-        }
-      }
-
-      // شروع
-      main();
+          setMsg("گزارش پیدا شد؛ در حال انتقال به ایمیل...", "ok");
+          setTimeout(() => {
+            location.href = mailto;
+          }, 250);
+        })
+        .catch(() => {
+          setMsg("خطا: گزارش پیدا نشد یا اطلاعات گیت‌هاب در دسترس نبود.", "err");
+        });
     })();
   </script>
 </body>
