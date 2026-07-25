@@ -89,11 +89,19 @@
       };
 
       const params = new URLSearchParams(location.search);
-      const key =
-        text(params.get("issue")) ||
-        text(params.get("report")) ||
-        text(params.get("r")) ||
-        "";
+
+let key =
+  text(params.get("issue")) ||
+  text(params.get("report")) ||
+  text(params.get("r"));
+
+if (!key) {
+  const raw = location.search.slice(1).trim();
+
+  if (raw && !raw.includes("=") && !raw.includes("&")) {
+    key = decodeURIComponent(raw);
+  }
+}
 
       if (!location.search || location.search === "?" || !key) {
         setMsg("خطا: لینک معتبر نیست یا اطلاعاتی برای جستجو وجود ندارد.", "err");
