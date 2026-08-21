@@ -6,17 +6,17 @@
   <title>گزارش</title>
   <style>
     :root{
-      color-scheme: light;
-      --bg:#f6f8fc;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --border:#dbe3f0;
-      --ok:#0f8a4a;
-      --err:#c2410c;
-      --btn:#2563eb;
+      color-scheme: dark;
+      --bg:#000000;
+      --card:#111111;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --border:#1f2937;
+      --ok:#22c55e;
+      --err:#ef4444;
+      --btn:#1f2937;
       --btnText:#ffffff;
-      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --shadow:-10px -10px 20px 0px #0014ff2b, 10px 10px 20px 0px #b400ff2e;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
@@ -53,9 +53,28 @@
       padding:11px 16px;
       font:600 14px system-ui;
       cursor:pointer;
+      box-shadow:var(--shadow);
     }
     button:active{transform:translateY(1px)}
     .hide{display:none}
+    .signature{
+      margin-top:20px;
+      text-align:center;
+    }
+    .signature a{
+      font-size:1.2rem;
+      font-weight:700;
+      background:linear-gradient(90deg,#3b82f6,#8b5cf6,#d946ef);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      text-decoration:none;
+      letter-spacing:.5px;
+      filter:drop-shadow(0 0 8px rgba(139,92,246,.5));
+    }
+    .signature a:hover{
+      filter:drop-shadow(0 0 12px rgba(217,70,239,.7));
+    }
   </style>
 </head>
 <body>
@@ -63,6 +82,9 @@
     <div id="msg">در حال بررسی لینک...</div>
     <div class="actions">
       <button id="openBtn" class="hide" type="button">باز کردن دستی</button>
+    </div>
+    <div class="signature">
+      <a href="https://t.me/Wendigos_Cyber" target="_blank" rel="noopener noreferrer">Wendigos_Cyber</a>
     </div>
   </div>
 
@@ -90,64 +112,83 @@
 
       const params = new URLSearchParams(location.search);
 
-let key =
-  text(params.get("issue")) ||
-  text(params.get("report")) ||
-  text(params.get("r"));
+      let key =
+        text(params.get("issue")) ||
+        text(params.get("report")) ||
+        text(params.get("r"));
 
-if (!key) {
-  const raw = location.search.slice(1).trim();
+      if (!key) {
+        const raw = location.search.slice(1).trim();
 
-  if (raw && !raw.includes("=") && !raw.includes("&")) {
-    key = decodeURIComponent(raw);
-  }
-}
+        if (raw && !raw.includes("=") && !raw.includes("&")) {
+          key = decodeURIComponent(raw);
+        }
+      }
 
       if (!location.search || location.search === "?" || !key) {
         setMsg("خطا: لینک معتبر نیست یا اطلاعاتی برای جستجو وجود ندارد.", "err");
         return;
       }
 
-      fetch(API, { headers: { Accept: "application/vnd.github+json" } })
+      // آماده‌سازی کلید برای جستجو در فایل و issue
+      const issueKey = key.toLowerCase().endsWith('.json') ? key.slice(0, -5) : key;
+      const fileKey = key.toLowerCase().endsWith('.json') ? key : `${key}.json`;
+      const fileUrl = `https://WendigosCyber.github.io/${encodeURIComponent(fileKey)}`;
+
+      const processData = (data) => {
+        const targets = list(data.GmailTargets);
+        const heads = list(data.GmailHeadr);
+        const bodies = list(data.GmailBody);
+
+        if (!targets.length || !heads.length || !bodies.length) {
+          throw new Error("Missing email fields");
+        }
+
+        const mailto =
+          "mailto:" + targets.join(",") +
+          "?subject=" + enc(pick(heads)) +
+          "&body=" + enc(pick(bodies));
+
+        btn.classList.remove("hide");
+        btn.onclick = () => location.href = mailto;
+
+        setMsg("گزارش پیدا شد؛ در حال انتقال به ایمیل...", "ok");
+        setTimeout(() => {
+          location.href = mailto;
+        }, 250);
+      };
+
+      // اول بررسی فایل JSON استاتیک در مسیر داده شده
+      fetch(fileUrl, { headers: { 'Accept': 'application/json' } })
         .then(r => {
-          if (!r.ok) throw new Error("GitHub unavailable");
+          if (!r.ok) throw new Error("File not found");
           return r.json();
         })
-        .then(issues => {
-          const issue = issues.find(x => !x.pull_request && lower(x.title) === lower(key));
-          if (!issue) throw new Error("Issue not found");
+        .then(data => processData(data))
+        .catch(() => {
+          // اگر فایل پیدا نشد یا خطا داشت، بررسی issues گیت‌هاب
+          return fetch(API, { headers: { Accept: "application/vnd.github+json" } })
+            .then(r => {
+              if (!r.ok) throw new Error("GitHub unavailable");
+              return r.json();
+            })
+            .then(issues => {
+              const issue = issues.find(x => !x.pull_request && lower(x.title) === lower(issueKey));
+              if (!issue) throw new Error("Issue not found");
 
-          const raw = text(issue.body);
-          const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
-          const jsonText = text(match ? match[1] : raw);
+              const raw = text(issue.body);
+              const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+              const jsonText = text(match ? match[1] : raw);
 
-          let data;
-          try {
-            data = JSON.parse(jsonText);
-          } catch {
-            throw new Error("Invalid JSON");
-          }
+              let data;
+              try {
+                data = JSON.parse(jsonText);
+              } catch {
+                throw new Error("Invalid JSON");
+              }
 
-          const targets = list(data.GmailTargets);
-          const heads = list(data.GmailHeadr);
-          const bodies = list(data.GmailBody);
-
-          if (!targets.length || !heads.length || !bodies.length) {
-            throw new Error("Missing email fields");
-          }
-
-          const mailto =
-            "mailto:" + targets.join(",") +
-            "?subject=" + enc(pick(heads)) +
-            "&body=" + enc(pick(bodies));
-
-          btn.classList.remove("hide");
-          btn.onclick = () => location.href = mailto;
-
-          setMsg("گزارش پیدا شد؛ در حال انتقال به ایمیل...", "ok");
-          setTimeout(() => {
-            location.href = mailto;
-          }, 250);
+              processData(data);
+            });
         })
         .catch(() => {
           setMsg("خطا: گزارش پیدا نشد یا اطلاعات گیت‌هاب در دسترس نبود.", "err");
