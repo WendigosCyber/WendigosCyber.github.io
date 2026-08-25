@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wendigos_Cyber - داشبورد اطلاعاتی</title>
+    <style>
+        :root {
+            --bg: #080808;
+            --bg2: #0c0c0c;
+            --bg3: #111111;
+            --bg4: #161616;
+            --red: #ff1a1a;
+            --red2: #cc0000;
+            --red3: #990000;
+            --red4: #660000;
+            --red5: #330000;
+            --red6: #1a0000;
+            --text: #e0e0e0;
+            --text2: #b0b0b0;
+            --text3: #707070;
+            --glow: #ff3333;
+            --shadow: rgba(255, 0, 0, 0.1);
+            --font: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+            font-size: 14px;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(255,0,0,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,0,0,0.03) 0%, transparent 50%);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg2); }
+        ::-webkit-scrollbar-thumb { background: var(--red4); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--red3); }
+        ::selection { background: var(--red3); color: #fff; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 24px; background: var(--bg2);
+            margin-bottom: 20px; position: relative; overflow: hidden; flex-wrap: wrap; gap: 12px;
+            animation: slideDown 0.5s ease;
+            border-left: 2px solid var(--red);
+        }
+        .header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), var(--red2), var(--red), transparent);
+            animation: scan 3s ease-in-out infinite;
+        }
+        @keyframes scan { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        .logo-svg { width: 48px; height: 48px; flex-shrink: 0; animation: rotatePulse 4s ease-in-out infinite; }
+        @keyframes rotatePulse { 0%,100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.05); opacity: 1; } }
+        .logo-text h1 { font-size: 1.4rem; font-weight: 700; color: var(--red); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 20px var(--shadow), 0 0 40px var(--shadow); }
+        .logo-text span { font-size: 0.7rem; color: var(--text3); letter-spacing: 4px; text-transform: uppercase; }
+
+        .header-status { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .status-dot { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text2); }
+        .status-dot .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 10px var(--red); } 50% { opacity: 0.4; box-shadow: 0 0 2px var(--red); } }
+        .status-dot .dot.offline { background: var(--text3); animation: none; box-shadow: none; }
+
+        .search-wrapper { position: relative; margin-bottom: 16px; }
+        .search-input {
+            width: 100%; padding: 14px 20px; padding-left: 50px;
+            background: var(--bg2); color: var(--text); font-family: var(--font);
+            font-size: 0.9rem; outline: none; transition: all 0.3s; letter-spacing: 0.5px;
+            border: none; border-bottom: 2px solid var(--red4);
+        }
+        .search-input::placeholder { color: var(--text3); letter-spacing: 1px; }
+        .search-input:focus { background: var(--bg3); box-shadow: 0 0 20px rgba(255,0,0,0.15); border-bottom-color: var(--red); }
+        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; pointer-events: none; opacity: 0.5; }
+        .search-hint { font-size: 0.6rem; color: var(--text3); margin-top: 4px; padding: 0 4px; letter-spacing: 0.5px; }
+
+        .stats-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .stat-chip { padding: 6px 14px; background: var(--bg2); font-size: 0.65rem; color: var(--text2); letter-spacing: 0.5px; transition: all 0.3s; border-left: 2px solid var(--red4); }
+        .stat-chip:hover { background: var(--bg3); transform: translateY(-2px); }
+        .stat-chip .num { color: var(--red); font-weight: 700; font-size: 0.8rem; }
+
+        .sections-grid { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+        .section-card { background: var(--bg2); overflow: hidden; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); border-bottom: 1px solid var(--red4); }
+        .section-card:hover { background: var(--bg3); box-shadow: 0 0 20px rgba(255,0,0,0.05); }
+        .section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; user-select: none; transition: all 0.2s; }
+        .section-header:hover { background: var(--bg4); }
+        .section-title { flex: 1; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; color: var(--text); }
+        .section-count { font-size: 0.65rem; color: var(--red); background: var(--red5); padding: 4px 10px; margin-left: 12px; font-weight: 700; }
+        .chevron { width: 16px; height: 16px; transition: transform 0.3s ease; flex-shrink: 0; }
+        .section-card.open .chevron { transform: rotate(180deg); }
+        .section-body { display: none; padding: 0 20px 20px; border-top: 1px solid rgba(255,0,0,0.1); padding-top: 16px; }
+        .section-card.open .section-body { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item-card { background: var(--bg3); padding: 12px 16px; transition: all 0.2s; position: relative; border-right: 2px solid var(--red4); }
+        .item-card:hover { background: var(--bg4); border-right-color: var(--red); }
+        .item-card.has-coords { cursor: pointer; }
+        .item-card.has-coords:hover { box-shadow: 0 0 16px rgba(255,0,0,0.08); transform: translateX(-4px); }
+        .item-name { font-size: 0.8rem; font-weight: 600; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .map-indicator { font-size: 0.55rem; color: var(--text3); background: var(--bg4); padding: 2px 8px; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; }
+        .map-indicator:hover { color: var(--red); background: var(--red5); }
+        .item-description { font-size: 0.72rem; color: var(--text2); letter-spacing: 0.3px; }
+        .item-details { font-size: 0.68rem; color: var(--text3); margin-top: 6px; letter-spacing: 0.2px; border-right: 2px solid var(--red4); padding-right: 10px; }
+
+        .map-modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
+        .map-modal.active { display: flex; }
+        .map-modal-content { background: var(--bg2); width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; position: relative; border: 1px solid var(--red4); }
+        .map-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg3); border-bottom: 1px solid rgba(255,0,0,0.15); }
+        .map-modal-header .title { font-size: 0.75rem; color: var(--text); letter-spacing: 1px; }
+        .close-btn { width: 28px; height: 28px; cursor: pointer; background: var(--red5); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .close-btn:hover { background: var(--red3); }
+        .close-btn svg { width: 14px; height: 14px; }
+        .map-iframe { flex: 1; width: 100%; border: none; }
+        .map-footer { padding: 8px 16px; background: var(--bg3); border-top: 1px solid rgba(255,0,0,0.15); font-size: 0.65rem; color: var(--text3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .map-footer a { color: var(--red); text-decoration: none; font-size: 0.65rem; letter-spacing: 0.5px; }
+        .map-footer a:hover { text-decoration: underline; }
+        .copy-btn { cursor: pointer; color: var(--red); font-size: 0.65rem; background: none; border: none; font-family: var(--font); letter-spacing: 0.5px; }
+
+        .footer { margin-top: 20px; padding: 16px 20px; background: var(--bg2); text-align: center; font-size: 0.65rem; color: var(--text3); letter-spacing: 1px; position: relative; overflow: hidden; border-top: 2px solid var(--red4); }
+        .footer::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--red4), transparent); }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px 8px; }
+            .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+            .logo-text h1 { font-size: 1.1rem; }
+            .section-header { padding: 12px 14px; }
+            .section-body { padding: 0 12px 14px; padding-top: 12px; }
+            .item-card { padding: 10px 12px; }
+            .map-modal-content { height: 90vh; }
+        }
+        @media (max-width: 480px) {
+            .logo-text h1 { font-size: 0.9rem; letter-spacing: 1px; }
+            .logo-text span { font-size: 0.55rem; letter-spacing: 2px; }
+            .section-header .section-title { font-size: 0.72rem; }
+            .item-name { font-size: 0.7rem; flex-wrap: wrap; }
+            .item-description { font-size: 0.62rem; }
+            .item-details { font-size: 0.58rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-area">
+                <svg class="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 4L6 14v20L24 44l18-10V14L24 4z" stroke="#ff1a1a" stroke-width="1.5" fill="none" opacity="0.7"/>
+                    <path d="M24 12L12 19v10l12 7 12-7V19L24 12z" stroke="#ff1a1a" stroke-width="1.5" fill="none" opacity="0.9"/>
+                    <path d="M24 20L16 25v6l8 5 8-5v-6l-8-5z" fill="#ff1a1a" opacity="0.6"/>
+                    <circle cx="24" cy="28" r="2" fill="#ff1a1a"/>
+                    <line x1="24" y1="4" x2="24" y2="12" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                    <line x1="6" y1="14" x2="12" y2="19" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                    <line x1="42" y1="14" x2="36" y2="19" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                    <line x1="24" y1="44" x2="24" y2="36" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                    <line x1="6" y1="34" x2="12" y2="31" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                    <line x1="42" y1="34" x2="36" y2="31" stroke="#cc0000" stroke-width="1" opacity="0.5"/>
+                </svg>
+                <div class="logo-text">
+                    <h1>Wendigos_Cyber</h1>
+                    <span>SECURE INTELLIGENCE DASHBOARD</span>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-dot"><span class="dot"></span> SECURE CHANNEL</div>
+                <div class="status-dot"><span class="dot"></span> ENCRYPTED</div>
+                <div class="status-dot"><span class="dot"></span> 2026 DATA</div>
+                <div class="status-dot"><span class="dot offline"></span> OFFLINE</div>
+            </div>
+        </header>
+
+        <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="9" r="6" stroke="#ff3333" stroke-width="1.5" fill="none"/>
+                <line x1="14" y1="14" x2="18" y2="18" stroke="#ff3333" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="جستجوی هوشمند... (مثلاً: پایگاه هوایی یا F-35)" autocomplete="off">
+            <div class="search-hint">جستجوی NLP: کلمات کلیدی را جدا کنید، از AND/OR/NOT پشتیبانی می‌شود</div>
+        </div>
+
+        <div class="stats-bar" id="statsBar"></div>
+
+        <div class="sections-grid" id="sectionsContainer"></div>
+
+        <footer class="footer">
+            For Iran, for the people, <a href="https://t.me/Wendigos_Cyber" style="color: red;">Wendigo Cyber ​​Team</a>
+        </footer>
+    </div>
+
+    <div class="map-modal" id="mapModal">
+        <div class="map-modal-content">
+            <div class="map-modal-header">
+                <span class="title" id="mapModalTitle">LOCATION</span>
+                <div class="close-btn" id="mapModalClose">
+                    <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2" y1="2" x2="12" y2="12" stroke="#ff1a1a" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="12" y1="2" x2="2" y2="12" stroke="#ff1a1a" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            <iframe class="map-iframe" id="mapIframe" src="" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="map-footer">
+                <span id="mapCoordsText">COORDINATES: --</span>
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <button class="copy-btn" id="copyCoordsBtn">COPY</button>
+                    <a href="#" id="mapExternalLink" target="_blank">OPEN IN GOOGLE MAPS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ ENHANCED DATA (LONGER, MORE DETAILED) ============
+        const DATA = {
+            sections: [
+                { id: 1, title: "سامانه‌های پدافند هوایی و موشکی", items: [
+                    { name: "گنبد آهنین (Iron Dome)", coords: "31.2518,34.7913",
+                      desc: "سامانه پدافند هوایی کوتاه‌برد و سیار ساخت رافائل و IAI که برای رهگیری راکت، خمپاره، پهپاد و موشک‌های کوتاه‌برد طراحی شده است. هر باتری شامل رادار چندمنظوره EL/M-2084، واحد مدیریت نبرد و ۳ تا ۴ پرتابگر است. موشک رهگیر تامیر مجهز به جستجوگر راداری فعال و فیوز مجاورتی است. این سامانه قابلیت رهگیری همزمان ۱۱۰۰ هدف و اولویت‌بندی تهدیدها را دارد. گنبد آهنین از سال ۲۰۱۱ عملیاتی شده و در برابر راکت‌های پرتاب‌شده از نوار غزه و لبنان عملکرد بسیار موفقی داشته است. هزینه هر موشک تامیر حدود ۵۰ هزار دلار است. باتری‌ها به صورت ۲۴ ساعته فعال بوده و پرسنل در شیفت‌های ۸ یا ۱۲ ساعته فعالیت می‌کنند. این سامانه نقش کلیدی در دفاع غیرنظامی اسرائیل ایفا می‌کند.",
+                      details: "تعداد باتری‌ها: ۱۰-۱۴ | نفرات هر باتری: ۷۰-۱۰۰ | فرمانده: موشه پاتل | وضعیت: کاملاً عملیاتی | شیفت: ۲۴/۷ | فناوری: AESA رادار، موشک تامیر | هزینه شلیک: ۵۰ هزار دلار" },
+                    { name: "کلا داوید (David's Sling)", coords: "32.9667,35.5000",
+                      desc: "سامانه پدافند هوایی لایه میانی با برد ۴۰ تا ۳۰۰ کیلومتر که به‌صورت مشترک توسط رافائل اسرائیل و ریتون آمریکا ساخته شده است. این سامانه برای رهگیری موشک‌های بالستیک کوتاه‌برد و میان‌برد، موشک‌های کروز، هواپیما و پهپاد طراحی شده است. موشک رهگیر آن استونر نام دارد و از جستجوگر ترکیبی الکترواپتیکی/تصویربرداری حرارتی و رادار میلی‌متری بهره می‌برد. هزینه هر موشک استونر حدود ۱ میلیون دلار است. کلا داوید به‌عنوان جایگزین برخی باتری‌های پاتریوت در اسرائیل مستقر شده و توانسته است نقش مهمی در دفاع هوایی چندلایه ایفا کند.",
+                      details: "تعداد باتری‌ها: ۴ | نفرات هر باتری: ۱۰۰-۱۵۰ | هزینه هر موشک: ۱ میلیون دلار | وضعیت: عملیاتی | شیفت: ۲۴/۷ | فناوری: موشک استونر با جستجوگر EO/IR و رادار" },
+                    { name: "پیکان ۲ (Arrow-2)", coords: "31.8953,34.6917",
+                      desc: "سامانه ضد موشک بالستیک لایه بالایی با برد رهگیری تا ۳۰۰۰ کیلومتر که توسط IAI و بوئینگ ساخته شده است. رهگیری این سامانه در داخل جو انجام می‌شود. موشک پیکان ۲ دارای کلاهک انفجاری متعارف و سامانه هدایت راداری فعال/نیمه‌فعال است. رادار گرین پاین EL/M-2080 از نوع آرایه فازی برد بلند (تا ۵۰۰ کیلومتر) به کار گرفته می‌شود. هزینه هر موشک حدود ۳ میلیون دلار است. این سامانه از سال ۲۰۰۰ عملیاتی شده و در طول سال‌ها ارتقا یافته است، اما به تدریج با پیکان ۳ جایگزین می‌شود.",
+                      details: "تعداد باتری‌ها: ۲ | نفرات هر باتری: ۱۵۰-۲۰۰ | رادار: گرین پاین EL/M-2080 | هزینه هر موشک: ۳ میلیون دلار | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پیکان ۳ (Arrow-3)", coords: "31.8835,34.7022",
+                      desc: "سامانه ضد موشک بالستیک برون‌جَو (اگزواتمسفریک) که برای رهگیری موشک‌های دوربرد در فاز میانی پرواز، قبل از ورود مجدد به جو طراحی شده است. از فناوری هیت‌توکیل با برخورد مستقیم استفاده می‌کند و کلاهک انفجاری ندارد. برد رهگیری بیش از ۲۴۰۰ کیلومتر است. هر موشک دو مرحله‌ای است و حدود ۳ میلیون دلار هزینه دارد. پیکان ۳ در عملیات‌های واقعی علیه موشک‌های بالستیک حوثی‌ها با موفقیت استفاده شده است.",
+                      details: "فناوری: هیت‌توکیل | هزینه هر موشک: ۳ میلیون دلار | وضعیت: کاملاً عملیاتی | عملیات‌های واقعی موفق | شیفت: ۲۴/۷" },
+                    { name: "پاتریوت (MIM-104)", coords: "29.5577,34.9519",
+                      desc: "سامانه پدافند هوایی و ضد موشک بالستیک تاکتیکی ساخت آمریکا که اسرائیل در دهه ۱۹۹۰ دریافت کرد. این سامانه برای دفاع نقطه‌ای از تأسیسات حساس استفاده می‌شود. موشک‌های PAC-2 و PAC-3 به کار گرفته می‌شود که PAC-3 از فناوری هیت‌توکیل استفاده می‌کند. با ورود سامانه‌های جدیدتر مانند کلا داوید، پاتریوت در حال خروج تدریجی از خدمت است و برخی باتری‌ها به کشورهای دیگر منتقل شده‌اند.",
+                      details: "وضعیت: در حال خروج تدریجی | موشک‌ها: PAC-2 و PAC-3 | رادار: AN/MPQ-53/65" },
+                    { name: "THAAD", coords: "31.2083,35.0125",
+                      desc: "سامانه ضد موشک بالستیک آمریکایی برای رهگیری موشک‌های کوتاه‌برد و میان‌برد در فاز نهایی (ترمینال). رادار AN/TPY-2 باند X با برد بیش از ۱۰۰۰ کیلومتر دارد. هر موشک THAAD حدود ۱۵ میلیون دلار هزینه دارد. در اسرائیل دو باتری THAAD مستقر شده است؛ اولین باتری در اکتبر ۲۰۲۴ و دومین در آوریل ۲۰۲۵. این سامانه مکمل دیگر لایه‌های دفاع موشکی اسرائیل است.",
+                      details: "تعداد باتری‌ها در اسرائیل: ۲ | نفرات هر باتری: ۹۵-۱۲۰ سرباز آمریکایی | وضعیت: فعال و در حال گسترش | رادار: AN/TPY-2" },
+                    { name: "آیرون بیم (Iron Beam)", coords: null,
+                      desc: "سامانه لیزری پرانرژی ساخت رافائل برای انهدام راکت، خمپاره، پهپاد و موشک‌های کوتاه‌برد. توان لیزر ۱۰۰ کیلووات و برد مؤثر تا ۱۰ کیلومتر دارد. هزینه هر شلیک حدود ۲ دلار است. اولین سامانه عملیاتی در دسامبر ۲۰۲۵ به ارتش اسرائیل تحویل داده شد و استقرار تدریجی آن ادامه دارد. این سامانه به‌عنوان مکمل گنبد آهنین عمل می‌کند.",
+                      details: "وضعیت: تحویل شده در دسامبر ۲۰۲۵ | توان لیزر: ۱۰۰ کیلووات | برد: ۱۰ کیلومتر | هزینه شلیک: ۲ دلار" },
+                    { name: "رادار گرین پاین سدوت میخا", coords: "31.7386,34.9194",
+                      desc: "رادار آرایه فازی فعال (AESA) باند L با برد ۵۰۰+ کیلومتر که برای سامانه پیکان استفاده می‌شود. این رادار قابلیت ردیابی همزمان ده‌ها هدف بالستیک را دارد. در پایگاه هوایی سدوت میخا مستقر است و به صورت ۲۴ ساعته عملیاتی می‌باشد.",
+                      details: "نفرات: ۸۰-۱۲۰ | وضعیت: عملیاتی ۲۴/۷ | فناوری: AESA باند L" },
+                    { name: "رادار سوپر گرین پاین عین شمر", coords: "32.4408,35.0077",
+                      desc: "نسخه ارتقایافته رادار گرین پاین با برد بیش از ۸۰۰ کیلومتر و حساسیت بالاتر برای اهداف برون‌جَو. در پایگاه هوایی عین شمر مستقر است.",
+                      details: "نفرات: ۱۰۰-۱۵۰ | وضعیت: عملیاتی ۲۴/۷" },
+                    { name: "مرکز کنترل سیترون تری", coords: "31.8835,34.7022",
+                      desc: "مرکز مدیریت نبرد پیکان با پردازشگرهای موازی برای تصمیم‌گیری خودکار. این مرکز در پالماخیم قرار دارد.",
+                      details: "نفرات: ۵۰-۷۰ | وضعیت: عملیاتی ۲۴/۷" },
+                    { name: "مرکز کنترل گلدن آلموند", coords: null,
+                      desc: "مرکز مدیریت نبرد کلا داوید با ارتباط ماهواره‌ای و فیبر نوری. محل دقیق آن احتمالاً عین شمر است.",
+                      details: "نفرات: ۵۰-۸۰ | وضعیت: عملیاتی ۲۴/۷" }
+                ]},
+                { id: 2, title: "پایگاه‌های نظامی ارتش اسرائیل (IDF)", items: [
+                    { name: "پایگاه دادو (صفد)", coords: "32.96465,35.49600",
+                      desc: "مقر فرماندهی شمال اسرائیل و مرکز فرماندهی اصلی جبهه لبنان و سوریه. این پایگاه دارای مرکز عملیات زیرزمینی (War Room) است و نفرات آن حدود ۱۰۰۰ تا ۱۵۰۰ افسر و سرباز می‌باشند. فرماندهی شمال مسئولیت حفاظت از مناطق شمالی اسرائیل و هماهنگی عملیات‌های مرزی را بر عهده دارد.",
+                      details: "فرمانده: رافی میلو | نفرات: ۱۰۰۰-۱۵۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "کمپ گیبور (کریات شمونا)", coords: "33.2079,35.5702",
+                      desc: "مقر تیپ منطقه‌ای 769 «حیرام» که مسئول مرز لبنان است. این پایگاه در آماده‌باش بالا قرار دارد و نفرات آن حدود ۵۰۰ تا ۷۰۰ سرباز می‌باشند.",
+                      details: "نفرات: ۵۰۰-۷۰۰ | وضعیت: آماده‌باش بالا | شیفت: ۲۴/۷" },
+                    { name: "پایگاه بیرانیت (جلیل)", coords: "33.05867,35.34178",
+                      desc: "مرکز لجستیک و مقر لشکر 91 که مسئول مرز لبنان است. این پایگاه فعال بوده و حدود ۸۰۰ تا ۱۲۰۰ نفر پرسنل دارد.",
+                      details: "نفرات: ۸۰۰-۱۲۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه آویویم", coords: "33.067,35.334",
+                      desc: "میزبان یگان‌های توپخانه سنگین در مرز لبنان. فناوری‌های به کار رفته شامل توپخانه خودکششی M109 و راکت‌اندازهای M270 MLRS است.",
+                      details: "نفرات: ۴۰۰-۶۰۰ | وضعیت: آماده‌باش رزمی | شیفت: ۲۴/۷" },
+                    { name: "پایگاه مرون (کوه مرون)", coords: "32.9978,35.4136",
+                      desc: "مرکز نظارت، عملیات و جنگ الکترونیک با آنتن‌های شنود و رادارهای نظارت. این پایگاه اهمیت حیاتی برای جمع‌آوری اطلاعات از لبنان و سوریه دارد.",
+                      details: "نفرات: ۳۰۰-۵۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه هوایی تل نوف", coords: "31.8394,34.8219",
+                      desc: "بزرگ‌ترین پایگاه هوایی مرکزی اسرائیل که میزبان اسکادران‌های جنگنده و بالگرد است. فناوری‌های مستقر شامل F-15، F-16 و CH-53 می‌باشد.",
+                      details: "نفرات: ۲۰۰۰-۳۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه هوایی نواتیم", coords: "31.2083,35.0125",
+                      desc: "میزبان اسکادران‌های F-35I Adir و THAAD. این پایگاه یکی از مهم‌ترین پایگاه‌های هوایی اسرائیل است و فناوری‌های پیشرفته‌ای مانند جنگنده‌های F-35I و رادارهای پیشرفته در آن مستقر است.",
+                      details: "نفرات: ۲۵۰۰-۳۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه هوایی هاتزریم", coords: "31.2333,34.6625",
+                      desc: "پایگاه آموزشی و عملیاتی که میزبان F-15I و آموزش خلبانی است. این پایگاه محل آکادمی پرواز نیروی هوایی نیز می‌باشد.",
+                      details: "نفرات: ۲۰۰۰-۲۵۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه هوایی رامون", coords: "30.7747,34.6678",
+                      desc: "میزبان اسکادران‌های F-16I و بالگردهای AH-64. فناوری‌های مستقر شامل F-16I Sufa و AH-64 Apache است.",
+                      details: "نفرات: ۱۵۰۰-۲۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه هوایی اوودا", coords: "29.9403,34.9358",
+                      desc: "پایگاه پشتیبانی و تمرین در شمال ایلات. این پایگاه نقش مهمی در آموزش خلبانان و پشتیبانی عملیات‌های هوایی دارد.",
+                      details: "نفرات: ۸۰۰-۱۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پایگاه تمرین تزعلیم", coords: "31.2036,34.5350",
+                      desc: "بزرگ‌ترین پایگاه تمرینی در صحرای نگب با شهرک‌های جنگی شبیه‌سازی‌شده و سامانه‌های ثبت و تحلیل تمرین. این پایگاه برای مانورهای بزرگ ارتش استفاده می‌شود.",
+                      details: "نفرات: ۳۰۰۰-۵۰۰۰ | وضعیت: فعال" },
+                    { name: "رمات دیوید", coords: "32.6667,35.1833",
+                      desc: "بزرگ‌ترین پایگاه هوایی شمال اسرائیل که میزبان F-16 و بالگردهای CH-53 و UH-60 است.",
+                      details: "نفرات: ۲۰۰۰-۲۵۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "هاتزور", coords: "31.7625,34.7278",
+                      desc: "میزبان اسکادران‌های پهپاد. این پایگاه نقش کلیدی در عملیات‌های شناسایی و حمله با پهپاد دارد.",
+                      details: "نفرات: ۱۵۰۰-۲۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "پالماخیم", coords: "31.8953,34.6917",
+                      desc: "پایگاه آزمایش موشکی و فضایی که محل رادار پیکان نیز می‌باشد. پرتابگرهای ماهواره Shavit در این پایگاه مستقر هستند.",
+                      details: "نفرات: ۱۰۰۰-۱۵۰۰ | وضعیت: فعال" },
+                    { name: "سدوت میخا", coords: "31.7386,34.9194",
+                      desc: "پایگاه موشک‌های بالستیک اریحا با برد تا ۶۵۰۰ کیلومتر. پرتابگرهای زیرزمینی در این پایگاه وجود دارد. وضعیت آن آماده‌باش دائمی است.",
+                      details: "نفرات: ۵۰۰-۸۰۰ | وضعیت: آماده‌باش دائمی | شیفت: ۲۴/۷" },
+                    { name: "دیمونا", coords: "31.0015,35.1467",
+                      desc: "مرکز تحقیقات هسته‌ای نگب با رآکتور آب سنگین و تأسیسات بازفرآوری پلوتونیوم. امنیت این پایگاه بسیار بالا است.",
+                      details: "نفرات: ۲۰۰۰-۳۰۰۰ | وضعیت: فعال | امنیت: بسیار بالا" },
+                    { name: "پایگاه دریایی حیفا", coords: "32.82997,34.99342",
+                      desc: "مقر اصلی نیروی دریایی اسرائیل که زیردریایی‌های کلاس دلفین در آن مستقر هستند. این پایگاه مرکز فرماندهی ناوگان دریایی است.",
+                      details: "نفرات: ۳۰۰۰-۴۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "آتلیت", coords: "32.70528,34.93389",
+                      desc: "پایگاه یگان ویژه شایتت ۱۳ که عملیات‌های کماندویی دریایی را انجام می‌دهد.",
+                      details: "نفرات: ۵۰۰-۸۰۰ | وضعیت: فعال" }
+                ]},
+                { id: 3, title: "یگان‌ها و نیروهای نظامی", items: [
+                    { name: "فرماندهی شمال", coords: "32.96465,35.49600",
+                      desc: "فرماندهی اصلی جبهه لبنان و سوریه. این فرماندهی مسئول تمامی عملیات‌های نظامی در مناطق شمالی اسرائیل است و حدود ۵۰,۰۰۰ تا ۷۰,۰۰۰ سرباز تحت فرمان دارد.",
+                      details: "فرمانده: رافی میلو | نفرات: ۵۰,۰۰۰-۷۰,۰۰۰ | وضعیت: آماده‌باش بالا | شیفت: ۲۴/۷" },
+                    { name: "فرماندهی مرکزی", coords: "31.797,35.241",
+                      desc: "فرماندهی مناطق مرکزی اسرائیل که مسئول حفاظت از اورشلیم و کرانه باختری است.",
+                      details: "فرمانده: آوی بلوث | نفرات: ۳۰,۰۰۰-۵۰,۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "فرماندهی جنوب", coords: "31.2518,34.7913",
+                      desc: "فرماندهی نوار غزه و جنوب اسرائیل. این فرماندهی در آماده‌باش بالا قرار دارد و حدود ۴۰,۰۰۰ تا ۶۰,۰۰۰ سرباز دارد.",
+                      details: "فرمانده: یانیو آسور | نفرات: ۴۰,۰۰۰-۶۰,۰۰۰ | وضعیت: آماده‌باش بالا | شیفت: ۲۴/۷" },
+                    { name: "فرماندهی جبهه داخلی", coords: null,
+                      desc: "فرماندهی حفاظت از مناطق غیرنظامی. این فرماندهی در مواقع اضطراری و بلایای طبیعی فعال می‌شود.",
+                      details: "فرمانده: شای کالپر | نفرات: ۲۰,۰۰۰-۳۰,۰۰۰ | وضعیت: فعال | شیفت: ۲۴/۷" },
+                    { name: "لشکر 36 گولانی/زرهی", coords: "32.96465,35.49600",
+                      desc: "لشکر زرهی شمال اسرائیل که به دلیل شجاعت در جنگ‌های مختلف مشهور است.",
+                      details: "نفرات: ۱۰,۰۰۰-۱۵,۰۰۰ | شیفت: ۲۴/۷" },
+                    { name: "لشکر 91 جلیل", coords: "33.05867,35.34178",
+                      desc: "لشکر مسئول مرز لبنان که در برابر تهدیدهای حزب‌الله مستقر است.",
+                      details: "نفرات: ۸,۰۰۰-۱۲,۰۰۰ | شیفت: ۲۴/۷" },
+                    { name: "لشکر 143 غزه", coords: "31.466,34.501",
+                      desc: "لشکر مسئول نوار غزه که در عملیات‌های مختلف علیه حماس شرکت داشته است.",
+                      details: "نفرات: ۱۰,۰۰۰-۱۵,۰۰۰ | شیفت: ۲۴/۷" },
+                    { name: "تیپ گولانی (1)", coords: null,
+                      desc: "تیپ پیاده‌نظام معروف اسرائیلی که در جنگ‌های متعدد شرکت داشته و به عنوان یکی از بهترین تیپ‌های پیاده‌نظام جهان شناخته می‌شود.",
+                      details: "نفرات: ۳,۰۰۰-۵,۰۰۰ | شیفت: ۲۴/۷ در مناطق عملیاتی" },
+                    { name: "تیپ چتربازان (35)", coords: null,
+                      desc: "تیپ چترباز ارتش اسرائیل که عملیات‌های هوابرد و ویژه را انجام می‌دهد.",
+                      details: "نفرات: ۳,۰۰۰-۵,۰۰۰ | شیفت: ۲۴/۷ در مناطق عملیاتی" },
+                    { name: "سایرت متکل", coords: null,
+                      desc: "واحد ویژه ستاد کل که عملیات‌های برون‌مرزی، گروگان‌گیری و جاسوسی را انجام می‌دهد. این واحد یکی از مخفی‌ترین و حرفه‌ای‌ترین واحدهای نظامی جهان است.",
+                      details: "نفرات: ۳۰۰-۵۰۰ | شیفت: بر اساس مأموریت" },
+                    { name: "شایتت ۱۳", coords: "32.70528,34.93389",
+                      desc: "کماندوی دریایی نیروی دریایی اسرائیل که عملیات‌های آبی خاکی، ضدتروریسم و نجات گروگان را انجام می‌دهد.",
+                      details: "نفرات: ۳۰۰-۵۰۰ | شیفت: بر اساس مأموریت" },
+                    { name: "یگان 8200", coords: null,
+                      desc: "واحد اطلاعات سیگنال و سایبری که مسئول جمع‌آوری اطلاعات از سیگنال‌های الکترونیک، رمزگشایی و جنگ سایبری است. این واحد نقش کلیدی در دفاع سایبری اسرائیل دارد.",
+                      details: "نفرات: ۵,۰۰۰-۱۰,۰۰۰ | شیفت: ۲۴/۷ | فناوری: شنود، تحلیل داده، هوش مصنوعی" },
+                    { name: "اسکادران 69 (F-15I)", coords: "31.2333,34.6625",
+                      desc: "اسکادران F-15I در هاتزریم که به عنوان اسکادران حمله دوربرد شناخته می‌شود.",
+                      details: "نفرات: ۱۰۰-۱۵۰ | شیفت: ۲۴/۷ آماده‌باش پرواز" },
+                    { name: "اسکادران 116 (F-35I)", coords: "31.2083,35.0125",
+                      desc: "اسکادران F-35I Adir در نواتیم که مجهز به پیشرفته‌ترین جنگنده‌های رادارگریز است.",
+                      details: "نفرات: ۱۰۰-۱۵۰ | شیفت: ۲۴/۷" },
+                    { name: "اسکادران 117 (F-35I)", coords: "31.2083,35.0125",
+                      desc: "اسکادران دوم F-35I Adir در نواتیم.",
+                      details: "نفرات: ۱۰۰-۱۵۰ | شیفت: ۲۴/۷" }
+                ]},
+                { id: 4, title: "زیرساخت‌های حیاتی غیرنظامی", items: [
+                    { name: "نیروگاه اوروت رابین (هادره)", coords: "32.469902,34.886297",
+                      desc: "نیروگاه ۲۵۹۰ مگاواتی با سوخت زغال سنگ/گاز طبیعی. این نیروگاه در حال تبدیل به گاز طبیعی است و نقش مهمی در تأمین برق اسرائیل دارد.",
+                      details: "نفرات: ۵۰۰-۸۰۰ | فناوری: سیکل ترکیبی | وضعیت: فعال" },
+                    { name: "نیروگاه روتنبرگ (اشکلون)", coords: "31.630697,34.520237",
+                      desc: "نیروگاه ۲۲۵۰ مگاواتی زغال سنگ که یکی از بزرگترین نیروگاه‌های اسرائیل است.",
+                      details: "نفرات: ۵۰۰-۸۰۰ | فناوری: توربین بخار | وضعیت: فعال" },
+                    { name: "نیروگاه جیزر (رملا)", coords: "31.9153,34.9188",
+                      desc: "نیروگاه ۱۳۳۲ مگاواتی گازی با فناوری سیکل ترکیبی.",
+                      details: "نفرات: ۳۰۰-۵۰۰ | فناوری: سیکل ترکیبی | وضعیت: فعال" },
+                    { name: "بندر اشدود", coords: "31.8204,34.6436",
+                      desc: "بزرگترین بندر اسرائیل که در سال ۱۹۶۵ راه‌اندازی شد. این بندر دارای جرثقیل‌های کانتینری و سامانه‌های خودکار است.",
+                      details: "نفرات: ۱,۵۰۰-۲,۰۰۰ | وضعیت: فعال" },
+                    { name: "بندر حیفا", coords: "32.8204,35.0044",
+                      desc: "دومین بندر بزرگ اسرائیل که در سال ۱۹۳۳ تأسیس شد و نقش مهمی در تجارت دریایی دارد.",
+                      details: "نفرات: ۱,۰۰۰-۱,۵۰۰ | وضعیت: فعال" },
+                    { name: "بندر ایلات", coords: "29.5322,34.9406",
+                      desc: "بندر دریای سرخ اسرائیل که برای تجارت با آسیا و آفریقا اهمیت دارد.",
+                      details: "نفرات: ۲۰۰-۳۰۰ | وضعیت: فعال" },
+                    { name: "فرودگاه بن‌گوریون", coords: "32.0094,34.8822",
+                      desc: "فرودگاه اصلی بین‌المللی اسرائیل با سه باند ۳۰۰۰+ متری. این فرودگاه پرترددترین فرودگاه کشور است.",
+                      details: "نفرات: ۲,۰۰۰-۳,۰۰۰ | وضعیت: فعال" },
+                    { name: "فرودگاه رامون (ایلات)", coords: "29.7269,34.9994",
+                      desc: "فرودگاه ایلات که جایگزین فرودگاه قدیمی شد و باند ۳۶۰۰ متری دارد.",
+                      details: "وضعیت: فعال" },
+                    { name: "آب‌شیرین‌کن اشکلون", coords: "31.6307,34.5202",
+                      desc: "تأسیسات اسمز معکوس با ظرفیت ۱۲۰ میلیون متر مکعب در سال.",
+                      details: "نفرات: ۱۰۰-۱۵۰ | وضعیت: فعال" },
+                    { name: "آب‌شیرین‌کن شورک", coords: "31.94307,34.73433",
+                      desc: "تأسیسات اسمز معکوس با ظرفیت ۱۵۰ میلیون متر مکعب در سال.",
+                      details: "نفرات: ۱۵۰-۲۰۰ | وضعیت: فعال" },
+                    { name: "تصفیه‌خانه شافدان", coords: "31.96027,34.7423",
+                      desc: "بزرگترین تصفیه‌خانه فاضلاب در خاورمیانه که آب بازیافتی برای کشاورزی تولید می‌کند.",
+                      details: "نفرات: ۲۰۰-۳۰۰ | وضعیت: فعال" },
+                    { name: "میدان گازی لویاتان", coords: "33.0000,33.5000",
+                      desc: "میدان گازی با ذخیره ۶۰۸ میلیارد متر مکعب در ۱۳۰ کیلومتری ساحل حیفا. این میدان یکی از بزرگترین منابع انرژی اسرائیل است.",
+                      details: "وضعیت: فعال | فناوری: سکوهای دریایی" },
+                    { name: "پالایشگاه خلیج حیفا", coords: "32.8034,35.0548",
+                      desc: "مجموعه پالایشگاه‌ها و کارخانه‌های شیمیایی که نقش مهمی در صنعت پتروشیمی اسرائیل دارند.",
+                      details: "نفرات: ۲,۰۰۰-۳,۰۰۰ | وضعیت: فعال" },
+                    { name: "پالایشگاه اشدود", coords: "31.8426,34.6806",
+                      desc: "دومین پالایشگاه نفت اسرائیل که در اشدود واقع شده است.",
+                      details: "نفرات: ۵۰۰-۸۰۰ | وضعیت: فعال" },
+                    { name: "بیمارستان شیبا", coords: "32.0520,34.8520",
+                      desc: "بزرگترین بیمارستان اسرائیل که در تل هشومر قرار دارد و خدمات پزشکی پیشرفته ارائه می‌دهد.",
+                      details: "نفرات: ۸,۰۰۰-۱۰,۰۰۰ | وضعیت: فعال" },
+                    { name: "دانشگاه عبری اورشلیم", coords: "31.7756,35.1990",
+                      desc: "دانشگاه اصلی اورشلیم که یکی از معتبرترین دانشگاه‌های اسرائیل است.",
+                      details: "دانشجویان: ۲۰,۰۰۰ | وضعیت: فعال" },
+                    { name: "دانشگاه تل‌آویو", coords: "32.1134,34.8068",
+                      desc: "بزرگترین دانشگاه اسرائیل که در تل‌آویو قرار دارد.",
+                      details: "دانشجویان: ۳۰,۰۰۰ | وضعیت: فعال" },
+                    { name: "تکنیون (حیفا)", coords: "32.7767,35.0239",
+                      desc: "مؤسسه فناوری اسرائیل که به عنوان MIT خاورمیانه شناخته می‌شود.",
+                      details: "دانشجویان: ۱۵,۰۰۰ | وضعیت: فعال" }
+                ]},
+                { id: 5, title: "وب‌سایت‌های رسمی نهادها و سازمان‌ها", items: [
+                    { name: "دولت اسرائیل (Gov.il)", coords: null, desc: "پورتال رسمی دولت اسرائیل که دسترسی به خدمات و اطلاعات دولتی را فراهم می‌کند.", details: "https://www.gov.il" },
+                    { name: "ارتش اسرائیل (IDF)", coords: null, desc: "وب‌سایت رسمی نیروهای دفاعی اسرائیل که اخبار و اطلاعات نظامی را منتشر می‌کند.", details: "https://www.idf.il" },
+                    { name: "وزارت دفاع", coords: null, desc: "وب‌سایت وزارت دفاع اسرائیل که مسئول سیاست‌های دفاعی و امنیتی است.", details: "https://mod.gov.il" },
+                    { name: "موساد", coords: null, desc: "وب‌سایت رسمی موساد، سازمان اطلاعات خارجی اسرائیل.", details: "https://www.mossad.gov.il" },
+                    { name: "شاباک", coords: null, desc: "وب‌سایت رسمی شاباک، سازمان امنیت داخلی اسرائیل.", details: "https://www.shabak.gov.il" },
+                    { name: "رافائل", coords: null, desc: "صنایع دفاعی پیشرفته اسرائیل که سامانه‌های پدافندی مانند گنبد آهنین را تولید می‌کند.", details: "https://www.rafael.co.il" },
+                    { name: "IAI", coords: null, desc: "صنایع هوافضای اسرائیل که در زمینه هوافضا و دفاع فعالیت می‌کند.", details: "https://www.iai.co.il" },
+                    { name: "البیت سیستمز", coords: null, desc: "بزرگترین تولیدکننده تسلیحات اسرائیل که در زمینه الکترونیک دفاعی تخصص دارد.", details: "https://www.elbitsystems.com" },
+                    { name: "نقشه ملی اسرائیل", coords: null, desc: "نقشه تعاملی دولتی که جزئیات زیرساخت‌ها و تأسیسات عمومی را نشان می‌دهد.", details: "https://www.govmap.gov.il" },
+                    { name: "شرکت برق اسرائیل", coords: null, desc: "شرکت ملی برق اسرائیل که مسئول تولید و توزیع برق است.", details: "https://www.iec.co.il" },
+                    { name: "شرکت ملی آب (Mekorot)", coords: null, desc: "شرکت ملی آب اسرائیل که مدیریت منابع آبی را بر عهده دارد.", details: "https://www.mekorot.co.il" },
+                    { name: "فرودگاه‌های اسرائیل", coords: null, desc: "سازمان فرودگاه‌های اسرائیل که مدیریت فرودگاه‌های کشور را انجام می‌دهد.", details: "https://www.iaa.gov.il" },
+                    { name: "راه‌آهن اسرائیل", coords: null, desc: "شرکت راه‌آهن ملی اسرائیل که خدمات قطار شهری و بین‌شهری ارائه می‌دهد.", details: "https://www.rail.co.il" },
+                    { name: "مؤسسه مطالعات امنیت ملی", coords: null, desc: "مرکز تحلیل امنیتی که پژوهش‌های راهبردی در زمینه امنیت ملی انجام می‌دهد.", details: "https://www.inss.org.il" }
+                ]},
+                { id: 6, title: "شرکت‌های صنایع نظامی تکمیلی", items: [
+                    { name: "Israel Shipyards", coords: "32.82997,34.99342", desc: "ساخت کشتی‌های جنگی و گشتی در حیفا. این شرکت یکی از مهم‌ترین سازندگان کشتی‌های نظامی اسرائیل است.", details: "رتبه سوم صنایع دفاعی اسرائیل" },
+                    { name: "Controp Precision Technologies", coords: null, desc: "تولیدکننده سامانه‌های الکترواپتیکی شامل دوربین‌های حرارتی و دید در شب برای پهپادها و سامانه‌های زمینی.", details: "دوربین‌های حرارتی و دید در شب" },
+                    { name: "Ashot Ashkelon Industries", coords: "31.6307,34.5202", desc: "قطعات مکانیکی و انتقال قدرت برای تانک‌ها و خودروهای زرهی.", details: "رتبه پنجم صنایع دفاعی" },
+                    { name: "Aeronautics", coords: null, desc: "تولیدکننده پهپادها از جمله Orbiter و Dominator.", details: "پهپادهای Orbiter و Dominator" },
+                    { name: "Cellebrite", coords: null, desc: "استخراج داده از دستگاه‌های دیجیتال و ارائه راهکارهای امنیت سایبری.", details: "امنیت سایبری و دیجیتال" },
+                    { name: "Israel Weapon Industries", coords: null, desc: "سلاح‌های کوچک شامل تفنگ‌های Tavor و تپانچه Jericho.", details: "تولید سلاح‌های تهاجمی" },
+                    { name: "Gilat Satellite Network", coords: null, desc: "ارتباطات ماهواره‌ای و ترمینال‌های ماهواره‌ای.", details: "ترمینال‌های ماهواره‌ای" }
+                ]},
+                { id: 7, title: "موساد (Mossad)", items: [
+                    { name: "مقر اصلی موساد", coords: "32.145,34.809",
+                      desc: "تل‌آویو، تقاطع گلیلوت، نزدیک هرتزلیا. تخمین زده می‌شود حدود ۷,۰۰۰ کارمند دارد. این سازمان مسئول جمع‌آوری اطلاعات خارجی، عملیات ویژه و ضدتروریسم است. مدیر فعلی داوید بارنئا است که از ژوئن ۲۰۲۱ منصوب شده است.",
+                      details: "مدیر: داوید بارنئا | شیفت: ۲۴/۷ | وب‌سایت: mossad.gov.il" },
+                    { name: "دپارتمان جمع‌آوری", coords: null, desc: "بزرگترین بخش، مسئول جاسوسی انسانی (HUMINT) در خارج از کشور.", details: "اطلاعات طبقه‌بندی شده" },
+                    { name: "دپارتمان عملیات ویژه (Metsada)", coords: null, desc: "انجام عملیات‌های مخفی، ترور، خرابکاری و نجات.", details: "اطلاعات طبقه‌بندی شده" },
+                    { name: "دپارتمان فناوری", coords: null, desc: "توسعه ابزارهای جاسوسی، سایبری و تجهیزات ویژه.", details: "اطلاعات طبقه‌بندی شده" }
+                ]},
+                { id: 8, title: "شرکت‌های خارجی هوش مصنوعی در اسرائیل", items: [
+                    { name: "Google (تل‌آویو و حیفا)", coords: "32.0678,34.7895",
+                      desc: "برج الکترا، خیابان یگال آلون ۹۸، تل‌آویو. مرکز حیفا در ماتام. تمرکز بر جستجو، ترجمه ماشینی، DeepMind، هوش مصنوعی مولد. گوگل یکی از بزرگترین مراکز تحقیق و توسعه خود را در اسرائیل دارد.",
+                      details: "وب‌سایت: google.com" },
+                    { name: "Microsoft (هرتزلیا و تل‌آویو)", coords: "32.1653,34.8448",
+                      desc: "خیابان هاسادنا ۱۳، هرتزلیا پیتواخ. تمرکز بر Azure AI، پردازش زبان طبیعی، امنیت سایبری مبتنی بر AI.",
+                      details: "وب‌سایت: microsoft.com" },
+                    { name: "Apple (هرتزلیا و حیفا)", coords: "32.1653,34.8448",
+                      desc: "خیابان هاسادنا ۱۰، هرتزلیا پیتواخ. تمرکز بر طراحی تراشه، یادگیری ماشین روی دستگاه، پردازش سیگنال.",
+                      details: "وب‌سایت: apple.com" },
+                    { name: "NVIDIA (تل‌آویو و یوکنعام)", coords: "32.0853,34.7818",
+                      desc: "برج Amot Atrium، رمات گان. تمرکز بر پردازنده‌های گرافیکی، CUDA، شبکه‌های عصبی، خودروهای خودران.",
+                      details: "وب‌سایت: nvidia.com" },
+                    { name: "Meta (تل‌آویو)", coords: "32.0719,34.7861",
+                      desc: "برج Azrieli Sarona، خیابان کاپلان ۳۶. تمرکز بر بینایی کامپیوتر، واقعیت مجازی، هوش مصنوعی اجتماعی.",
+                      details: "وب‌سایت: meta.com" },
+                    { name: "IBM (تل‌آویو و حیفا)", coords: "32.0938,34.7988",
+                      desc: "خیابان وایزمن ۹۴، تل‌آویو. تمرکز بر Watson AI، امنیت سایبری، محاسبات کوانتومی.",
+                      details: "وب‌سایت: ibm.com" },
+                    { name: "Amazon (تل‌آویو و حیفا)", coords: "32.0678,34.7895",
+                      desc: "برج Azrieli، تل‌آویو. تمرکز بر Alexa AI، پردازش گفتار، بینایی کامپیوتر.",
+                      details: "وب‌سایت: amazon.com" },
+                    { name: "Intel (حیفا، اورشلیم، کریات گات)", coords: "32.7889,34.9589",
+                      desc: "ماتام حیفا، هار حوتزویم اورشلیم، کریات گات. تمرکز بر سخت‌افزار AI، یادگیری ماشین، پردازنده‌های عصبی.",
+                      details: "وب‌سایت: intel.co.il" }
+                ]},
+                { id: 9, title: "سایر شرکت‌های خارجی معروف در اسرائیل", items: [
+                    { name: "Applied Materials", coords: null, desc: "دفتر در رحووت. تجهیزات نیمه‌رسانا.", details: "تجهیزات نیمه‌رسانا" },
+                    { name: "HP", coords: null, desc: "مرکز در یهود و کریات گات. فناوری اطلاعات.", details: "فناوری اطلاعات" },
+                    { name: "Dell Technologies", coords: null, desc: "مرکز در هرتزلیا. فناوری اطلاعات.", details: "فناوری اطلاعات" },
+                    { name: "Broadcom", coords: null, desc: "مرکز در تل‌آویو. نیمه‌رسانا.", details: "نیمه‌رسانا" },
+                    { name: "Visa", coords: null, desc: "مرکز در تل‌آویو. پرداخت دیجیتال.", details: "پرداخت دیجیتال" },
+                    { name: "Mastercard", coords: null, desc: "مرکز در تل‌آویو. پرداخت دیجیتال.", details: "پرداخت دیجیتال" },
+                    { name: "Boeing", coords: null, desc: "دفتر در تل‌آویو. هوافضا.", details: "هوافضا" },
+                    { name: "Lockheed Martin", coords: null, desc: "دفتر در تل‌آویو. دفاعی.", details: "دفاعی" },
+                    { name: "General Motors", coords: null, desc: "مرکز R&D در هرتزلیا. خودرو.", details: "خودرو" },
+                    { name: "Ford", coords: null, desc: "مرکز تحقیق در تل‌آویو. خودرو.", details: "خودرو" }
+                ]},
+                { id: 10, title: "هتل‌های اصلی اسرائیل", items: [
+                    { name: "هتل دیوید اینترکنتیننتال", coords: "32.0532,34.7634", desc: "Kaufmann St 12, Tel Aviv-Yafo.", details: "تل‌آویو" },
+                    { name: "هتل کارلتون تل‌آویو", coords: "32.0866,34.7693", desc: "Eliezer Peri St 10, Tel Aviv-Yafo.", details: "تل‌آویو" },
+                    { name: "هتل شرایتون تل‌آویو", coords: "32.0795,34.7671", desc: "HaYarkon St 115, Tel Aviv-Yafo.", details: "تل‌آویو" },
+                    { name: "هتل کینگ دیوید", coords: "31.7755,35.2239", desc: "King David St 23, Jerusalem.", details: "اورشلیم" },
+                    { name: "هتل ماملا", coords: "31.7790,35.2228", desc: "Shlomo ha-Melekh St 11, Jerusalem.", details: "اورشلیم" },
+                    { name: "هتل دن حیفا", coords: "32.8062,34.9880", desc: "HaNassi Blvd 35, Haifa.", details: "حیفا" },
+                    { name: "هتل رویال بیچ ایلات", coords: "29.5510,34.9530", desc: "Derech HaYam 1, Eilat.", details: "ایلات" },
+                    { name: "هتل لئوناردو نگیو", coords: "31.2530,34.7890", desc: "Sderot David Tuviyahu 4, Be'er Sheva.", details: "بئرشبع" }
+                ]},
+                { id: 11, title: "زیرساخت‌های جنگنده‌های نظامی و آموزش خلبانی", items: [
+                    { name: "نواتیم - تعمیرات F-35I", coords: "31.2083,35.0125", desc: "تعمیرات خط مقدم و انبار قطعات F-35 در این پایگاه انجام می‌شود. تعمیرات عمیق‌تر به IAI بن‌گوریون منتقل می‌شود.", details: "تعمیرات عمیق‌تر در IAI بن‌گوریون" },
+                    { name: "تل نوف - تعمیرات F-15", coords: "31.8394,34.8219", desc: "میزبان F-15 ها و بالگردهای سنگین. تعمیرات اساسی F-15 در مرکز تعمیرات IAI انجام می‌شود.", details: "تعمیرات اساسی در IAI" },
+                    { name: "آکادمی پرواز IAF", coords: "31.2333,34.6625", desc: "آموزش پایه و پیشرفته خلبانی در هاتزریم. اسکادران‌های آموزشی: 102، 122، 131.", details: "اسکادران‌های آموزشی: 102، 122، 131" },
+                    { name: "مرکز تعمیرات IAI", coords: "32.0114,34.8867", desc: "فرودگاه بن‌گوریون، بخش لود. تعمیرات بدنه، موتور و اویونیک برای انواع جنگنده‌ها.", details: "تعمیرات بدنه، موتور و اویونیک" },
+                    { name: "مرکز آموزش شبیه‌ساز", coords: "31.2333,34.6625", desc: "شبیه‌سازهای کامل F-35، F-16، F-15. در هاتزریم و نواتیم.", details: "در هاتزریم و نواتیم" }
+                ]},
+                { id: 12, title: "سایت‌های موشکی زیرزمینی و تأسیسات هسته‌ای", items: [
+                    { name: "سدوت میخا", coords: "31.7386,34.9194", desc: "پایگاه موشک‌های بالستیک اریحا. پرتابگرها در تونل‌های زیرزمینی قرار دارند. عمق تخمینی ۲۰-۵۰ متر. برد موشک‌ها تا ۶۵۰۰ کیلومتر.", details: "عمق تخمینی: ۲۰-۵۰ متر | برد: تا ۶۵۰۰ کیلومتر" },
+                    { name: "کیفر زخاریا", coords: "31.7663,34.8814", desc: "پایگاه موشکی هسته‌ای مظنون و انبار بمب. عمق تخمینی ۳۰-۶۰ متر.", details: "عمق تخمینی: ۳۰-۶۰ متر" },
+                    { name: "دیمونا", coords: "31.0015,35.1467", desc: "مرکز تحقیقات هسته‌ای با رآکتور آب سنگین. عمق تأسیسات زیرزمینی ۱۵-۴۰ متر.", details: "عمق تأسیسات زیرزمینی: ۱۵-۴۰ متر" },
+                    { name: "ایلابون", coords: "32.8333,35.3833", desc: "انبار سلاح هسته‌ای تاکتیکی مظنون. عمق تخمینی ۲۰-۴۰ متر.", details: "عمق تخمینی: ۲۰-۴۰ متر" },
+                    { name: "تیروش", coords: "31.7520,34.8635", desc: "انبار سلاح هسته‌ای راهبردی مظنون. عمق تخمینی ۲۵-۵۰ متر.", details: "عمق تخمینی: ۲۵-۵۰ متر" },
+                    { name: "یودفات", coords: "32.8509,35.2792", desc: "تأسیسات مونتاژ سلاح هسته‌ای مظنون. عمق تخمینی ۲۰-۴۰ متر.", details: "عمق تخمینی: ۲۰-۴۰ متر" }
+                ]},
+                { id: 13, title: "ماهواره‌های اسرائیل", items: [
+                    { name: "Ofeq 5", coords: null, desc: "ماهواره شناسایی نوری با رزولوشن بالا. پرتاب: ۲۰۰۲. وضعیت: فعال.", details: "پرتاب: ۲۰۰۲ | وضعیت: فعال" },
+                    { name: "Ofeq 7", coords: null, desc: "ماهواره شناسایی نوری پیشرفته. پرتاب: ۲۰۰۷. وضعیت: فعال.", details: "پرتاب: ۲۰۰۷ | وضعیت: فعال" },
+                    { name: "Ofeq 8 (TECSAR-1)", coords: null, desc: "ماهواره شناسایی راداری (SAR). پرتاب: ۲۰۰۸. وضعیت: فعال.", details: "پرتاب: ۲۰۰۸ | وضعیت: فعال" },
+                    { name: "Ofeq 9", coords: null, desc: "ماهواره شناسایی نوری. پرتاب: ۲۰۱۰. وضعیت: فعال.", details: "پرتاب: ۲۰۱۰ | وضعیت: فعال" },
+                    { name: "Ofeq 10", coords: null, desc: "ماهواره شناسایی راداری (SAR). پرتاب: ۲۰۱۴. وضعیت: فعال.", details: "پرتاب: ۲۰۱۴ | وضعیت: فعال" },
+                    { name: "Ofeq 11", coords: null, desc: "ماهواره شناسایی نوری. پرتاب: ۲۰۱۶. وضعیت: فعال.", details: "پرتاب: ۲۰۱۶ | وضعیت: فعال" },
+                    { name: "Ofeq 16", coords: null, desc: "ماهواره شناسایی نوری با رزولوشن بسیار بالا. پرتاب: ۲۰۲۰. وضعیت: فعال.", details: "پرتاب: ۲۰۲۰ | وضعیت: فعال" },
+                    { name: "Ofeq 13", coords: null, desc: "ماهواره شناسایی راداری (SAR) نسل جدید. پرتاب: ۲۰۲۳. وضعیت: فعال.", details: "پرتاب: ۲۰۲۳ | وضعیت: فعال" },
+                    { name: "AMOS-3", coords: null, desc: "ماهواره ارتباطی. پرتاب: ۲۰۰۸. وضعیت: فعال.", details: "پرتاب: ۲۰۰۸ | وضعیت: فعال" },
+                    { name: "AMOS-7", coords: null, desc: "ماهواره ارتباطی. پرتاب: ۲۰۱۸. وضعیت: فعال.", details: "پرتاب: ۲۰۱۸ | وضعیت: فعال" },
+                    { name: "AMOS-17", coords: null, desc: "ماهواره ارتباطی برای آفریقا. پرتاب: ۲۰۱۹. وضعیت: فعال.", details: "پرتاب: ۲۰۱۹ | وضعیت: فعال" },
+                    { name: "مرکز کنترل IAI", coords: "32.033,34.883", desc: "مرکز کنترل ماهواره‌ای در یهود. وضعیت: فعال.", details: "وضعیت: فعال" },
+                    { name: "مرکز کنترل پالماخیم", coords: "31.895,34.692", desc: "مرکز کنترل ماهواره‌ای امنیتی. وضعیت: فعال.", details: "وضعیت: فعال" }
+                ]},
+                { id: 14, title: "سفارت‌ها و دفاتر دیپلماتیک اسرائیل", items: [
+                    { name: "سفارت مصر (قاهره)", coords: "30.027,31.217", desc: "6 Ibn Malek St, Giza, Cairo.", details: "آفریقا" },
+                    { name: "سفارت کنیا (نایروبی)", coords: "-1.279,36.813", desc: "Bishop Rd, Nairobi.", details: "آفریقا" },
+                    { name: "سفارت چین (پکن)", coords: "39.944,116.456", desc: "17 Tianze Rd, Chaoyang, Beijing.", details: "آسیا" },
+                    { name: "سفارت هند (دهلی نو)", coords: "28.597,77.181", desc: "3 Dr APJ Abdul Kalam Rd, New Delhi.", details: "آسیا" },
+                    { name: "سفارت ژاپن (توکیو)", coords: "35.688,139.739", desc: "3 Nibancho, Chiyoda, Tokyo.", details: "آسیا" },
+                    { name: "سفارت بریتانیا (لندن)", coords: "51.503,-0.190", desc: "2 Palace Green, Kensington, London.", details: "اروپا" },
+                    { name: "سفارت فرانسه (پاریس)", coords: "48.870,2.311", desc: "3 Rue Rabelais, 75008 Paris.", details: "اروپا" },
+                    { name: "سفارت آلمان (برلین)", coords: "52.496,13.272", desc: "Auguste-Viktoria-Straße 74, Berlin.", details: "اروپا" },
+                    { name: "سفارت روسیه (مسکو)", coords: "55.737,37.624", desc: "Bolshaya Ordynka 56, Moscow.", details: "اروپا" },
+                    { name: "سفارت آمریکا (واشنگتن)", coords: "38.942,-77.067", desc: "3514 International Dr NW, Washington, DC.", details: "آمریکا" },
+                    { name: "سفارت کانادا (اتاوا)", coords: "45.421,-75.697", desc: "50 O'Connor St, Ottawa.", details: "آمریکا" },
+                    { name: "سفارت اردن (امان)", coords: "31.956,35.906", desc: "Abdul Hamid Sharaf St, Amman.", details: "خاورمیانه" },
+                    { name: "سفارت امارات (ابوظبی)", coords: "24.467,54.367", desc: "Al Markaziyah, Abu Dhabi.", details: "خاورمیانه" },
+                    { name: "سفارت ترکیه (آنکارا)", coords: "39.890,32.855", desc: "Mahatma Gandhi Cd. No:85, Ankara.", details: "خاورمیانه" }
+                ]},
+                { id: 15, title: "سامانه‌های جاسوسی و راداری اسرائیل در خاورمیانه", items: [
+                    { name: "رادار AN/TPY-2 (چشم صحرا)", coords: "30.96,34.95", desc: "کوه کرن، صحرای نگب. ردیابی موشک‌های بالستیک. بخشی از سامانه THAAD.", details: "بخشی از سامانه THAAD | وضعیت: فعال" },
+                    { name: "رادار گرین پاین - سدوت میخا", coords: "31.7386,34.9194", desc: "ردیابی موشک‌های بالستیک از ایران و یمن.", details: "وضعیت: فعال" },
+                    { name: "رادار سوپر گرین پاین - پالماخیم", coords: "31.8953,34.6917", desc: "ردیابی موشک‌های بالستیک.", details: "وضعیت: فعال" },
+                    { name: "رادار AN/TPY-2 نواتیم", coords: "31.2083,35.0125", desc: "پوشش راداری برای دفاع موشکی.", details: "وضعیت: فعال" },
+                    { name: "پایگاه راداری کوه هرمن", coords: "33.282,35.757", desc: "نظارت بر سوریه و لبنان. ارتفاع: ۲۰۰۰ متر.", details: "وضعیت: فعال | ارتفاع: ۲۰۰۰ متر" },
+                    { name: "پایگاه مرون", coords: "32.9978,35.4136", desc: "جنگ الکترونیک و شنود.", details: "وضعیت: فعال" },
+                    { name: "رادار X-Band جبل علی (امارات)", coords: "24.98,55.03", desc: "ردیابی موشک‌های ایرانی.", details: "وضعیت: گزارش شده" },
+                    { name: "رادار قبرس (پافوس)", coords: "34.77,32.42", desc: "پوشش راداری مدیترانه شرقی.", details: "وضعیت: گزارش شده" }
+                ]}
+            ]
+        };
+
+        // ============ NLP-LIKE SEARCH ============
+        function tokenizeQuery(q) {
+            const normalized = q.toLowerCase().replace(/[،,]/g, ' ').replace(/\s+/g, ' ').trim();
+            const tokens = normalized.split(' ');
+            const result = { and: [], or: [], not: [] };
+            let current = 'and';
+            tokens.forEach(t => {
+                if (t === 'and') current = 'and';
+                else if (t === 'or') current = 'or';
+                else if (t === 'not' || t === '!') current = 'not';
+                else result[current].push(t);
+            });
+            return result;
+        }
+
+        function matchNLP(item, queryTokens) {
+            const haystack = (item.name + ' ' + item.desc + ' ' + item.details).toLowerCase();
+            const and = queryTokens.and.length === 0 || queryTokens.and.every(t => haystack.includes(t));
+            const or = queryTokens.or.length === 0 || queryTokens.or.some(t => haystack.includes(t));
+            const not = queryTokens.not.length === 0 || !queryTokens.not.some(t => haystack.includes(t));
+            return and && or && not;
+        }
+
+        // ============ RENDER ============
+        const sectionsContainer = document.getElementById('sectionsContainer');
+        const statsBar = document.getElementById('statsBar');
+        const searchInput = document.getElementById('searchInput');
+        const mapModal = document.getElementById('mapModal');
+        const mapIframe = document.getElementById('mapIframe');
+        const mapModalTitle = document.getElementById('mapModalTitle');
+        const mapCoordsText = document.getElementById('mapCoordsText');
+        const mapExternalLink = document.getElementById('mapExternalLink');
+        const copyCoordsBtn = document.getElementById('copyCoordsBtn');
+        const mapModalClose = document.getElementById('mapModalClose');
+
+        let totalItems = 0;
+        let coordsItems = 0;
+
+        function renderStats() {
+            DATA.sections.forEach(s => totalItems += s.items.length);
+            DATA.sections.forEach(s => s.items.forEach(i => { if (i.coords) coordsItems++; }));
+            statsBar.innerHTML = `
+                <div class="stat-chip">SECTIONS: <span class="num">${DATA.sections.length}</span></div>
+                <div class="stat-chip">TOTAL TARGETS: <span class="num">${totalItems}</span></div>
+                <div class="stat-chip">GPS TRACKED: <span class="num">${coordsItems}</span></div>
+                <div class="stat-chip">DATA: <span class="num">2026</span></div>
+                <div class="stat-chip">STATUS: <span class="num" style="color:#ff1a1a">ACTIVE</span></div>
+            `;
+        }
+
+        function renderSections(queryTokens = null) {
+            sectionsContainer.innerHTML = '';
+            let visibleCount = 0;
+
+            DATA.sections.forEach(section => {
+                const filteredItems = section.items.filter(item => {
+                    if (!queryTokens) return true;
+                    return matchNLP(item, queryTokens);
+                });
+
+                if (queryTokens && filteredItems.length === 0) return;
+                visibleCount += filteredItems.length;
+
+                const card = document.createElement('div');
+                card.className = 'section-card' + (queryTokens ? ' open' : '');
+
+                const itemsHtml = filteredItems.map(item => {
+                    const hasCoords = item.coords ? 'has-coords' : '';
+                    const mapBtn = item.coords ? `<span class="map-indicator" data-coords="${item.coords}" data-name="${item.name}">GPS</span>` : '';
+                    return `
+                        <div class="item-card ${hasCoords}" data-coords="${item.coords || ''}" data-name="${item.name}">
+                            <div class="item-name">${item.name} ${mapBtn}</div>
+                            <div class="item-description">${item.desc || ''}</div>
+                            ${item.details ? `<div class="item-details">${item.details}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-title">${section.title}</div>
+                        <div class="section-count">${filteredItems.length} ITEMS</div>
+                        <svg class="chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 6l4 4 4-4" stroke="#ff1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="section-body">
+                        <div class="item-list">${itemsHtml}</div>
+                    </div>
+                `;
+
+                card.querySelector('.section-header').addEventListener('click', () => {
+                    card.classList.toggle('open');
+                });
+
+                sectionsContainer.appendChild(card);
+
+                card.querySelectorAll('.map-indicator').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openMap(btn.dataset.coords, btn.dataset.name);
+                    });
+                });
+
+                card.querySelectorAll('.item-card.has-coords').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (item.dataset.coords) openMap(item.dataset.coords, item.dataset.name);
+                    });
+                });
+            });
+
+            if (sectionsContainer.innerHTML === '') {
+                sectionsContainer.innerHTML = `
+                    <div style="text-align:center;padding:40px;color:var(--text3);font-size:0.8rem;letter-spacing:1px;">
+                        NO TARGETS FOUND
+                    </div>
+                `;
+            }
+
+            statsBar.querySelector('.stat-chip:last-child .num').textContent = visibleCount;
+        }
+
+        function openMap(coords, name) {
+            const [lat, lng] = coords.split(',');
+            const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&z=16&t=k&output=embed`;
+            const externalUrl = `https://www.google.com/maps?q=${lat},${lng}&z=16&t=k`;
+            mapIframe.src = embedUrl;
+            mapModalTitle.textContent = name || 'LOCATION';
+            mapCoordsText.textContent = `COORDINATES: ${coords}`;
+            mapExternalLink.href = externalUrl;
+            mapModal.classList.add('active');
+        }
+
+        function closeMap() {
+            mapModal.classList.remove('active');
+            mapIframe.src = '';
+        }
+
+        copyCoordsBtn.addEventListener('click', () => {
+            const text = mapCoordsText.textContent.replace('COORDINATES: ', '');
+            navigator.clipboard.writeText(text).then(() => {
+                copyCoordsBtn.textContent = 'COPIED!';
+                setTimeout(() => copyCoordsBtn.textContent = 'COPY', 1000);
+            });
+        });
+
+        mapModalClose.addEventListener('click', closeMap);
+        mapModal.addEventListener('click', (e) => { if (e.target === mapModal) closeMap(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMap(); });
+
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.trim();
+            if (q === '') {
+                renderSections();
+            } else {
+                const tokens = tokenizeQuery(q);
+                renderSections(tokens);
+            }
+        });
+
+        renderStats();
+        renderSections();
+    </script>
+</body>
+      </html>
