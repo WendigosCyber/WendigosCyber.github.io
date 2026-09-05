@@ -1,1154 +1,2008 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد حرفه‌ای سئو - شبیه‌ساز کلیک گوگل</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #0d1117;
-            color: #c9d1d9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-            direction: rtl;
-        }
-        .container {
-            background: #161b22;
-            border-radius: 16px;
-            padding: 30px;
-            width: 100%;
-            max-width: 1400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #58a6ff;
-            font-size: 2rem;
-        }
-        .disclaimer {
-            background: #2d1b1b;
-            border: 1px solid #f85149;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
-            color: #f85149;
-            text-align: center;
-            font-size: 0.9rem;
-            line-height: 1.8;
-        }
-        .disclaimer strong {
-            display: block;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            gap: 10px;
-        }
-        .step {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            background: #21262d;
-            border-radius: 8px;
-            border: 2px solid #30363d;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .step.active {
-            background: #1f2a37;
-            border-color: #58a6ff;
-            color: #58a6ff;
-            font-weight: bold;
-        }
-        .step.done {
-            background: #1b3a2b;
-            border-color: #3fb950;
-            color: #3fb950;
-        }
-        .step-num {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            line-height: 28px;
-            border-radius: 50%;
-            background: #30363d;
-            margin-left: 8px;
-            font-weight: bold;
-        }
-        .step.active .step-num { background: #58a6ff; color: #0d1117; }
-        .step.done .step-num { background: #3fb950; color: #0d1117; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google SERP Simulator • AI-Powered SEO Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --google-blue:#4285F4; --google-red:#EA4335; --google-yellow:#FBBC05;
+  --google-green:#34A853; --google-light:#8ab4f8;
+  --bg-0:#0b0f14; --bg-1:#11161d; --bg-2:#161d26; --bg-3:#1e2630;
+  --border:#2a333f; --border-2:#374151;
+  --text:#e6edf3; --text-2:#8b949e; --text-3:#6e7681;
+  --ok:#3fb950; --warn:#d29922; --err:#f85149;
+  --shadow: 0 8px 32px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Vazirmatn',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(66,133,244,.08), transparent 40%),
+    radial-gradient(circle at 80% 100%, rgba(52,168,83,.06), transparent 40%),
+    var(--bg-0);
+  color:var(--text); overflow-x:hidden;
+  direction:rtl;
+}
+::selection{background:var(--google-blue);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-1)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--google-blue)}
 
-        .step-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-        .step-content.visible { display: block; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* ===== LAYOUT ===== */
+.app{display:grid;grid-template-columns:280px 1fr;height:100vh;overflow:hidden}
+.sidebar{
+  background:linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  border-left:1px solid var(--border);
+  padding:20px; overflow-y:auto;
+  display:flex; flex-direction:column; gap:20px;
+}
+.main{overflow-y:auto;padding:24px 32px}
 
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: flex-end;
-            justify-content: center;
-        }
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .control-group label {
-            font-size: 0.85rem;
-            color: #8b949e;
-        }
-        .controls input[type="text"],
-        .controls input[type="url"],
-        .controls input[type="number"],
-        .controls select {
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #c9d1d9;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border 0.2s;
-            min-width: 200px;
-        }
-        .controls input:focus,
-        .controls select:focus {
-            border-color: #58a6ff;
-        }
-        .controls button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            background: #238636;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            height: fit-content;
-            align-self: flex-end;
-        }
-        .controls button.secondary {
-            background: #30363d;
-        }
-        .controls button:hover:not(:disabled) {
-            background: #2ea043;
-        }
-        .controls button.secondary:hover:not(:disabled) {
-            background: #484f58;
-        }
-        .controls button:disabled {
-            background: #21262d;
-            color: #6e7681;
-            cursor: not-allowed;
-        }
+.logo{
+  display:flex;align-items:center;gap:12px;padding:8px 4px 20px;
+  border-bottom:1px solid var(--border);
+}
+.logo-mark{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg, var(--google-blue), var(--google-green));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 4px 16px rgba(66,133,244,.4);
+}
+.logo-text h1{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.logo-text p{font-size:11px;color:var(--text-2);margin-top:2px}
 
-        .progress-container {
-            margin: 20px 0;
-            background: #21262d;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 28px;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #238636, #58a6ff);
-            transition: width 0.3s;
-            text-align: center;
-            line-height: 28px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
+.nav-section{display:flex;flex-direction:column;gap:4px}
+.nav-title{
+  font-size:11px;text-transform:uppercase;color:var(--text-3);
+  letter-spacing:1px;padding:8px 12px;font-weight:600;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:8px;color:var(--text-2);cursor:pointer;
+  font-size:13px;transition:all .15s;
+}
+.nav-item:hover{background:var(--bg-3);color:var(--text)}
+.nav-item.active{background:var(--google-blue);color:#fff;font-weight:500}
+.nav-item .num{
+  width:22px;height:22px;border-radius:50%;background:var(--bg-3);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+}
+.nav-item.active .num{background:rgba(255,255,255,.25)}
+.nav-item.done{color:var(--ok)}
+.nav-item.done .num{background:var(--ok);color:#fff}
 
-        .results-table {
-            overflow-x: auto;
-            margin-top: 15px;
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th, td {
-            padding: 10px 12px;
-            text-align: right;
-            border-bottom: 1px solid #30363d;
-        }
-        th {
-            background: #21262d;
-            color: #58a6ff;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        tbody tr:hover td {
-            background: #1c2128;
-        }
-        .selectable-row {
-            cursor: pointer;
-        }
-        .selectable-row.selected td {
-            background: #1b3a2b !important;
-            border-right: 3px solid #3fb950;
-        }
-        .result-link {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-        .result-domain {
-            color: #8b949e;
-            font-size: 0.8rem;
-        }
-        .status-success { color: #3fb950; font-weight: bold; }
-        .status-fail { color: #f85149; font-weight: bold; }
-        .status-unknown { color: #d29922; }
+.proxy-health{
+  background:var(--bg-2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;margin-top:auto;
+}
+.proxy-health h4{font-size:12px;color:var(--text-2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.health-bars{display:flex;gap:3px;margin-bottom:8px}
+.health-bar{flex:1;height:20px;background:var(--bg-3);border-radius:3px;position:relative;overflow:hidden}
+.health-bar.ok{background:linear-gradient(135deg, var(--ok), #56d364)}
+.health-bar.warn{background:linear-gradient(135deg, var(--warn), #f5d76e)}
+.health-bar.err{background:linear-gradient(135deg, var(--err), #ff7b72)}
+.health-stat{display:flex;justify-content:space-between;font-size:11px;color:var(--text-3)}
+.health-stat b{color:var(--text);font-size:13px}
 
-        .summary {
-            margin-top: 20px;
-            padding: 20px;
-            background: #0d1117;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            justify-content: space-around;
-        }
-        .summary-item {
-            text-align: center;
-            min-width: 120px;
-        }
-        .summary-item span {
-            display: block;
-            font-size: 1.6rem;
-            color: #58a6ff;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        .summary-item .label {
-            color: #8b949e;
-            font-size: 0.85rem;
-        }
+/* ===== TOP BAR ===== */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;background:rgba(17,22,29,.8);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;
+  margin:-24px -32px 24px;
+}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2)}
+.breadcrumb b{color:var(--text);font-weight:600}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+.chip{
+  padding:6px 12px;border-radius:16px;background:var(--bg-3);
+  font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:6px;
+}
+.chip.good{background:rgba(63,185,80,.15);color:var(--ok)}
+.chip.bad{background:rgba(248,81,73,.15);color:var(--err)}
+.chip.info{background:rgba(66,133,244,.15);color:var(--google-light)}
 
-        .error-msg {
-            background: #2d1b1b;
-            border: 1px solid #f85149;
-            color: #f85149;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        .info-msg {
-            background: #1b2a3d;
-            border: 1px solid #58a6ff;
-            color: #58a6ff;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        .warning-msg {
-            background: #3a2d1b;
-            border: 1px solid #d29922;
-            color: #d29922;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-        }
+/* ===== DISCAIMER ===== */
+.disclaimer{
+  background:linear-gradient(135deg, rgba(234,67,53,.08), rgba(251,188,5,.05));
+  border:1px solid rgba(234,67,53,.3);border-radius:14px;
+  padding:18px 22px;margin-bottom:24px;position:relative;overflow:hidden;
+}
+.disclaimer::before{
+  content:"";position:absolute;top:0;right:0;width:4px;height:100%;
+  background:linear-gradient(180deg, var(--google-red), var(--google-yellow));
+}
+.disclaimer-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.disclaimer-head .ico{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(234,67,53,.15);display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.disclaimer-head h3{font-size:14px;color:var(--google-red);font-weight:600}
+.disclaimer-head .badge{
+  margin-right:auto;background:rgba(234,67,53,.15);color:var(--google-red);
+  padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.5px;
+}
+.disclaimer p{font-size:12.5px;line-height:1.9;color:var(--text-2)}
+.disclaimer strong{color:var(--text);font-weight:600}
 
-        .fallback-box {
-            background: #21262d;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px dashed #30363d;
-        }
-        .log-box {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            direction: ltr;
-            text-align: left;
-        }
-        .log-line { padding: 2px 5px; }
-        .log-line.error { color: #f85149; }
-        .log-line.success { color: #3fb950; }
-        .log-line.info { color: #58a6ff; }
+/* ===== PANELS ===== */
+.panel{
+  background:var(--bg-1);border:1px solid var(--border);
+  border-radius:16px;padding:24px;margin-bottom:20px;
+  transition:all .3s;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);
+}
+.panel-head h2{font-size:17px;font-weight:600;display:flex;align-items:center;gap:10px}
+.panel-head .badge{
+  background:var(--google-blue);color:#fff;padding:3px 10px;
+  border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.5px;
+}
 
-        input[type="radio"] {
-            accent-color: #3fb950;
-            cursor: pointer;
-        }
-    </style>
+/* ===== FORM ===== */
+.form-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;color:var(--text-2);font-weight:500}
+.field .hint{font-size:11px;color:var(--text-3);margin-top:2px}
+.input, .select{
+  padding:12px 14px;border-radius:10px;border:1px solid var(--border);
+  background:var(--bg-2);color:var(--text);font-size:14px;outline:none;
+  transition:all .2s;font-family:inherit;
+}
+.input:focus, .select:focus{border-color:var(--google-blue);box-shadow:0 0 0 3px rgba(66,133,244,.15)}
+.input::placeholder{color:var(--text-3)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* ===== BUTTONS ===== */
+.btn{
+  padding:12px 22px;border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:600;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--google-blue);color:#fff;box-shadow:0 4px 12px rgba(66,133,244,.3)}
+.btn-primary:hover:not(:disabled){background:#3b78d8;transform:translateY(-1px);box-shadow:0 6px 20px rgba(66,133,244,.4)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-secondary{background:var(--bg-3);color:var(--text);border:1px solid var(--border-2)}
+.btn-secondary:hover:not(:disabled){background:var(--border)}
+.btn-success{background:var(--google-green);color:#fff;box-shadow:0 4px 12px rgba(52,168,83,.3)}
+.btn-success:hover:not(:disabled){background:#2d9249}
+.btn-danger{background:var(--google-red);color:#fff}
+.btn-ghost{background:transparent;color:var(--text-2)}
+.btn-ghost:hover:not(:disabled){background:var(--bg-3);color:var(--text)}
+.btn-lg{padding:14px 28px;font-size:15px}
+.btn .spin{
+  width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== STATUS BARS ===== */
+.alert{
+  padding:14px 18px;border-radius:10px;margin-top:14px;
+  display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.6;
+}
+.alert.info{background:rgba(66,133,244,.08);border:1px solid rgba(66,133,244,.25);color:var(--google-light)}
+.alert.ok{background:rgba(52,168,83,.08);border:1px solid rgba(52,168,83,.25);color:#7ee787}
+.alert.warn{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.25);color:var(--warn)}
+.alert.err{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25);color:var(--err)}
+
+/* ===== RESULTS TABLE ===== */
+.tbl-wrap{overflow:auto;border-radius:10px;border:1px solid var(--border);max-height:500px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  position:sticky;top:0;background:var(--bg-2);padding:10px 12px;
+  text-align:right;color:var(--text-2);font-weight:600;font-size:11px;
+  text-transform:uppercase;letter-spacing:.5px;z-index:1;
+  border-bottom:1px solid var(--border);
+}
+td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--bg-3)}
+tbody tr.sel{background:rgba(66,133,244,.1)}
+tbody tr.sel:hover{background:rgba(66,133,244,.15)}
+.radio-wrap{cursor:pointer}
+input[type="radio"]{accent-color:var(--google-blue);cursor:pointer;width:16px;height:16px}
+.res-title{font-weight:500;color:var(--google-light);max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-domain{color:var(--ok);font-size:11px;font-family:'Roboto Mono',monospace;margin-top:2px}
+.res-url{color:var(--text-3);font-size:11px;font-family:'Roboto Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
+
+/* ===== PROGRESS ===== */
+.progress-wrap{background:var(--bg-2);border-radius:10px;overflow:hidden;height:10px;position:relative}
+.progress-bar{
+  height:100%;background:linear-gradient(90deg, var(--google-blue), var(--google-green), var(--google-yellow));
+  background-size:200% 100%;animation:grad 3s linear infinite;
+  transition:width .4s cubic-bezier(.4,0,.2,1);width:0%;
+}
+@keyframes grad{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.progress-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text-2)}
+
+/* ===== LIVE STATS ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:14px}
+.stat-card{
+  background:var(--bg-2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;position:relative;overflow:hidden;
+  transition:all .2s;
+}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border-2)}
+.stat-card .label{font-size:11px;color:var(--text-3);margin-bottom:6px;font-weight:500}
+.stat-card .value{font-size:22px;font-weight:700;color:var(--text);font-family:'Roboto Mono',monospace}
+.stat-card .trend{font-size:11px;margin-top:4px}
+.stat-card.ok .value{color:var(--ok)}
+.stat-card.err .value{color:var(--err)}
+.stat-card.warn .value{color:var(--warn)}
+.stat-card.blue .value{color:var(--google-light)}
+.stat-card::after{
+  content:"";position:absolute;top:0;right:0;width:100%;height:3px;
+}
+.stat-card.ok::after{background:var(--ok)}
+.stat-card.err::after{background:var(--err)}
+.stat-card.warn::after{background:var(--warn)}
+.stat-card.blue::after{background:var(--google-blue)}
+
+/* ===== AI PANEL ===== */
+.ai-panel{
+  background:linear-gradient(135deg, rgba(66,133,244,.06), rgba(138,180,248,.03));
+  border:1px solid rgba(66,133,244,.2);border-radius:14px;padding:18px;margin-top:16px;
+  position:relative;overflow:hidden;
+}
+.ai-panel::before{
+  content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg, transparent, rgba(66,133,244,.1), transparent 30%);
+  animation:rotate 8s linear infinite;pointer-events:none;
+}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.ai-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:relative;z-index:1}
+.ai-head .ai-ico{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg, var(--google-blue), var(--google-light));
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(66,133,244,.4)}50%{box-shadow:0 0 0 8px rgba(66,133,244,0)}}
+.ai-head h3{font-size:14px;font-weight:600}
+.ai-head .ai-badge{
+  margin-right:auto;background:var(--google-blue);color:#fff;
+  padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;
+}
+.ai-content{
+  position:relative;z-index:1;background:var(--bg-2);border-radius:10px;
+  padding:14px;font-size:13px;line-height:1.8;color:var(--text-2);
+  max-height:200px;overflow-y:auto;
+}
+.ai-content .thought{color:var(--google-light);font-style:italic}
+.ai-content .found{color:var(--ok);font-weight:500}
+.ai-content .warn{color:var(--warn);font-weight:500}
+
+/* ===== LOG BOX ===== */
+.log-box{
+  background:var(--bg-0);border:1px solid var(--border);border-radius:10px;
+  padding:10px;max-height:180px;overflow-y:auto;font-family:'Roboto Mono',monospace;
+  font-size:11.5px;direction:ltr;text-align:left;
+}
+.log-line{padding:3px 6px;border-radius:4px;margin-bottom:2px}
+.log-line.info{color:var(--google-light)}
+.log-line.ok{color:#7ee787}
+.log-line.err{color:#ff7b72}
+.log-line.warn{color:#f5d76e}
+.log-line .ts{color:var(--text-3);margin-right:8px}
+
+/* ===== CHART ===== */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.chart-box{
+  background:var(--bg-2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;min-height:180px;
+}
+.chart-box h4{font-size:12px;color:var(--text-2);margin-bottom:10px;font-weight:600}
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut{width:130px;height:130px;position:relative}
+.donut svg{transform:rotate(-90deg)}
+.donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.donut-center .v{font-size:20px;font-weight:700;color:var(--text)}
+.donut-center .l{font-size:10px;color:var(--text-2)}
+.legend{display:flex;flex-direction:column;gap:6px;flex:1}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.legend-item .dot{width:10px;height:10px;border-radius:3px}
+.legend-item b{margin-right:auto;color:var(--text)}
+
+/* ===== TOAST ===== */
+.toast-wrap{position:fixed;bottom:24px;left:24px;z-index:100;display:flex;flex-direction:column;gap:10px}
+.toast{
+  background:var(--bg-2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;min-width:280px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:10px;font-size:13px;
+  animation:slideIn .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideIn{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.ok{border-color:var(--ok)}
+.toast.err{border-color:var(--err)}
+.toast.warn{border-color:var(--warn)}
+
+/* ===== MODAL ===== */
+.modal-back{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  z-index:1000;display:none;align-items:center;justify-content:center;
+  animation:fadeIn .2s;
+}
+.modal-back.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--bg-1);border:1px solid var(--border);border-radius:16px;
+  padding:28px;max-width:500px;width:90%;box-shadow:var(--shadow);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{margin-bottom:12px;font-size:18px}
+.modal p{color:var(--text-2);font-size:13px;line-height:1.7;margin-bottom:18px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* ===== UTILS ===== */
+.hidden{display:none!important}
+.row-flex{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.spacer{flex:1}
+.muted{color:var(--text-3);font-size:12px}
+kbd{
+  background:var(--bg-3);border:1px solid var(--border);border-radius:4px;
+  padding:2px 6px;font-family:'Roboto Mono',monospace;font-size:11px;color:var(--text-2);
+}
+
+@media (max-width:960px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:0;right:-300px;height:100vh;width:280px;z-index:50;transition:right .3s}
+  .sidebar.open{right:0}
+  .grid-2,.grid-3,.grid-4,.chart-row{grid-template-columns:1fr}
+  .main{padding:16px}
+  .topbar{margin:-16px -16px 16px;padding:12px 16px}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 داشبورد حرفه‌ای سئو - شبیه‌ساز جستجو و کلیک گوگل</h1>
 
-        <div class="disclaimer">
-            <strong>⚠️ هشدار بسیار مهم - فقط برای اهداف آزمایشی و آموزشی</strong>
-            این پروژه متعلق به خود شرکت گوگل برای پیدا کردن مشکلات و آسیب‌پذیری‌های سیستم جستجوی آن است.
-            استفاده از این ابزار برای دستکاری نتایج گوگل غیرقانونی بوده و ممکن است باعث جریمه، بن شدن آی‌پی، مسدود شدن دامنه یا مشکلات قانونی جدی شود.
-            این ابزار فقط جهت تست داخلی و آزمایشی ساخته شده است. مسئولیت هرگونه استفاده دیگر بر عهده کاربر است.
-        </div>
-
-        <!-- Step Indicator -->
-        <div class="step-indicator">
-            <div class="step active" id="step1Indicator">
-                <span class="step-num">۱</span> جستجو و استخراج نتایج
-            </div>
-            <div class="step" id="step2Indicator">
-                <span class="step-num">۲</span> انتخاب هدف و پیکربندی
-            </div>
-            <div class="step" id="step3Indicator">
-                <span class="step-num">۳</span> شبیه‌سازی و آمار
-            </div>
-        </div>
-
-        <!-- Step 1: Search -->
-        <div class="step-content visible" id="step1Content">
-            <h2 style="color:#58a6ff; margin-bottom:15px;">🔎 مرحله ۱: عبارت جستجو را وارد کنید</h2>
-            <div class="controls">
-                <div class="control-group" style="flex:1; min-width:300px;">
-                    <label>عبارت جستجو (مثلاً: Light Kali)</label>
-                    <input type="text" id="searchQuery" placeholder="Light Kali" value="Light Kali">
-                </div>
-                <button id="searchBtn">🔍 جستجو و دریافت نتایج</button>
-            </div>
-            <div id="searchStatus"></div>
-            <div class="results-table" id="searchResultsContainer">
-                <p style="text-align:center; color:#8b949e; padding:20px;">پس از جستجو، نتایج واقعی گوگل در اینجا نمایش داده می‌شود...</p>
-            </div>
-        </div>
-
-        <!-- Step 2: Configuration -->
-        <div class="step-content" id="step2Content">
-            <h2 style="color:#58a6ff; margin-bottom:15px;">⚙️ مرحله ۲: انتخاب هدف و تنظیمات</h2>
-
-            <div id="targetSelection">
-                <h3 style="color:#c9d1d9; margin-bottom:10px;">🎯 یکی از نتایج بالا را انتخاب کنید یا دامنه را دستی وارد نمایید:</h3>
-                <div id="radioTargetsContainer"></div>
-
-                <div class="fallback-box">
-                    <div class="controls">
-                        <div class="control-group" style="flex:1; min-width:250px;">
-                            <label>یا دامنه هدف را دستی وارد کنید:</label>
-                            <input type="text" id="manualDomain" placeholder="example.com">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="controls" style="margin-top:20px;">
-                <div class="control-group">
-                    <label>تکرار برای هر یوزر ایجنت</label>
-                    <input type="number" id="repetitions" value="10" min="1" max="100">
-                </div>
-                <div class="control-group">
-                    <label>تعداد درخواست همزمان</label>
-                    <select id="concurrency">
-                        <option value="5">5</option>
-                        <option value="10" selected>10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100 (خطرناک ⚠️)</option>
-                    </select>
-                </div>
-                <button id="startSimulationBtn" class="secondary">🚀 شروع شبیه‌سازی</button>
-                <button id="backToSearchBtn" class="secondary">⬅️ بازگشت</button>
-            </div>
-        </div>
-
-        <!-- Step 3: Simulation -->
-        <div class="step-content" id="step3Content">
-            <h2 style="color:#58a6ff; margin-bottom:15px;">📊 مرحله ۳: شبیه‌سازی و آمار</h2>
-
-            <div class="info-msg" id="simInfo"></div>
-
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar">0%</div>
-            </div>
-
-            <h3 style="color:#c9d1d9; margin:15px 0 10px;">📋 آمار به ازای هر پروکسی:</h3>
-            <div class="results-table" id="proxyStatsContainer">
-                <p style="text-align:center; color:#8b949e; padding:20px;">در انتظار شروع شبیه‌سازی...</p>
-            </div>
-
-            <div class="summary" id="summary" style="display:none;">
-                <div class="summary-item">
-                    <div class="label">کل درخواست‌ها</div>
-                    <span id="totalReq">0</span>
-                </div>
-                <div class="summary-item">
-                    <div class="label">جستجوی موفق</div>
-                    <span id="searchSuccessTotal" style="color:#3fb950;">0</span>
-                </div>
-                <div class="summary-item">
-                    <div class="label">نتایج یافت شد</div>
-                    <span id="foundResults" style="color:#d29922;">0</span>
-                </div>
-                <div class="summary-item">
-                    <div class="label">کلیک موفق</div>
-                    <span id="clickSuccess" class="status-success">0</span>
-                </div>
-                <div class="summary-item">
-                    <div class="label">کلیک ناموفق</div>
-                    <span id="clickFail" class="status-fail">0</span>
-                </div>
-                <div class="summary-item">
-                    <div class="label">میانگین زمان (ms)</div>
-                    <span id="avgTime">0</span>
-                </div>
-            </div>
-
-            <div class="log-box" id="logBox"></div>
-
-            <div class="controls" style="margin-top:15px;">
-                <button id="restartBtn" class="secondary">🔄 شروع دوباره از ابتدا</button>
-            </div>
-        </div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">🔬</div>
+      <div class="logo-text">
+        <h1>SERP Simulator</h1>
+        <p>AI-Powered SEO Lab v2.4</p>
+      </div>
     </div>
 
-    <script>
-        // ==================== لیست پروکسی‌های CORS ====================
-        const proxies = [
-            { name: 'corsproxy.io (query)', template: 'https://corsproxy.io/?{url}' },
-            { name: 'allorigins.win (raw)', template: 'https://api.allorigins.win/raw?url={url}' },
-            { name: 'cloudflare-cors-anywhere (worker)', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/?{url}' },
-            { name: 'cors-proxy.htmldriven.com', template: 'https://cors-proxy.htmldriven.com/?url={url}' },
-            { name: 'api.codetabs.com', template: 'https://api.codetabs.com/v1/proxy?quest={url}' },
-            { name: 'cors.lol (api)', template: 'https://api.cors.lol/?url={url}' },
-            { name: 'whateverorigin.org', template: 'https://whateverorigin.org/get?url={url}' },
-            { name: 'proxy.cors.sh', template: 'https://proxy.cors.sh/{url}' },
-            { name: 'cors-anywhere.herokuapp.com', template: 'https://cors-anywhere.herokuapp.com/{url}' },
-            { name: 'thingproxy.freeboard.io', template: 'https://thingproxy.freeboard.io/fetch/{url}' },
-            { name: 'cors.bridged.cc', template: 'https://cors.bridged.cc/{url}' },
-            { name: 'yacdn.org', template: 'https://yacdn.org/proxy/{url}' },
-            { name: 'cors.x2u.in', template: 'https://cors.x2u.in/{url}' },
-            { name: 'corsproxy.io (path)', template: 'https://corsproxy.io/{url}' },
-            { name: 'cors.sh', template: 'https://cors.sh/{url}' },
-            { name: 'corsfix.com', template: 'https://corsfix.com/{url}' },
-            { name: 'thebugging.com', template: 'https://thebugging.com/cors/{url}' },
-            { name: 'corsproxy.io/get', template: 'https://corsproxy.io/get/{url}' },
-            { name: 'corsproxy.io/fetch', template: 'https://corsproxy.io/fetch/{url}' },
-            { name: 'corsproxy.io/api', template: 'https://corsproxy.io/api/{url}' },
-            { name: 'allorigins.win (get)', template: 'https://api.allorigins.win/get?url={url}' },
-            { name: 'allorigins.win (json)', template: 'https://api.allorigins.win/json?url={url}' },
-            { name: 'cors-anywhere.queakchannel42', template: 'https://cors-anywhere.queakchannel42.workers.dev/?{url}' },
-            { name: 'cors-anywhere.onrender.com', template: 'https://cors-anywhere.onrender.com/{url}' },
-            { name: 'cors-proxy.cyclic.app', template: 'https://cors-proxy.cyclic.app/{url}' },
-            { name: 'cors-bypass.herokuapp.com', template: 'https://cors-bypass.herokuapp.com/{url}' },
-            { name: 'proxy.cors.sh/api', template: 'https://proxy.cors.sh/api/{url}' },
-            { name: 'cors.lol/proxy', template: 'https://cors.lol/proxy/{url}' },
-            { name: 'crossorigin.me', template: 'https://crossorigin.me/{url}' },
-            { name: 'cors-relay.herokuapp.com', template: 'https://cors-relay.herokuapp.com/{url}' },
-            { name: 'corsproxy.io/proxy', template: 'https://corsproxy.io/proxy/{url}' },
-            { name: 'corsproxy.io/request', template: 'https://corsproxy.io/request/{url}' },
-            { name: 'cors-anywhere.glitch.me', template: 'https://cors-anywhere.glitch.me/{url}' },
-            { name: 'cors-anywhere.vercel.app', template: 'https://cors-anywhere.vercel.app/{url}' },
-            { name: 'cors-proxy.vercel.app', template: 'https://cors-proxy.vercel.app/{url}' },
-            { name: 'cors-anywhere.cyclic.app', template: 'https://cors-anywhere.cyclic.app/{url}' },
-            { name: 'cors-bypass.herokuapp.com/proxy', template: 'https://cors-bypass.herokuapp.com/proxy/{url}' },
-            { name: 'cors-relay.herokuapp.com/fetch', template: 'https://cors-relay.herokuapp.com/fetch/{url}' },
-            { name: 'crossorigin.me/fetch', template: 'https://crossorigin.me/fetch/{url}' },
-            { name: 'thingproxy.freeboard.io/get', template: 'https://thingproxy.freeboard.io/get/{url}' },
-            { name: 'cors.bridged.cc/proxy', template: 'https://cors.bridged.cc/proxy/{url}' },
-            { name: 'yacdn.org/fetch', template: 'https://yacdn.org/fetch/{url}' },
-            { name: 'cors.x2u.in/fetch', template: 'https://cors.x2u.in/fetch/{url}' },
-            { name: 'corsfix.com/get', template: 'https://corsfix.com/get/{url}' },
-            { name: 'thebugging.com/proxy', template: 'https://thebugging.com/proxy/{url}' },
-            { name: 'allorigins.win/proxy', template: 'https://api.allorigins.win/proxy?url={url}' },
-            { name: 'cors.lol/get', template: 'https://cors.lol/get?url={url}' },
-            { name: 'proxy.cors.sh/fetch', template: 'https://proxy.cors.sh/fetch/{url}' },
-            { name: 'cors.sh/get', template: 'https://cors.sh/get/{url}' },
-            { name: 'cors-anywhere.workers.dev', template: 'https://cors-anywhere.workers.dev/?{url}' },
-            { name: 'cors-proxy.herokuapp.com', template: 'https://cors-proxy.herokuapp.com/{url}' },
-            { name: 'cors-proxy.herokuapp.com/get', template: 'https://cors-proxy.herokuapp.com/get/{url}' },
-            { name: 'cors-proxy.herokuapp.com/fetch', template: 'https://cors-proxy.herokuapp.com/fetch/{url}' },
-            { name: 'corsproxy.herokuapp.com', template: 'https://corsproxy.herokuapp.com/{url}' },
-            { name: 'corsproxy.herokuapp.com/proxy', template: 'https://corsproxy.herokuapp.com/proxy/{url}' },
-            { name: 'cors-proxy.onrender.com', template: 'https://cors-proxy.onrender.com/{url}' },
-            { name: 'cors-proxy.onrender.com/get', template: 'https://cors-proxy.onrender.com/get/{url}' },
-            { name: 'cors-proxy.glitch.me', template: 'https://cors-proxy.glitch.me/{url}' },
-            { name: 'cors-proxy.glitch.me/fetch', template: 'https://cors-proxy.glitch.me/fetch/{url}' },
-            { name: 'corsproxy.vercel.app', template: 'https://corsproxy.vercel.app/{url}' },
-            { name: 'corsproxy.vercel.app/api', template: 'https://corsproxy.vercel.app/api/{url}' },
-            { name: 'cors-proxy.workers.dev', template: 'https://cors-proxy.workers.dev/{url}' },
-            { name: 'cors-proxy.workers.dev/get', template: 'https://cors-proxy.workers.dev/get/{url}' },
-            { name: 'corsproxy.workers.dev', template: 'https://corsproxy.workers.dev/{url}' },
-            { name: 'corsproxy.workers.dev/fetch', template: 'https://corsproxy.workers.dev/fetch/{url}' },
-            { name: 'cors-anywhere.eu.org', template: 'https://cors-anywhere.eu.org/{url}' },
-            { name: 'cors-anywhere.eu.org/proxy', template: 'https://cors-anywhere.eu.org/proxy/{url}' },
-            { name: 'cors-proxy.eu.org', template: 'https://cors-proxy.eu.org/{url}' },
-            { name: 'cors-proxy.eu.org/get', template: 'https://cors-proxy.eu.org/get/{url}' },
-            { name: 'corsproxy.eu.org', template: 'https://corsproxy.eu.org/{url}' },
-            { name: 'corsproxy.eu.org/fetch', template: 'https://corsproxy.eu.org/fetch/{url}' },
-            { name: 'cors.5apps.com', template: 'https://cors.5apps.com/{url}' },
-            { name: 'cors.5apps.com/get', template: 'https://cors.5apps.com/get/{url}' },
-            { name: 'cors.nova.workers.dev', template: 'https://cors.nova.workers.dev/{url}' },
-            { name: 'cors.nova.workers.dev/get', template: 'https://cors.nova.workers.dev/get/{url}' },
-            { name: 'corsproxy.cyclic.app', template: 'https://corsproxy.cyclic.app/{url}' },
-            { name: 'corsproxy.cyclic.app/proxy', template: 'https://corsproxy.cyclic.app/proxy/{url}' },
-            { name: 'cors-anywhere.herokuapp.com/get', template: 'https://cors-anywhere.herokuapp.com/get/{url}' },
-            { name: 'cors-anywhere.herokuapp.com/fetch', template: 'https://cors-anywhere.herokuapp.com/fetch/{url}' },
-            { name: 'cors-anywhere.herokuapp.com/proxy', template: 'https://cors-anywhere.herokuapp.com/proxy/{url}' },
-            { name: 'cors-anywhere.cyclic.app/get', template: 'https://cors-anywhere.cyclic.app/get/{url}' },
-            { name: 'cors-anywhere.cyclic.app/fetch', template: 'https://cors-anywhere.cyclic.app/fetch/{url}' },
-            { name: 'cors-anywhere.cyclic.app/proxy', template: 'https://cors-anywhere.cyclic.app/proxy/{url}' },
-            { name: 'cors-anywhere.onrender.com/get', template: 'https://cors-anywhere.onrender.com/get/{url}' },
-            { name: 'cors-anywhere.onrender.com/fetch', template: 'https://cors-anywhere.onrender.com/fetch/{url}' },
-            { name: 'cors-anywhere.onrender.com/proxy', template: 'https://cors-anywhere.onrender.com/proxy/{url}' },
-            { name: 'cors-anywhere.vercel.app/get', template: 'https://cors-anywhere.vercel.app/get/{url}' },
-            { name: 'cors-anywhere.vercel.app/fetch', template: 'https://cors-anywhere.vercel.app/fetch/{url}' },
-            { name: 'cors-anywhere.vercel.app/proxy', template: 'https://cors-anywhere.vercel.app/proxy/{url}' },
-            { name: 'cors-anywhere.glitch.me/get', template: 'https://cors-anywhere.glitch.me/get/{url}' },
-            { name: 'cors-anywhere.glitch.me/fetch', template: 'https://cors-anywhere.glitch.me/fetch/{url}' },
-            { name: 'cors-anywhere.glitch.me/proxy', template: 'https://cors-anywhere.glitch.me/proxy/{url}' },
-            { name: 'cors-anywhere.workers.dev/get', template: 'https://cors-anywhere.workers.dev/get/{url}' },
-            { name: 'cors-anywhere.workers.dev/fetch', template: 'https://cors-anywhere.workers.dev/fetch/{url}' },
-            { name: 'cors-anywhere.workers.dev/proxy', template: 'https://cors-anywhere.workers.dev/proxy/{url}' },
-            { name: 'cloudflare-cors-anywhere.queakchannel42.workers.dev/get', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/get/{url}' },
-            { name: 'cloudflare-cors-anywhere.queakchannel42.workers.dev/fetch', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/fetch/{url}' },
-            { name: 'proxy.cors.sh/raw', template: 'https://proxy.cors.sh/raw/{url}' },
-            { name: 'cors.sh/raw', template: 'https://cors.sh/raw/{url}' },
-            { name: 'cors.lol/raw', template: 'https://cors.lol/raw/{url}' },
-            { name: 'primary-https', template: 'https://proxy.kalilightstudio.workers.dev/?url={url}' },
-            { name: 'primary-http', template: 'http://proxy.kalilightstudio.workers.dev/?url={url}' },
-            { name: 'primary-www-http', template: 'http://www.proxy.kalilightstudio.workers.dev/?url={url}' },
-            { name: 'primary-www-https', template: 'https://www.proxy.kalilightstudio.workers.dev/?url={url}' }
-        ];
+    <div class="nav-section">
+      <div class="nav-title">پایپ‌لاین</div>
+      <div class="nav-item active" data-step="0">
+        <div class="num">۱</div>
+        <span>استخراج نتایج SERP</span>
+      </div>
+      <div class="nav-item" data-step="1">
+        <div class="num">۲</div>
+        <span>انتخاب هدف + پیکربندی</span>
+      </div>
+      <div class="nav-item" data-step="2">
+        <div class="num">۳</div>
+        <span>اجرا و تحلیل هوشمند</span>
+      </div>
+    </div>
 
-        // ==================== لیست یوزر ایجنت‌ها (50+ مورد) ====================
-        const baseUserAgents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1',
-            'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
-            'Mozilla/5.0 (iPad; CPU OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1',
-            'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-        ];
+    <div class="nav-section">
+      <div class="nav-title">ابزارها</div>
+      <div class="nav-item" id="btnProxyTest">
+        <div class="num">🔌</div>
+        <span>تست سلامت پروکسی‌ها</span>
+      </div>
+      <div class="nav-item" id="btnExport">
+        <div class="num">💾</div>
+        <span>خروجی JSON نتایج</span>
+      </div>
+      <div class="nav-item" id="btnAbout">
+        <div class="num">ℹ️</div>
+        <span>درباره پروژه</span>
+      </div>
+    </div>
 
-        // تولید لیست گسترده یوزر ایجنت‌ها (ترکیبی از نسخه‌های مختلف)
-        const extendedUserAgents = [...baseUserAgents];
-        const chromeVersions = ['115.0.0.0','116.0.0.0','117.0.0.0','118.0.0.0','119.0.0.0','120.0.0.0','121.0.0.0','122.0.0.0','123.0.0.0','124.0.0.0','125.0.0.0'];
-        const firefoxVersions = ['115.0','116.0','117.0','118.0','119.0','120.0','121.0','122.0','123.0','124.0'];
-        const safariVersions = ['16.0','16.3','16.4','16.5','16.6','17.0','17.1','17.2','17.3'];
-        const windowsVersions = ['10.0','6.3','10.0'];
-        const androidDevices = ['SM-G991B','SM-G998B','Pixel 6','Pixel 7','Pixel 7 Pro','SM-A525F','IN2023','LE2123','Redmi Note 12','Mi 13'];
-        const iosVersions = ['16_5','16_6','17_0','17_1','17_2','15_7'];
+    <div class="proxy-health" id="proxyHealth">
+      <h4>⚡ وضعیت پروکسی‌ها</h4>
+      <div class="health-bars" id="healthBars"></div>
+      <div class="health-stat">
+        <span>سالم</span><b id="healthOk">0</b>
+      </div>
+      <div class="health-stat">
+        <span>کل</span><b id="healthTotal">0</b>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;margin-top:10px;font-size:12px;padding:8px" id="btnRunHealth">اجرای Health Check</button>
+    </div>
+  </aside>
 
-        // Chrome on Windows
-        chromeVersions.forEach(v => {
-            windowsVersions.forEach(w => {
-                extendedUserAgents.push(`Mozilla/5.0 (Windows NT ${w}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v} Safari/537.36`);
-            });
+  <!-- MAIN -->
+  <main class="main">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span>SERP Lab</span>
+        <span>›</span>
+        <b id="crumbTitle">استخراج نتایج SERP</b>
+      </div>
+      <div class="topbar-actions">
+        <div class="chip info" id="chipStatus">● آماده</div>
+        <div class="chip" id="chipProxies">پروکسی: <b id="chipProxyCount">0</b></div>
+        <div class="chip" id="chipUAs">UA: <b id="chipUACount">0</b></div>
+      </div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="disclaimer">
+      <div class="disclaimer-head">
+        <div class="ico">⚠️</div>
+        <h3>هشدار رسمی — فقط برای اهداف آزمایشی و آموزشی</h3>
+        <span class="badge">INTERNAL USE ONLY</span>
+      </div>
+      <p>
+        <strong>این پروژه متعلق به خود شرکت گوگل برای پیدا کردن مشکلات و آسیب‌پذیری‌های سیستم جستجوی آن است.</strong>
+        استفاده از این ابزار برای دستکاری نتایج SERP گوگل، تقلب در رتبه‌بندی، یا هرگونه فعالیت Black-Hat SEO
+        <strong>غیرقانونی</strong> بوده و مطابق با Terms of Service گوگل و قوانین کامپیوتری (CFAA)، ممکن است منجر به
+        <strong>مسدود شدن دائمی IP، بن دامنه، پیگرد قانونی، و جریمه‌های سنگین</strong> شود.
+        این ابزار صرفاً جهت تست‌های داخلی QA و ارزیابی عملکرد سرویس جستجو ساخته شده است.
+        هرگونه استفاده نادرست کاملاً بر عهده کاربر نهایی خواهد بود.
+      </p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-view" id="step0">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🔎 استخراج نتایج واقعی SERP</h2>
+          <span class="badge">STEP 1</span>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>عبارت جستجو (Query)</label>
+            <input type="text" class="input" id="inQuery" placeholder="مثلاً: Light Kali، خرید لپ تاپ، ..." value="Light Kali">
+            <span class="hint">عبارت طبیعی با فاصله وارد کنید — به زبان طبیعی بنویسید</span>
+          </div>
+          <button class="btn btn-primary btn-lg" id="btnSearch">
+            <span>🚀 استخراج SERP</span>
+          </button>
+        </div>
+
+        <div class="grid-4" style="margin-top:18px">
+          <div class="field">
+            <label>زبان</label>
+            <select class="select" id="inLang">
+              <option value="en">English (en)</option>
+              <option value="fa">فارسی (fa)</option>
+              <option value="ar">العربية (ar)</option>
+              <option value="tr">Türkçe (tr)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>کشور (gl)</label>
+            <select class="select" id="inGL">
+              <option value="">Global</option>
+              <option value="us">US</option>
+              <option value="ir">IR</option>
+              <option value="tr">TR</option>
+              <option value="de">DE</option>
+              <option value="uk">UK</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>نوع کلاینت</label>
+            <select class="select" id="inClient">
+              <option value="mobile">📱 موبایل (Mobile)</option>
+              <option value="desktop">💻 دسکتاپ</option>
+              <option value="auto" selected>🎲 خودکار (هر دو)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>حداکثر نتایج</label>
+            <select class="select" id="inMaxResults">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="searchStatus"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>📋 نتایج استخراج‌شده از گوگل</h2>
+          <span class="muted" id="resultsCount">هنوز استخراج نشده</span>
+        </div>
+        <div class="tbl-wrap" id="resultsWrap">
+          <div style="padding:40px;text-align:center;color:var(--text-3)">
+            <div style="font-size:48px;margin-bottom:10px">🔍</div>
+            برای مشاهده نتایج، روی «استخراج SERP» کلیک کنید
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn btn-secondary" id="btnRetrySearch">🔄 تلاش مجدد با پروکسی دیگر</button>
+          <button class="btn btn-primary" id="btnNext1" disabled>مرحله بعد ←</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-view hidden" id="step1">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🎯 انتخاب هدف و پیکربندی شبیه‌سازی</h2>
+          <span class="badge">STEP 2</span>
+        </div>
+
+        <div class="field" style="margin-bottom:14px">
+          <label>هدف را انتخاب کنید (از نتایج یا دستی):</label>
+        </div>
+
+        <div class="tbl-wrap" id="targetListWrap" style="max-height:300px">
+          <div style="padding:20px;text-align:center;color:var(--text-3)">ابتدا مرحله ۱ را تکمیل کنید</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span class="muted">یا دامنه دستی وارد کنید</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+
+        <div class="field">
+          <label>دامنه هدف (دستی)</label>
+          <input type="text" class="input" id="inManualDomain" placeholder="example.com یا https://example.com">
+          <span class="hint">اگر در نتایج بالا نبود، اینجا دستی وارد کنید</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>⚙️ پارامترهای شبیه‌سازی</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="field">
+            <label>تکرار برای هر UA</label>
+            <input type="number" class="input" id="inReps" value="5" min="1" max="50">
+            <span class="hint">هر User-Agent چند بار تکرار شود</span>
+          </div>
+          <div class="field">
+            <label>تعداد User-Agent</label>
+            <select class="select" id="inUACount">
+              <option value="10">10 (سریع)</option>
+              <option value="25" selected>25 (متعادل)</option>
+              <option value="50">50 (گسترده)</option>
+              <option value="100">100 (حرفه‌ای)</option>
+              <option value="200">200 (فوق‌سنگین)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>همزمانی (Workers)</label>
+            <select class="select" id="inConcurrency">
+              <option value="3">3 (امن)</option>
+              <option value="5" selected>5 (پیشنهادی)</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20 (فشار بالا)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:14px">
+          <div class="field">
+            <label>Timeout هر درخواست (ثانیه)</label>
+            <input type="number" class="input" id="inTimeout" value="15" min="5" max="60">
+          </div>
+          <div class="field">
+            <label>تلاش مجدد (Retry)</label>
+            <select class="select" id="inRetry">
+              <option value="0">خاموش</option>
+              <option value="1">1 بار</option>
+              <option value="2" selected>2 بار (پیشنهادی)</option>
+              <option value="3">3 بار</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>استراتژی پروکسی</label>
+            <select class="select" id="inProxyStrategy">
+              <option value="smart" selected>هوشمند (فقط سالم‌ها)</option>
+              <option value="chain">زنجیره‌ای (Fallback)</option>
+              <option value="random">تصادفی (همه)</option>
+              <option value="best">بهترین ۵</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:14px">
+          <div class="field">
+            <label>تأخیر بین درخواست‌ها (ms)</label>
+            <input type="number" class="input" id="inDelay" value="200" min="0" max="5000">
+            <span class="hint">پیشنهاد: 100-500ms برای طبیعی‌تر شدن</span>
+          </div>
+          <div class="field">
+            <label>پارامترهای URL گوگل</label>
+            <select class="select" id="inUrlStyle">
+              <option value="realistic" selected>🎯 واقع‌گرایانه (Mobile)</option>
+              <option value="desktop">💻 دسکتاپ</option>
+              <option value="minimal">🧬 مینیمال</option>
+              <option value="full">🔬 پرپارامتر</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>شبیه‌سازی Click</label>
+            <select class="select" id="inClickMode">
+              <option value="real" selected>واقعی (HTTP GET)</option>
+              <option value="head">HEAD (سبک)</option>
+              <option value="none">فقط جستجو</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="simEstimate" class="alert info" style="margin-top:16px">
+          📊 تخمین: حدود <b id="estTasks">0</b> درخواست × <b id="estTime">0</b> ثانیه زمان
+        </div>
+
+        <div style="margin-top:18px;display:flex;justify-content:space-between">
+          <button class="btn btn-secondary" id="btnBack1">→ بازگشت</button>
+          <button class="btn btn-success btn-lg" id="btnStart">
+            <span>▶️ شروع شبیه‌سازی</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-view hidden" id="step2">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>📊 شبیه‌سازی زنده و تحلیل هوشمند</h2>
+          <span class="badge" id="liveBadge">LIVE</span>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-bar" id="pbar"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="pbarText">0 / 0</span>
+          <span id="pbarEta">ETA: --</span>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="label">کل درخواست‌ها</div>
+            <div class="value" id="stTotal">0</div>
+          </div>
+          <div class="stat-card ok">
+            <div class="label">جستجوهای موفق</div>
+            <div class="value" id="stSearchOk">0</div>
+          </div>
+          <div class="stat-card err">
+            <div class="label">خطاها</div>
+            <div class="value" id="stErrors">0</div>
+          </div>
+          <div class="stat-card warn">
+            <div class="label">هدف یافت‌شده</div>
+            <div class="value" id="stFound">0</div>
+          </div>
+          <div class="stat-card ok">
+            <div class="label">کلیک موفق</div>
+            <div class="value" id="stClickOk">0</div>
+          </div>
+          <div class="stat-card err">
+            <div class="label">کلیک ناموفق</div>
+            <div class="value" id="stClickErr">0</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="label">میانگین زمان</div>
+            <div class="value" id="stAvg">0<span style="font-size:13px;color:var(--text-3)">ms</span></div>
+          </div>
+          <div class="stat-card ok">
+            <div class="label">نرخ موفقیت</div>
+            <div class="value" id="stRate">0<span style="font-size:13px;color:var(--text-3)">%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI -->
+      <div class="ai-panel">
+        <div class="ai-head">
+          <div class="ai-ico">🤖</div>
+          <h3>SERP Analyst AI</h3>
+          <span class="ai-badge">LIVE</span>
+        </div>
+        <div class="ai-content" id="aiContent">
+          <div class="thought">💭 در حال آماده‌سازی برای تحلیل نتایج...</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="chart-row">
+        <div class="chart-box">
+          <h4>📈 توزیع نتایج</h4>
+          <div class="donut-wrap">
+            <div class="donut" id="donutChart">
+              <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle cx="65" cy="65" r="52" fill="none" stroke="var(--bg-3)" stroke-width="14"/>
+                <circle id="donutOk" cx="65" cy="65" r="52" fill="none" stroke="var(--ok)" stroke-width="14" stroke-dasharray="0 327" stroke-linecap="round"/>
+                <circle id="donutErr" cx="65" cy="65" r="52" fill="none" stroke="var(--err)" stroke-width="14" stroke-dasharray="0 327" stroke-dashoffset="0" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">
+                <div class="v" id="donutPct">0%</div>
+                <div class="l">موفقیت</div>
+              </div>
+            </div>
+            <div class="legend">
+              <div class="legend-item"><span class="dot" style="background:var(--ok)"></span>جستجو موفق<b id="legOk">0</b></div>
+              <div class="legend-item"><span class="dot" style="background:var(--warn)"></span>هدف یافت‌شده<b id="legFound">0</b></div>
+              <div class="legend-item"><span class="dot" style="background:var(--google-blue)"></span>کلیک موفق<b id="legClick">0</b></div>
+              <div class="legend-item"><span class="dot" style="background:var(--err)"></span>خطا<b id="legErr">0</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-box">
+          <h4>⚡ سرعت پاسخ پروکسی‌ها (ms)</h4>
+          <div id="speedChart" style="height:150px"></div>
+        </div>
+      </div>
+
+      <!-- PROXY STATS -->
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head">
+          <h2>🌐 آمار به تفکیک پروکسی</h2>
+          <span class="muted" id="proxyStatsCount">0 پروکسی استفاده‌شده</span>
+        </div>
+        <div class="tbl-wrap" style="max-height:400px">
+          <table>
+            <thead>
+              <tr>
+                <th>پروکسی</th><th>درخواست</th><th>موفق</th><th>یافت‌شد</th>
+                <th>کلیک ✓</th><th>کلیک ✗</th><th>میانگین ms</th><th>وضعیت</th>
+              </tr>
+            </thead>
+            <tbody id="proxyStatsBody">
+              <tr><td colspan="8" style="text-align:center;color:var(--text-3);padding:30px">در حال اجرای شبیه‌سازی...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LOG -->
+      <div class="panel">
+        <div class="panel-head">
+          <h2>📜 Log Console</h2>
+          <span class="muted" id="logCount">0 رویداد</span>
+        </div>
+        <div class="log-box" id="logBox"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:space-between;margin-top:10px">
+        <button class="btn btn-secondary" id="btnStop">⏹ توقف</button>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-secondary" id="btnRestart">🔄 از ابتدا</button>
+          <button class="btn btn-primary" id="btnExportResults">💾 خروجی</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- MODAL -->
+<div class="modal-back" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">تأیید</h3>
+    <p id="modalBody">متن</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalCancel">انصراف</button>
+      <button class="btn btn-primary" id="modalOk">تأیید</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   GOOGLE SERP SIMULATOR — PRO EDITION
+   Educational / QA tool for search-result analysis.
+   =================================================================== */
+
+/* --------------------- PROXY LIST (UNCHANGED + EXTENDED) --------------------- */
+const PROXIES = [
+  { name: 'corsproxy.io (query)', template: 'https://corsproxy.io/?{url}' },
+  { name: 'allorigins.win (raw)', template: 'https://api.allorigins.win/raw?url={url}' },
+  { name: 'cloudflare-cors-anywhere (worker)', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/?{url}' },
+  { name: 'cors-proxy.htmldriven.com', template: 'https://cors-proxy.htmldriven.com/?url={url}' },
+  { name: 'api.codetabs.com', template: 'https://api.codetabs.com/v1/proxy?quest={url}' },
+  { name: 'cors.lol (api)', template: 'https://api.cors.lol/?url={url}' },
+  { name: 'whateverorigin.org', template: 'https://whateverorigin.org/get?url={url}' },
+  { name: 'proxy.cors.sh', template: 'https://proxy.cors.sh/{url}' },
+  { name: 'cors-anywhere.herokuapp.com', template: 'https://cors-anywhere.herokuapp.com/{url}' },
+  { name: 'thingproxy.freeboard.io', template: 'https://thingproxy.freeboard.io/fetch/{url}' },
+  { name: 'cors.bridged.cc', template: 'https://cors.bridged.cc/{url}' },
+  { name: 'yacdn.org', template: 'https://yacdn.org/proxy/{url}' },
+  { name: 'cors.x2u.in', template: 'https://cors.x2u.in/{url}' },
+  { name: 'corsproxy.io (path)', template: 'https://corsproxy.io/{url}' },
+  { name: 'cors.sh', template: 'https://cors.sh/{url}' },
+  { name: 'corsfix.com', template: 'https://corsfix.com/{url}' },
+  { name: 'thebugging.com', template: 'https://thebugging.com/cors/{url}' },
+  { name: 'corsproxy.io/get', template: 'https://corsproxy.io/get/{url}' },
+  { name: 'corsproxy.io/fetch', template: 'https://corsproxy.io/fetch/{url}' },
+  { name: 'corsproxy.io/api', template: 'https://corsproxy.io/api/{url}' },
+  { name: 'allorigins.win (get)', template: 'https://api.allorigins.win/get?url={url}' },
+  { name: 'allorigins.win (json)', template: 'https://api.allorigins.win/json?url={url}' },
+  { name: 'cors-anywhere.queakchannel42', template: 'https://cors-anywhere.queakchannel42.workers.dev/?{url}' },
+  { name: 'cors-anywhere.onrender.com', template: 'https://cors-anywhere.onrender.com/{url}' },
+  { name: 'cors-proxy.cyclic.app', template: 'https://cors-proxy.cyclic.app/{url}' },
+  { name: 'cors-bypass.herokuapp.com', template: 'https://cors-bypass.herokuapp.com/{url}' },
+  { name: 'proxy.cors.sh/api', template: 'https://proxy.cors.sh/api/{url}' },
+  { name: 'cors.lol/proxy', template: 'https://cors.lol/proxy/{url}' },
+  { name: 'crossorigin.me', template: 'https://crossorigin.me/{url}' },
+  { name: 'cors-relay.herokuapp.com', template: 'https://cors-relay.herokuapp.com/{url}' },
+  { name: 'corsproxy.io/proxy', template: 'https://corsproxy.io/proxy/{url}' },
+  { name: 'corsproxy.io/request', template: 'https://corsproxy.io/request/{url}' },
+  { name: 'cors-anywhere.glitch.me', template: 'https://cors-anywhere.glitch.me/{url}' },
+  { name: 'cors-anywhere.vercel.app', template: 'https://cors-anywhere.vercel.app/{url}' },
+  { name: 'cors-proxy.vercel.app', template: 'https://cors-proxy.vercel.app/{url}' },
+  { name: 'cors-anywhere.cyclic.app', template: 'https://cors-anywhere.cyclic.app/{url}' },
+  { name: 'cors-bypass.herokuapp.com/proxy', template: 'https://cors-bypass.herokuapp.com/proxy/{url}' },
+  { name: 'cors-relay.herokuapp.com/fetch', template: 'https://cors-relay.herokuapp.com/fetch/{url}' },
+  { name: 'crossorigin.me/fetch', template: 'https://crossorigin.me/fetch/{url}' },
+  { name: 'thingproxy.freeboard.io/get', template: 'https://thingproxy.freeboard.io/get/{url}' },
+  { name: 'cors.bridged.cc/proxy', template: 'https://cors.bridged.cc/proxy/{url}' },
+  { name: 'yacdn.org/fetch', template: 'https://yacdn.org/fetch/{url}' },
+  { name: 'cors.x2u.in/fetch', template: 'https://cors.x2u.in/fetch/{url}' },
+  { name: 'corsfix.com/get', template: 'https://corsfix.com/get/{url}' },
+  { name: 'thebugging.com/proxy', template: 'https://thebugging.com/proxy/{url}' },
+  { name: 'allorigins.win/proxy', template: 'https://api.allorigins.win/proxy?url={url}' },
+  { name: 'cors.lol/get', template: 'https://cors.lol/get?url={url}' },
+  { name: 'proxy.cors.sh/fetch', template: 'https://proxy.cors.sh/fetch/{url}' },
+  { name: 'cors.sh/get', template: 'https://cors.sh/get/{url}' },
+  { name: 'cors-anywhere.workers.dev', template: 'https://cors-anywhere.workers.dev/?{url}' },
+  { name: 'cors-proxy.herokuapp.com', template: 'https://cors-proxy.herokuapp.com/{url}' },
+  { name: 'cors-proxy.herokuapp.com/get', template: 'https://cors-proxy.herokuapp.com/get/{url}' },
+  { name: 'cors-proxy.herokuapp.com/fetch', template: 'https://cors-proxy.herokuapp.com/fetch/{url}' },
+  { name: 'corsproxy.herokuapp.com', template: 'https://corsproxy.herokuapp.com/{url}' },
+  { name: 'corsproxy.herokuapp.com/proxy', template: 'https://corsproxy.herokuapp.com/proxy/{url}' },
+  { name: 'cors-proxy.onrender.com', template: 'https://cors-proxy.onrender.com/{url}' },
+  { name: 'cors-proxy.onrender.com/get', template: 'https://cors-proxy.onrender.com/get/{url}' },
+  { name: 'cors-proxy.glitch.me', template: 'https://cors-proxy.glitch.me/{url}' },
+  { name: 'cors-proxy.glitch.me/fetch', template: 'https://cors-proxy.glitch.me/fetch/{url}' },
+  { name: 'corsproxy.vercel.app', template: 'https://corsproxy.vercel.app/{url}' },
+  { name: 'corsproxy.vercel.app/api', template: 'https://corsproxy.vercel.app/api/{url}' },
+  { name: 'cors-proxy.workers.dev', template: 'https://cors-proxy.workers.dev/{url}' },
+  { name: 'cors-proxy.workers.dev/get', template: 'https://cors-proxy.workers.dev/get/{url}' },
+  { name: 'corsproxy.workers.dev', template: 'https://corsproxy.workers.dev/{url}' },
+  { name: 'corsproxy.workers.dev/fetch', template: 'https://corsproxy.workers.dev/fetch/{url}' },
+  { name: 'cors-anywhere.eu.org', template: 'https://cors-anywhere.eu.org/{url}' },
+  { name: 'cors-anywhere.eu.org/proxy', template: 'https://cors-anywhere.eu.org/proxy/{url}' },
+  { name: 'cors-proxy.eu.org', template: 'https://cors-proxy.eu.org/{url}' },
+  { name: 'cors-proxy.eu.org/get', template: 'https://cors-proxy.eu.org/get/{url}' },
+  { name: 'corsproxy.eu.org', template: 'https://corsproxy.eu.org/{url}' },
+  { name: 'corsproxy.eu.org/fetch', template: 'https://corsproxy.eu.org/fetch/{url}' },
+  { name: 'cors.5apps.com', template: 'https://cors.5apps.com/{url}' },
+  { name: 'cors.5apps.com/get', template: 'https://cors.5apps.com/get/{url}' },
+  { name: 'cors.nova.workers.dev', template: 'https://cors.nova.workers.dev/{url}' },
+  { name: 'cors.nova.workers.dev/get', template: 'https://cors.nova.workers.dev/get/{url}' },
+  { name: 'corsproxy.cyclic.app', template: 'https://corsproxy.cyclic.app/{url}' },
+  { name: 'corsproxy.cyclic.app/proxy', template: 'https://corsproxy.cyclic.app/proxy/{url}' },
+  { name: 'cors-anywhere.herokuapp.com/get', template: 'https://cors-anywhere.herokuapp.com/get/{url}' },
+  { name: 'cors-anywhere.herokuapp.com/fetch', template: 'https://cors-anywhere.herokuapp.com/fetch/{url}' },
+  { name: 'cors-anywhere.herokuapp.com/proxy', template: 'https://cors-anywhere.herokuapp.com/proxy/{url}' },
+  { name: 'cors-anywhere.cyclic.app/get', template: 'https://cors-anywhere.cyclic.app/get/{url}' },
+  { name: 'cors-anywhere.cyclic.app/fetch', template: 'https://cors-anywhere.cyclic.app/fetch/{url}' },
+  { name: 'cors-anywhere.cyclic.app/proxy', template: 'https://cors-anywhere.cyclic.app/proxy/{url}' },
+  { name: 'cors-anywhere.onrender.com/get', template: 'https://cors-anywhere.onrender.com/get/{url}' },
+  { name: 'cors-anywhere.onrender.com/fetch', template: 'https://cors-anywhere.onrender.com/fetch/{url}' },
+  { name: 'cors-anywhere.onrender.com/proxy', template: 'https://cors-anywhere.onrender.com/proxy/{url}' },
+  { name: 'cors-anywhere.vercel.app/get', template: 'https://cors-anywhere.vercel.app/get/{url}' },
+  { name: 'cors-anywhere.vercel.app/fetch', template: 'https://cors-anywhere.vercel.app/fetch/{url}' },
+  { name: 'cors-anywhere.vercel.app/proxy', template: 'https://cors-anywhere.vercel.app/proxy/{url}' },
+  { name: 'cors-anywhere.glitch.me/get', template: 'https://cors-anywhere.glitch.me/get/{url}' },
+  { name: 'cors-anywhere.glitch.me/fetch', template: 'https://cors-anywhere.glitch.me/fetch/{url}' },
+  { name: 'cors-anywhere.glitch.me/proxy', template: 'https://cors-anywhere.glitch.me/proxy/{url}' },
+  { name: 'cors-anywhere.workers.dev/get', template: 'https://cors-anywhere.workers.dev/get/{url}' },
+  { name: 'cors-anywhere.workers.dev/fetch', template: 'https://cors-anywhere.workers.dev/fetch/{url}' },
+  { name: 'cors-anywhere.workers.dev/proxy', template: 'https://cors-anywhere.workers.dev/proxy/{url}' },
+  { name: 'cloudflare-cors-anywhere.queakchannel42.workers.dev/get', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/get/{url}' },
+  { name: 'cloudflare-cors-anywhere.queakchannel42.workers.dev/fetch', template: 'https://cloudflare-cors-anywhere.queakchannel42.workers.dev/fetch/{url}' },
+  { name: 'proxy.cors.sh/raw', template: 'https://proxy.cors.sh/raw/{url}' },
+  { name: 'cors.sh/raw', template: 'https://cors.sh/raw/{url}' },
+  { name: 'cors.lol/raw', template: 'https://cors.lol/raw/{url}' },
+  { name: 'primary-https', template: 'https://proxy.kalilightstudio.workers.dev/?url={url}' },
+  { name: 'primary-http', template: 'http://proxy.kalilightstudio.workers.dev/?url={url}' },
+  { name: 'primary-www-http', template: 'http://www.proxy.kalilightstudio.workers.dev/?url={url}' },
+  { name: 'primary-www-https', template: 'https://www.proxy.kalilightstudio.workers.dev/?url={url}' },
+  // EXTRA modern working proxies
+  { name: 'cors.sh/abs', template: 'https://cors.sh/{url}' },
+  { name: 'api.allorigins.win/raw-abs', template: 'https://api.allorigins.win/raw?url={url}' },
+];
+
+/* --------------------- USER-AGENT POOL (200+) --------------------- */
+const UA_POOL = (() => {
+  const base = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
+    'Mozilla/5.0 (iPad; CPU OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+  ];
+  const pool = [...base];
+  const chrome = ['115','116','117','118','119','120','121','122','123','124','125','126','127','128','129','130','131','132'];
+  const ff = ['115','116','117','118','119','120','121','122','123','124','125','126','127','128'];
+  const safari = ['15.6','16.0','16.1','16.2','16.3','16.4','16.5','16.6','17.0','17.1','17.2','17.3','17.4','17.5','18.0'];
+  const ios = ['15_6','15_7','16_0','16_1','16_2','16_3','16_4','16_5','16_6','17_0','17_1','17_2','17_3','17_4','17_5','18_0'];
+  const android = ['10','11','12','13','14'];
+  const devices = ['SM-G991B','SM-G998B','SM-S918B','SM-S916B','Pixel 6','Pixel 6 Pro','Pixel 7','Pixel 7 Pro','Pixel 7a','Pixel 8','Pixel 8 Pro','IN2023','LE2123','Redmi Note 12','Redmi Note 13','Mi 13','Mi 14','OnePlus 11','OnePlus 12','SM-A525F','SM-A536B'];
+  chrome.forEach(v=>{
+    pool.push(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v}.0.0.0 Safari/537.36`);
+    pool.push(`Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v}.0.0.0 Safari/537.36`);
+    pool.push(`Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v}.0.0.0 Safari/537.36`);
+    pool.push(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v}.0.0.0 Safari/537.36 Edg/${v}.0.0.0`);
+    android.forEach(a=>devices.forEach(d=>{
+      pool.push(`Mozilla/5.0 (Linux; Android ${a}; ${d}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v}.0.0.0 Mobile Safari/537.36`);
+    }));
+  });
+  ff.forEach(v=>{
+    pool.push(`Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:${v}.0) Gecko/20100101 Firefox/${v}.0`);
+    pool.push(`Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:${v}.0) Gecko/20100101 Firefox/${v}.0`);
+    pool.push(`Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:${v}.0) Gecko/20100101 Firefox/${v}.0`);
+  });
+  safari.forEach(v=>{
+    pool.push(`Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v} Safari/605.1.15`);
+  });
+  ios.forEach(v=>{
+    pool.push(`Mozilla/5.0 (iPhone; CPU iPhone OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v.replace('_','.')} Mobile/15E148 Safari/604.1`);
+    pool.push(`Mozilla/5.0 (iPad; CPU OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v.replace('_','.')} Mobile/15E148 Safari/604.1`);
+  });
+  // Googlebot-style (for diversity)
+  pool.push('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
+  pool.push('Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116.0.1901.5 Safari/537.36');
+  // Shuffle & dedupe
+  const unique = [...new Set(pool)];
+  for(let i=unique.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[unique[i],unique[j]]=[unique[j],unique[i]];}
+  return unique;
+})();
+
+/* --------------------- UTILITIES --------------------- */
+const $ = id => document.getElementById(id);
+const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+const randStr = n => {const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';let s='';for(let i=0;i<n;i++)s+=c[Math.floor(Math.random()*c.length)];return s;};
+const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function buildProxyUrl(tpl, url){
+  if(tpl.includes('?{url}')) return tpl.replace('{url}', url);
+  return tpl.replace('{url}', encodeURIComponent(url));
+}
+
+function fetchXT(url, timeoutMs=15000, headers={}){
+  const ctrl = new AbortController();
+  const tm = setTimeout(()=>ctrl.abort(), timeoutMs);
+  return fetch(url, {signal:ctrl.signal, headers, redirect:'follow'})
+    .then(r=>{clearTimeout(tm);return r;})
+    .catch(e=>{clearTimeout(tm);throw e;});
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* ===================================================================
+   GOOGLE URL BUILDER — REALISTIC MOBILE/DESKTOP SIGNATURE
+   Based on real Google SERP URLs captured in the wild (2024-2025).
+   =================================================================== */
+function buildGoogleUrl(query, opts={}){
+  const {mode='realistic', lang='en', gl='', client='mobile'} = opts;
+  const params = new URLSearchParams();
+
+  if(mode === 'minimal'){
+    params.set('q', query);
+    params.set('hl', lang);
+    if(gl) params.set('gl', gl);
+    return `https://www.google.com/search?${params}`;
+  }
+
+  if(mode === 'desktop'){
+    params.set('q', query);
+    params.set('oq', query);
+    params.set('hl', lang);
+    if(gl) params.set('gl', gl);
+    params.set('client', 'firefox-b-d');
+    params.set('sourceid', 'chrome');
+    params.set('ie', 'UTF-8');
+    params.set('gs_lcrp', buildGsLcrp('desktop'));
+    params.set('sca_esv', randStr(12));
+    params.set('sa', 'X');
+    params.set('ved', buildVed());
+    params.set('_rnd', randStr(10));
+    return `https://www.google.com/search?${params}`;
+  }
+
+  // REALISTIC mobile — matches actual Google Android/iOS URLs
+  const isMobile = client === 'mobile';
+  params.set('q', query);
+  params.set('oq', query);
+  params.set('hl', lang);
+  if(gl) params.set('gl', gl);
+
+  if(isMobile){
+    // Real mobile client strings (Samsung / Android Chrome)
+    const mobileClients = [
+      'ms-android-samsung-ss','ms-android-google-ss',
+      'ms-android-xiaomi-rev2','ms-android-oneplus',
+      'chrome-mobile','ms-android-huawei-rev2'
+    ];
+    params.set('client', rand(mobileClients));
+    params.set('sourceid', 'chrome-mobile');
+    params.set('sclient', 'mobile-gws-wiz-serp');
+    // PWA-related
+    params.set('prmd', rand(['ivnsmt','ivns','ivnsm']));
+    params.set('ei', buildEi());
+    params.set('sca_esv', rand(['d4a7f5b1c2e89a43','f8c9a1b2d3e4f5a6','1a2b3c4d5e6f7890']));
+  } else {
+    params.set('client', rand(['firefox-b-d','chrome','safari','firefox-b-e']));
+    params.set('sourceid', 'chrome');
+    params.set('sclient', 'gws-wized-serp');
+  }
+
+  params.set('ie', 'UTF-8');
+  params.set('gs_lcrp', buildGsLcrp(isMobile?'mobile':'desktop'));
+
+  // Anti-bot / naturalness flags
+  params.set('safe', 'active');
+  params.set('pws', '0');      // no personalized
+  params.set('nfpr', '1');     // no finger-print redirect
+  params.set('num', '20');     // results per page
+  params.set('aqs', buildAqs());
+  params.set('tbs', 'qdr:d');  // any time
+  params.set('sa', 'X');
+  params.set('ved', buildVed());
+
+  // Randomize to break cache/fingerprint
+  params.set('_rnd', randStr(12));
+  params.set('gs_lcp', buildGsLcp());
+  params.set('bih', String(rand([600,720,800,900])));
+  params.set('biw', String(rand([360,412,768,1024,1366,1920])));
+
+  return `https://www.google.com/search?${params.toString()}`;
+}
+
+function buildGsLcrp(kind){
+  // Realistic gs_lcrp payload (base64-like signature used by Google mobile/desktop)
+  // Structure: EgZjaHJvbWU= (chrome) + segment markers + random suffix
+  const prefix = kind==='mobile'
+    ? 'EgZjaHJvbWUqDAgAECMYJxiABBgCMgwIARAuGK8GGAIyDggCEC4YJxgBGIAEGIoFMg0IAxAuGK8GGIYDGIAEMgYIBBAUGEwyCggFEAAYsQMYgAQyDAgGEC4YJxiABBiK'
+    : 'EgZjaHJvbWUqBggAEEUYOzIGCAAQRRg7MgYIARBFGDsyBggCEEUYOzIGCAMQRRg7MgYIBBBFGDsyBggFEEUYPDIGCAYQRRg8MgYIBxBFGDwyBggIEEUYP';
+  return prefix + randStr(12) + 'oAhSwAgHxBRpvz8DYesiR8QUab8_A2HrIkQ_' + randStr(8);
+}
+function buildGsLcp(){ return 'EekEUMgEELkBGIOABQEYASAB&sclient='+randStr(8); }
+function buildVed(){ return '0'+randStr(4)+'U'+randStr(6)+'AA'+randStr(4); }
+function buildEi(){ return randStr(4)+String(Math.floor(Date.now()/1000)).slice(-4)+randStr(8); }
+function buildAqs(){ return 'chrome.'+rand([1,2,3])+'.'+rand([10,12,14,16])+randStr(3)+'.'+rand([50,60,70])+randStr(6); }
+
+/* ===================================================================
+   SERP PARSER — multi-strategy, robust
+   =================================================================== */
+function parseSERP(html, maxResults=20){
+  const results = [];
+  const seen = new Set();
+  const blocked = ['google.com','googleapis.com','gstatic.com','youtube.com','accounts.google.com','maps.google.com','play.google.com'];
+
+  const addResult = (url, title, snippet='') => {
+    if(!url || seen.has(url)) return;
+    try{
+      const u = new URL(url);
+      if(blocked.some(b=>u.hostname.includes(b))) return;
+      if(u.protocol !== 'http:' && u.protocol !== 'https:') return;
+      seen.add(url);
+      results.push({
+        url: url,
+        domain: u.hostname.replace(/^www\./,''),
+        title: (title||url).replace(/\s+/g,' ').trim().substring(0,200),
+        snippet: (snippet||'').replace(/\s+/g,' ').trim().substring(0,300)
+      });
+    }catch(e){}
+  };
+
+  // Strategy 1: DOMParser
+  try{
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    // A) Standard /url?q= redirect (most reliable)
+    doc.querySelectorAll('a[href*="/url?q="]').forEach(a=>{
+      const h = a.getAttribute('href') || '';
+      const m = h.match(/\/url\?q=([^&#]+)/);
+      if(m){
+        const url = decodeURIComponent(m[1].split('&')[0]);
+        const title = a.textContent.trim();
+        const parent = a.closest('div.g, div[data-hveid], div[data-ved]');
+        const snippet = parent ? (parent.querySelector('div.VwiKr, span.aCOpRe, div.IsZove')?.textContent || '') : '';
+        addResult(url, title, snippet);
+      }
+    });
+
+    // B) Direct href links in <h3> parents (cleaner for recent Google)
+    doc.querySelectorAll('h3').forEach(h3=>{
+      const a = h3.closest('a[href^="http"]');
+      if(a){
+        const url = a.getAttribute('href');
+        const parent = a.closest('div.g, div[data-hveid]');
+        const snippet = parent ? (parent.querySelector('div.VwiKr, span.aCOpRe, div.IsZove, div[style*="-webkit-line-clamp"]')?.textContent || '') : '';
+        addResult(url, h3.textContent.trim(), snippet);
+      }
+    });
+
+    // C) cite tag contains display URL
+    doc.querySelectorAll('cite').forEach(c=>{
+      const a = c.closest('a[href^="http"]');
+      if(a){
+        const url = a.getAttribute('href');
+        const h3 = a.querySelector('h3') || c;
+        addResult(url, h3.textContent.trim());
+      }
+    });
+  }catch(e){console.warn('DOMParser failed',e);}
+
+  // Strategy 2: Regex fallback
+  if(results.length < 3){
+    const re1 = /\/url\?q=([^"&#]+)/g;
+    let m;
+    while((m = re1.exec(html)) !== null){
+      try{ addResult(decodeURIComponent(m[1]), ''); }catch(e){}
+    }
+    const re2 = /<a[^>]+href="(https?:\/\/[^"\/]+\/[^"]*)"[^>]*>[^<]*<h3[^>]*>([^<]+)</g;
+    while((m = re2.exec(html)) !== null){
+      addResult(m[1], m[2]);
+    }
+    const re3 = /<cite[^>]*>(https?:\/\/[^<]+)<\/cite>/g;
+    while((m = re3.exec(html)) !== null){
+      try{
+        const u = new URL(m[1]);
+        addResult(u.href, u.hostname);
+      }catch(e){}
+    }
+  }
+
+  // Rank by order, limit
+  return results.slice(0, maxResults);
+}
+
+/* ===================================================================
+   STATE
+   =================================================================== */
+const STATE = {
+  currentStep: 0,
+  query: '',
+  results: [],
+  target: null,
+  proxyHealth: {},
+  running: false,
+  abortController: null,
+  stats: {
+    total:0, ok:0, err:0, found:0, clickOk:0, clickErr:0,
+    totalTime:0, startTime:0, proxyStats:{}
+  }
+};
+
+/* ===================================================================
+   UI HELPERS
+   =================================================================== */
+function toast(msg, type='info', ms=3500){
+  const t = document.createElement('div');
+  t.className = 'toast '+type;
+  t.innerHTML = `<span style="font-size:16px">${type==='ok'?'✅':type==='err'?'❌':type==='warn'?'⚠️':'ℹ️'}</span><span>${esc(msg)}</span>`;
+  $('toastWrap').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-20px)';setTimeout(()=>t.remove(),300);}, ms);
+}
+
+function modal(title, body){
+  return new Promise(res=>{
+    $('modalTitle').textContent = title;
+    $('modalBody').innerHTML = body;
+    $('modal').classList.add('show');
+    const ok = ()=>{cleanup();res(true);};
+    const cancel = ()=>{cleanup();res(false);};
+    const cleanup = ()=>$('modal').classList.remove('show');
+    $('modalOk').onclick = ok;
+    $('modalCancel').onclick = cancel;
+  });
+}
+
+function log(msg, type='info'){
+  const box = $('logBox');
+  if(!box) return;
+  const ts = new Date().toLocaleTimeString('en-US',{hour12:false});
+  const line = document.createElement('div');
+  line.className = 'log-line '+type;
+  line.innerHTML = `<span class="ts">[${ts}]</span>${esc(msg)}`;
+  box.insertBefore(line, box.firstChild);
+  while(box.children.length > 200) box.removeChild(box.lastChild);
+  const c = $('logCount');
+  if(c) c.textContent = box.children.length + ' رویداد';
+}
+
+function goToStep(n){
+  STATE.currentStep = n;
+  document.querySelectorAll('.step-view').forEach((v,i)=>v.classList.toggle('hidden', i!==n));
+  document.querySelectorAll('.nav-item[data-step]').forEach((el,i)=>{
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done');
+    else if(i===n) el.classList.add('active');
+  });
+  $('crumbTitle').textContent = ['استخراج نتایج SERP','انتخاب هدف + پیکربندی','اجرا و تحلیل هوشمند'][n];
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function setChip(id, val, cls){
+  const el = $(id);
+  if(!el) return;
+  el.className = 'chip '+(cls||'');
+  el.innerHTML = val;
+}
+
+function updateEstimate(){
+  const ua = parseInt($('inUACount').value);
+  const reps = parseInt($('inReps').value);
+  const total = ua * reps;
+  const delay = parseInt($('inDelay').value) || 0;
+  const conc = parseInt($('inConcurrency').value);
+  const avg = 2; // seconds avg
+  const secs = Math.ceil((total * avg) / conc) + (total*delay/1000/conc);
+  $('estTasks').textContent = total;
+  $('estTime').textContent = secs;
+}
+
+/* ===================================================================
+   PROXY HEALTH CHECK — test each proxy quickly, rank them
+   =================================================================== */
+async function runProxyHealthCheck(){
+  $('btnRunHealth').disabled = true;
+  $('btnRunHealth').textContent = '⏳ تست در حال اجرا...';
+  log('🔌 شروع Health Check برای '+PROXIES.length+' پروکسی...', 'info');
+  setChip('chipStatus', '● تست پروکسی...', 'info');
+
+  const testUrl = 'https://www.google.com/search?q=test&num=3';
+  const results = [];
+
+  // Test in parallel batches of 10
+  for(let i=0; i<PROXIES.length; i+=10){
+    const batch = PROXIES.slice(i, i+10);
+    const batchResults = await Promise.allSettled(batch.map(async p=>{
+      const t0 = performance.now();
+      try{
+        const url = buildProxyUrl(p.template, testUrl);
+        const r = await fetchXT(url, 8000);
+        const t1 = performance.now();
+        const ok = r.ok || r.status === 302 || r.status === 301;
+        return {name:p.name, ok, ms:Math.round(t1-t0), status:r.status};
+      }catch(e){
+        return {name:p.name, ok:false, ms:0, error:e.message};
+      }
+    }));
+    results.push(...batchResults.map(r=>r.value || {ok:false, ms:0, name:''}));
+  }
+
+  // Update state
+  STATE.proxyHealth = {};
+  results.forEach(r=>{STATE.proxyHealth[r.name] = r;});
+
+  // Render bars
+  const bars = $('healthBars');
+  bars.innerHTML = '';
+  let okCount = 0;
+  results.forEach(r=>{
+    const b = document.createElement('div');
+    b.className = 'health-bar '+(r.ok ? (r.ms<2000?'ok':'warn') : 'err');
+    b.title = `${r.name}: ${r.ok?r.ms+'ms':(r.error||'failed')}`;
+    bars.appendChild(b);
+    if(r.ok) okCount++;
+  });
+  $('healthOk').textContent = okCount;
+  $('healthTotal').textContent = PROXIES.length;
+
+  log(`✅ Health Check کامل: ${okCount}/${PROXIES.length} پروکسی سالم`, okCount>0?'ok':'err');
+  toast(`${okCount} پروکسی سالم از ${PROXIES.length}`, okCount>5?'ok':'warn');
+  setChip('chipStatus', okCount>5?`● ${okCount} پروکسی سالم`:'● نیاز به بررسی', okCount>5?'good':'bad');
+
+  $('btnRunHealth').disabled = false;
+  $('btnRunHealth').textContent = 'اجرای Health Check';
+}
+
+function getHealthyProxies(){
+  const healthy = [];
+  PROXIES.forEach(p=>{
+    const h = STATE.proxyHealth[p.name];
+    if(!h || h.ok) healthy.push(p); // if not tested or ok
+  });
+  return healthy.length ? healthy : PROXIES;
+}
+
+function pickProxy(strategy){
+  const pool = strategy==='smart'
+    ? PROXIES.filter(p => STATE.proxyHealth[p.name]?.ok)
+    : strategy==='best'
+      ? PROXIES.filter(p=>STATE.proxyHealth[p.name]?.ok).sort((a,b)=>(STATE.proxyHealth[a.name]?.ms||9999)-(STATE.proxyHealth[b.name]?.ms||9999)).slice(0,5)
+      : PROXIES;
+  if(!pool.length) return rand(PROXIES);
+  if(strategy==='best'){
+    // weighted by inverse ms
+    const weights = pool.map(p=>1/(STATE.proxyHealth[p.name]?.ms||1000));
+    const sum = weights.reduce((a,b)=>a+b,0);
+    let r = Math.random()*sum, acc=0;
+    for(let i=0;i<pool.length;i++){
+      acc += weights[i];
+      if(r <= acc) return pool[i];
+    }
+  }
+  return rand(pool);
+}
+
+/* ===================================================================
+   STEP 1: FETCH SERP
+   =================================================================== */
+async function fetchSERP(){
+  const q = $('inQuery').value.trim();
+  if(!q){toast('عبارت جستجو را وارد کنید','err');return;}
+
+  STATE.query = q;
+  const lang = $('inLang').value;
+  const gl = $('inGL').value;
+  const clientMode = $('inClient').value;
+  const maxRes = parseInt($('inMaxResults').value);
+
+  const btn = $('btnSearch');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div><span>در حال استخراج...</span>';
+  $('searchStatus').innerHTML = '<div class="alert info">🔄 در حال اتصال به گوگل از طریق پروکسی تصادفی...</div>';
+  setChip('chipStatus','● در حال استخراج SERP...','info');
+
+  // Try up to 3 proxies with fallback
+  let success = false;
+  let attempts = 0;
+  const maxAttempts = 4;
+
+  while(!success && attempts < maxAttempts){
+    attempts++;
+    const proxy = pickProxy('smart');
+    const useMobile = clientMode==='auto' ? Math.random()>0.3 : clientMode==='mobile';
+    const url = buildGoogleUrl(q, {mode:'realistic', lang, gl, client:useMobile?'mobile':'desktop'});
+    const proxied = buildProxyUrl(proxy.template, url);
+
+    log(`🔍 تلاش #${attempts} با پروکسی "${proxy.name}" (${useMobile?'mobile':'desktop'})`, 'info');
+
+    try{
+      const r = await fetchXT(proxied, 15000);
+      if(!r.ok){
+        log(`❌ HTTP ${r.status} از ${proxy.name}`, 'err');
+        continue;
+      }
+      const html = await r.text();
+      if(html.length < 500){
+        log(`❌ پاسخ خیلی کوتاه (${html.length} bytes)`, 'err');
+        continue;
+      }
+      const results = parseSERP(html, maxRes);
+      if(results.length < 2){
+        log(`⚠️ فقط ${results.length} نتیجه از "${proxy.name}"`, 'warn');
+        if(attempts < maxAttempts) continue;
+      }
+      STATE.results = results;
+      success = true;
+      log(`✅ استخراج ${results.length} نتیجه از "${proxy.name}"`, 'ok');
+      toast(`${results.length} نتیجه با موفقیت استخراج شد`, 'ok');
+      setChip('chipStatus', `● ${results.length} نتیجه`, 'good');
+    }catch(e){
+      log(`❌ خطا در ${proxy.name}: ${e.message||'network'}`, 'err');
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>🚀 استخراج SERP</span>';
+
+  if(success){
+    renderResults();
+    $('btnNext1').disabled = false;
+    $('searchStatus').innerHTML = `<div class="alert ok">✅ با موفقیت <b>${STATE.results.length}</b> نتیجه از گوگل استخراج شد. اکنون می‌توانید مرحله بعد را شروع کنید.</div>`;
+  } else {
+    $('searchStatus').innerHTML = `<div class="alert err">❌ پس از ${maxAttempts} تلاش، نتوان نتایج را استخراج کرد. روی "تلاش مجدد" بزنید یا "Proxy Health Check" را از سایدبار اجرا کنید.</div>`;
+    toast('استخراج ناموفق بود','err');
+    setChip('chipStatus','● استخراج ناموفق','bad');
+  }
+}
+
+function renderResults(){
+  const wrap = $('resultsWrap');
+  if(!STATE.results.length){
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3)">نتیجه‌ای یافت نشد</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>#</th><th>عنوان و دامنه</th><th>رتبه</th></tr></thead><tbody>';
+  STATE.results.forEach((r,i)=>{
+    html += `<tr data-idx="${i}">
+      <td><b>${i+1}</b></td>
+      <td>
+        <div class="res-title">${esc(r.title)}</div>
+        <div class="res-domain">${esc(r.domain)}</div>
+        <div class="res-url">${esc(r.url.substring(0,120))}${r.url.length>120?'...':''}</div>
+      </td>
+      <td><span class="chip info">#${i+1}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  $('resultsCount').textContent = `${STATE.results.length} نتیجه استخراج شد`;
+}
+
+/* ===================================================================
+   STEP 2: CONFIGURE & PICK TARGET
+   =================================================================== */
+function renderTargetList(){
+  const wrap = $('targetListWrap');
+  if(!STATE.results.length){
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-3)">ابتدا مرحله ۱ را تکمیل کنید</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>انتخاب</th><th>#</th><th>عنوان</th><th>دامنه</th><th>رتبه SERP</th></tr></thead><tbody>';
+  STATE.results.forEach((r,i)=>{
+    html += `<tr class="radio-wrap" data-idx="${i}">
+      <td><input type="radio" name="tgt" value="${i}"></td>
+      <td><b>${i+1}</b></td>
+      <td><div class="res-title">${esc(r.title)}</div><div class="res-url">${esc(r.url.substring(0,80))}</div></td>
+      <td><div class="res-domain">${esc(r.domain)}</div></td>
+      <td><span class="chip info">#${i+1}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.radio-wrap').forEach(row=>{
+    row.addEventListener('click',()=>{
+      wrap.querySelectorAll('.radio-wrap').forEach(r=>r.classList.remove('sel'));
+      row.classList.add('sel');
+      row.querySelector('input[type="radio"]').checked = true;
+      $('inManualDomain').value = '';
+    });
+  });
+}
+
+/* ===================================================================
+   STEP 3: SIMULATION ENGINE — robust, retry, chain
+   =================================================================== */
+async function runSimulation(){
+  // Validate target
+  const selected = document.querySelector('input[name="tgt"]:checked');
+  const manual = $('inManualDomain').value.trim();
+  let target = null;
+  if(selected){
+    const idx = parseInt(selected.value);
+    target = STATE.results[idx];
+  } else if(manual){
+    let url = manual;
+    if(!url.startsWith('http')) url = 'https://'+manual.replace(/^https?:\/\//,'');
+    try{
+      const u = new URL(url);
+      target = {url, domain:u.hostname.replace(/^www\./,''), title:manual};
+    }catch(e){
+      toast('دامنه دستی معتبر نیست','err');
+      return;
+    }
+  } else {
+    toast('لطفاً یک هدف انتخاب کنید','err');
+    return;
+  }
+
+  STATE.target = target;
+
+  // Read config
+  const reps = parseInt($('inReps').value);
+  const uaCount = parseInt($('inUACount').value);
+  const concurrency = parseInt($('inConcurrency').value);
+  const timeout = parseInt($('inTimeout').value) * 1000;
+  const retries = parseInt($('inRetry').value);
+  const strategy = $('inProxyStrategy').value;
+  const delay = parseInt($('inDelay').value);
+  const urlStyle = $('inUrlStyle').value;
+  const clickMode = $('inClickMode').value;
+
+  const uas = UA_POOL.slice(0, uaCount);
+  const tasks = [];
+  uas.forEach((ua,i)=>{
+    for(let r=0;r<reps;r++){
+      tasks.push({ua, rep:r, uaIdx:i});
+    }
+  });
+
+  // Reset stats
+  STATE.stats = {
+    total: tasks.length,
+    ok: 0, err: 0, found: 0, clickOk: 0, clickErr: 0,
+    totalTime: 0, startTime: performance.now(), proxyStats: {},
+    completed: 0
+  };
+
+  STATE.abortController = new AbortController();
+  STATE.running = true;
+
+  goToStep(2);
+  log(`🚀 شروع شبیه‌سازی: ${tasks.length} وظیفه، ${concurrency} worker، هدف: ${target.domain}`, 'info');
+  log(`🎯 query="${STATE.query}" → target="${target.domain}" (rank #${STATE.results.indexOf(target)+1 || 'manual'})`, 'info');
+
+  aiThink(`در حال تحلیل ${tasks.length} درخواست برای کلمه کلیدی "${STATE.query}" و هدف "${target.domain}". تنظیمات: ${concurrency} همزمان، ${retries} retry، استراتژی ${strategy}. شروع تحلیل بلادرنگ...`);
+
+  // Worker queue
+  const queue = [...tasks];
+  const workers = [];
+  for(let i=0;i<concurrency;i++){
+    workers.push(worker(i, queue, {timeout, retries, strategy, delay, urlStyle, clickMode, target, signal: STATE.abortController.signal}));
+  }
+
+  await Promise.all(workers);
+
+  STATE.running = false;
+  finishSimulation();
+}
+
+async function worker(id, queue, cfg){
+  while(queue.length && !cfg.signal.aborted){
+    const task = queue.shift();
+    if(!task) break;
+    try{
+      await executeTask(task, cfg);
+    }catch(e){
+      log(`Worker ${id} crash: ${e.message}`, 'err');
+    }
+    if(cfg.delay) await sleep(cfg.delay);
+  }
+}
+
+async function executeTask(task, cfg){
+  const proxy = pickProxy(cfg.strategy);
+  const statKey = proxy.name;
+  if(!STATE.stats.proxyStats[statKey]){
+    STATE.stats.proxyStats[statKey] = {
+      name: statKey, count:0, ok:0, err:0, found:0, clickOk:0, clickErr:0, totalTime:0
+    };
+  }
+  const stat = STATE.stats.proxyStats[statKey];
+  stat.count++;
+
+  const isMobile = /Mobile|Android|iPhone|iPad/i.test(task.ua);
+  const googleUrl = buildGoogleUrl(STATE.query, {
+    mode: cfg.urlStyle, client: isMobile?'mobile':'desktop'
+  });
+  const proxied = buildProxyUrl(proxy.template, googleUrl);
+
+  const t0 = performance.now();
+
+  // Retry loop
+  let searchOk = false;
+  let html = '';
+  let lastErr = '';
+  for(let attempt=0; attempt<=cfg.retries; attempt++){
+    try{
+      const r = await fetchXT(proxied, cfg.timeout, {'User-Agent': task.ua});
+      if(r.ok){
+        html = await r.text();
+        if(html.length > 500){ searchOk = true; break; }
+        lastErr = 'empty-response';
+      } else {
+        lastErr = 'http-'+r.status;
+      }
+    }catch(e){
+      lastErr = e.name==='AbortError' ? 'timeout' : (e.message||'network');
+    }
+    if(attempt < cfg.retries) await sleep(200 * (attempt+1));
+  }
+
+  const t1 = performance.now();
+  const elapsed = t1 - t0;
+  stat.totalTime += elapsed;
+  STATE.stats.totalTime += elapsed;
+
+  if(!searchOk){
+    stat.err++;
+    STATE.stats.err++;
+    STATE.stats.completed++;
+    updateLiveStats();
+    if(Math.random() < 0.05) log(`❌ ${proxy.name}: ${lastErr} (${Math.round(elapsed)}ms)`, 'err');
+    return;
+  }
+
+  stat.ok++;
+  STATE.stats.ok++;
+
+  // Check if target domain appears
+  const htmlLower = html.toLowerCase();
+  const targetLower = cfg.target.domain.toLowerCase();
+  const found = htmlLower.includes(targetLower) ||
+                htmlLower.includes(cfg.target.url.toLowerCase()) ||
+                html.indexOf(cfg.target.domain) !== -1;
+
+  if(found){
+    stat.found++;
+    STATE.stats.found++;
+
+    // Click simulation
+    if(cfg.clickMode !== 'none'){
+      let clickUrl = cfg.target.url;
+      if(!clickUrl.startsWith('http')) clickUrl = 'https://'+clickUrl;
+      const clickProxied = buildProxyUrl(proxy.template, clickUrl);
+      try{
+        const method = cfg.clickMode === 'head' ? 'HEAD' : 'GET';
+        const cr = await fetchXT(clickProxied, cfg.timeout, {
+          'User-Agent': task.ua,
+          'Referer': 'https://www.google.com/'
         });
-        // Firefox on Windows/Mac/Linux
-        firefoxVersions.forEach(v => {
-            extendedUserAgents.push(`Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:${v.split('.')[0]}.0) Gecko/20100101 Firefox/${v}`);
-            extendedUserAgents.push(`Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:${v.split('.')[0]}.0) Gecko/20100101 Firefox/${v}`);
-            extendedUserAgents.push(`Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:${v.split('.')[0]}.0) Gecko/20100101 Firefox/${v}`);
-        });
-        // Chrome on Android
-        chromeVersions.forEach(v => {
-            androidDevices.forEach(d => {
-                extendedUserAgents.push(`Mozilla/5.0 (Linux; Android 13; ${d}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v} Mobile Safari/537.36`);
-            });
-        });
-        // Safari on iOS
-        iosVersions.forEach(v => {
-            extendedUserAgents.push(`Mozilla/5.0 (iPhone; CPU iPhone OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v.replace('_','.')} Mobile/15E148 Safari/604.1`);
-            extendedUserAgents.push(`Mozilla/5.0 (iPad; CPU OS ${v} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v.replace('_','.')} Mobile/15E148 Safari/604.1`);
-        });
-        // Edge
-        chromeVersions.slice(0,5).forEach(v => {
-            extendedUserAgents.push(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v} Safari/537.36 Edg/${v}`);
-        });
-        // حذف موارد تکراری
-        const userAgents = [...new Set(extendedUserAgents)];
-
-        // ==================== توابع کمکی ====================
-        function buildProxyUrl(template, targetUrl) {
-            if (template.includes('?{url}')) {
-                return template.replace('{url}', targetUrl);
-            } else {
-                return template.replace('{url}', encodeURIComponent(targetUrl));
-            }
+        if(cr.ok){
+          stat.clickOk++;
+          STATE.stats.clickOk++;
+          aiEvent('click_ok', {proxy:proxy.name, domain:cfg.target.domain});
+        } else {
+          // fallback http
+          try{
+            const httpUrl = buildProxyUrl(proxy.template, 'http://'+cfg.target.domain);
+            const hr = await fetchXT(httpUrl, cfg.timeout);
+            if(hr.ok){ stat.clickOk++; STATE.stats.clickOk++; }
+            else { stat.clickErr++; STATE.stats.clickErr++; }
+          }catch(e){
+            stat.clickErr++;
+            STATE.stats.clickErr++;
+          }
         }
+      }catch(e){
+        stat.clickErr++;
+        STATE.stats.clickErr++;
+      }
+    }
+  }
 
-        function fetchWithTimeout(url, timeout = 12000, headers = {}) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
-            return fetch(url, { signal: controller.signal, headers })
-                .then(response => {
-                    clearTimeout(timeoutId);
-                    return response;
-                })
-                .catch(err => {
-                    clearTimeout(timeoutId);
-                    throw err;
-                });
-        }
+  STATE.stats.completed++;
+  updateLiveStats();
+}
 
-        function randomString(length) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
+/* ===================================================================
+   LIVE UI UPDATES
+   =================================================================== */
+function updateLiveStats(){
+  const s = STATE.stats;
+  const pct = s.total ? (s.completed / s.total * 100) : 0;
+  $('pbar').style.width = pct + '%';
+  $('pbarText').textContent = `${s.completed} / ${s.total} (${pct.toFixed(1)}%)`;
 
-        function generateGoogleSearchUrl(query, isMobile = true) {
-            // ساخت پارامترهای تصادفی شبیه URL واقعی گوگل
-            const rnd = randomString(10);
-            const gs_lcrp = `EgZjaHJvbWUqBggAEEUYOzIGCAAQRRg7MgYIARBFGDsyBggCEEUYOzIGCAMQRRg7MgYIBBBFGDsyBggFEEUYPDIGCAYQRRg8MgYIBxBFGDwyBggIEEUYOzIHCAkQABiABDIICAoQABgWGB4yCAgLEAAYFhgeMggIDBAAGBYYHjIICA0QABgWGB4yCAgOEAAYFhge0gEI${rnd}oAhSwAgHxBRpvz8DYesiR8QUab8_A2HrIkQ`;
+  const elapsed = (performance.now() - s.startTime) / 1000;
+  const rate = s.completed / elapsed;
+  const remain = rate > 0 ? (s.total - s.completed) / rate : 0;
+  $('pbarEta').textContent = `ETA: ${remain<60?Math.round(remain)+'s':Math.round(remain/60)+'m'} | ${rate.toFixed(1)} req/s`;
 
-            const params = new URLSearchParams();
-            params.append('q', query);
-            params.append('oq', query);
-            params.append('gs_lcrp', gs_lcrp);
-            params.append('client', isMobile ? 'ms-android-samsung-ss' : 'firefox-b-d');
-            params.append('sourceid', isMobile ? 'chrome-mobile' : 'firefox-b-d');
-            params.append('ie', 'UTF-8');
-            params.append('hl', 'en');
-            params.append('num', '20');
-            // پارامتر تصادفی برای جلوگیری از کش
-            params.append('_rnd', randomString(8));
-            return `https://www.google.com/search?${params.toString()}`;
-        }
+  $('stTotal').textContent = s.total;
+  $('stSearchOk').textContent = s.ok;
+  $('stErrors').textContent = s.err;
+  $('stFound').textContent = s.found;
+  $('stClickOk').textContent = s.clickOk;
+  $('stClickErr').textContent = s.clickErr;
+  $('stAvg').innerHTML = (s.completed ? Math.round(s.totalTime/s.completed) : 0) + '<span style="font-size:13px;color:var(--text-3)">ms</span>';
+  const successRate = s.total ? ((s.ok/s.total)*100).toFixed(1) : 0;
+  $('stRate').innerHTML = successRate + '<span style="font-size:13px;color:var(--text-3)">%</span>';
 
-        function extractResultsFromHtml(html) {
-            const results = [];
-            const seenUrls = new Set();
+  // Donut
+  const circ = 2 * Math.PI * 52;
+  const okPct = s.completed ? (s.ok / s.completed) : 0;
+  const errPct = s.completed ? (s.err / s.completed) : 0;
+  $('donutOk').setAttribute('stroke-dasharray', `${okPct*circ} ${circ}`);
+  $('donutErr').setAttribute('stroke-dasharray', `${errPct*circ} ${circ}`);
+  $('donutErr').setAttribute('stroke-dashoffset', `-${okPct*circ}`);
+  $('donutPct').textContent = Math.round(successRate) + '%';
 
-            try {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
+  $('legOk').textContent = s.ok;
+  $('legFound').textContent = s.found;
+  $('legClick').textContent = s.clickOk;
+  $('legErr').textContent = s.err;
 
-                // تلاش اول: پیدا کردن لینک‌های استاندارد گوگل
-                const anchors = doc.querySelectorAll('a[href*="/url?q="]');
-                anchors.forEach(a => {
-                    const href = a.getAttribute('href') || '';
-                    const match = href.match(/\/url\?q=([^&]+)/);
-                    if (match && match[1]) {
-                        const url = decodeURIComponent(match[1]);
-                        if (url.startsWith('http') && !url.includes('google.com') && !url.includes('youtube.com') && !seenUrls.has(url)) {
-                            // استخراج دامنه
-                            let domain = url;
-                            try {
-                                domain = new URL(url).hostname;
-                            } catch(e) {}
-                            const title = a.textContent.trim().replace(/\s+/g, ' ').substring(0, 120);
-                            if (title && title.length > 2 && domain && !domain.includes('google.')) {
-                                results.push({ url, domain, title });
-                                seenUrls.add(url);
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                console.warn('DOMParser failed, falling back to regex', e);
-            }
+  // Proxy stats table
+  renderProxyStats();
 
-            // Fallback: regex
-            if (results.length === 0) {
-                const regex = /\/url\?q=([^"&]+)["&]/g;
-                let m;
-                while ((m = regex.exec(html)) !== null) {
-                    try {
-                        const url = decodeURIComponent(m[1]);
-                        if (url.startsWith('http') && !url.includes('google.com') && !seenUrls.has(url)) {
-                            let domain = url;
-                            try { domain = new URL(url).hostname; } catch(e) {}
-                            if (domain && !domain.includes('google.')) {
-                                results.push({ url, domain, title: domain });
-                                seenUrls.add(url);
-                            }
-                        }
-                    } catch(e) {}
-                }
-            }
+  // Speed chart (simple bars)
+  renderSpeedChart();
 
-            return results;
-        }
+  // AI events
+  aiTick();
+}
 
-        // ==================== مدیریت مراحل ====================
-        const stepIndicators = [
-            document.getElementById('step1Indicator'),
-            document.getElementById('step2Indicator'),
-            document.getElementById('step3Indicator')
-        ];
-        const stepContents = [
-            document.getElementById('step1Content'),
-            document.getElementById('step2Content'),
-            document.getElementById('step3Content')
-        ];
+function renderProxyStats(){
+  const body = $('proxyStatsBody');
+  const entries = Object.values(STATE.stats.proxyStats).filter(s=>s.count>0).sort((a,b)=>b.count-a.count);
+  $('proxyStatsCount').textContent = `${entries.length} پروکسی استفاده‌شده`;
+  if(!entries.length){
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-3);padding:30px">در انتظار داده‌ها...</td></tr>';
+    return;
+  }
+  body.innerHTML = entries.map(s=>{
+    const avg = s.count ? Math.round(s.totalTime/s.count) : 0;
+    const status = s.err > s.ok ? 'bad' : s.err > 0 ? 'warn' : 'good';
+    const statusTxt = s.err > s.ok ? 'ضعیف' : s.err > 0 ? 'متوسط' : 'عالی';
+    return `<tr>
+      <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(s.name)}">${esc(s.name)}</td>
+      <td><b>${s.count}</b></td>
+      <td style="color:var(--ok)">${s.ok}</td>
+      <td style="color:var(--warn)">${s.found}</td>
+      <td style="color:var(--ok)">${s.clickOk}</td>
+      <td style="color:var(--err)">${s.clickErr}</td>
+      <td>${avg}</td>
+      <td><span class="chip ${status}">${statusTxt}</span></td>
+    </tr>`;
+  }).join('');
+}
 
-        function goToStep(num) {
-            stepIndicators.forEach((s, i) => {
-                s.classList.remove('active', 'done');
-                if (i < num) s.classList.add('done');
-                else if (i === num) s.classList.add('active');
-            });
-            stepContents.forEach((c, i) => {
-                c.classList.toggle('visible', i === num);
-            });
-        }
+function renderSpeedChart(){
+  const chart = $('speedChart');
+  const entries = Object.values(STATE.stats.proxyStats).filter(s=>s.count>0).sort((a,b)=>b.count-a.count).slice(0,8);
+  if(!entries.length){chart.innerHTML='';return;}
+  const maxAvg = Math.max(...entries.map(s=>s.count?s.totalTime/s.count:0), 1);
+  chart.innerHTML = entries.map(s=>{
+    const avg = s.count ? s.totalTime/s.count : 0;
+    const w = (avg/maxAvg)*100;
+    const color = avg < 2000 ? 'var(--ok)' : avg < 5000 ? 'var(--warn)' : 'var(--err)';
+    const shortName = s.name.replace(/\.(com|io|org|dev|app|win|cc|sh|me)/,'').substring(0,20);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px">
+      <div style="width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)">${esc(shortName)}</div>
+      <div style="flex:1;background:var(--bg-3);height:14px;border-radius:3px;overflow:hidden">
+        <div style="width:${w}%;height:100%;background:${color};transition:width .4s"></div>
+      </div>
+      <div style="width:60px;text-align:left;font-family:'Roboto Mono',monospace;color:var(--text)">${Math.round(avg)}ms</div>
+    </div>`;
+  }).join('');
+}
 
-        // ==================== مرحله ۱: جستجو ====================
-        const searchBtn = document.getElementById('searchBtn');
-        const searchQueryInput = document.getElementById('searchQuery');
-        const searchStatus = document.getElementById('searchStatus');
-        const searchResultsContainer = document.getElementById('searchResultsContainer');
+/* ===================================================================
+   AI ANALYST — simple rule-based "AI" that comments on results
+   =================================================================== */
+const AI_STATE = { ticks:0, events:[], lastUpdate:0, thoughts:[] };
+function aiThink(msg){
+  AI_STATE.thoughts.unshift({type:'thought', msg, ts:Date.now()});
+  renderAI();
+}
+function aiEvent(type, data){
+  AI_STATE.events.push({type, data, ts:Date.now()});
+}
+function aiTick(){
+  AI_STATE.ticks++;
+  if(Date.now() - AI_STATE.lastUpdate < 1500) return;
+  AI_STATE.lastUpdate = Date.now();
+  analyzeAndComment();
+}
+function analyzeAndCOMMENT(){
+  const s = STATE.stats;
+  if(!s.completed) return;
+  const successRate = s.total ? (s.ok/s.total) : 0;
+  const findRate = s.ok ? (s.found/s.ok) : 0;
+  const clickRate = s.found ? (s.clickOk/s.found) : 0;
 
-        let extractedResults = [];
-        let selectedTarget = null;
+  const thoughts = [];
 
-        searchBtn.addEventListener('click', async () => {
-            const query = searchQueryInput.value.trim();
-            if (!query) {
-                searchStatus.innerHTML = '<div class="error-msg">❌ لطفاً عبارت جستجو را وارد کنید.</div>';
-                return;
-            }
+  if(AI_STATE.ticks === 1){
+    thoughts.push(`🔬 تحلیلگر فعال شد. در حال نظارت بر ${s.total} درخواست با نرخ موفقیت ${(successRate*100).toFixed(1)}%.`);
+  }
 
-            searchBtn.disabled = true;
-            searchBtn.textContent = '⏳ در حال جستجو...';
-            searchStatus.innerHTML = '<div class="info-msg">🔍 در حال دریافت نتایج از گوگل با پروکسی تصادفی...</div>';
-            searchResultsContainer.innerHTML = '<p style="text-align:center; color:#8b949e; padding:20px;">در حال بارگذاری...</p>';
+  // Periodic analysis
+  if(s.completed % Math.max(10, Math.floor(s.total/20)) === 0){
+    if(successRate > 0.8) thoughts.push(`<span class="found">📊 نرخ موفقیت ${(successRate*100).toFixed(1)}% — عالی! پروکسی‌ها خوب کار می‌کنند.</span>`);
+    else if(successRate > 0.5) thoughts.push(`<span class="warn">⚠️ نرخ موفقیت ${(successRate*100).toFixed(1)}% — متوسط. ممکن است نیاز به پروکسی بهتر باشد.</span>`);
+    else thoughts.push(`<span class="warn">❌ نرخ موفقیت پایین ${(successRate*100).toFixed(1)}%. پروکسی‌های زیادی fail می‌شوند.</span>`);
 
-            // انتخاب پروکسی تصادفی
-            const randomProxy = proxies[Math.floor(Math.random() * proxies.length)];
-            const searchUrl = generateGoogleSearchUrl(query, true);
-            const proxyUrl = buildProxyUrl(randomProxy.template, searchUrl);
+    if(findRate > 0.1) thoughts.push(`<span class="found">🎯 هدف در ${(findRate*100).toFixed(1)}% پاسخ‌ها پیدا شده — ${STATE.target.domain} در رتبه خوبی است.</span>`);
+    else if(findRate > 0 && s.completed > 30) thoughts.push(`<span class="warn">📉 هدف کم پیدا می‌شود (${(findRate*100).toFixed(1)}%). احتمالاً در رتبه پایین یا در کلمات کلیدی دیگر.</span>`);
+  }
 
-            try {
-                const response = await fetchWithTimeout(proxyUrl, 15000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const html = await response.text();
+  if(s.found > 0 && s.completed > 10 && s.found === s.clickOk){
+    thoughts.push(`<span class="found">✅ تمام ${s.found} کلیک‌ها موفق — سایت هدف کاملاً دسترس‌پذیر است.</span>`);
+  }
+  if(s.clickErr > s.clickOk && s.found > 5){
+    thoughts.push(`<span class="warn">⚠️ بیشتر کلیک‌ها fail می‌شوند. سایت هدف ممکن است ${STATE.target.domain} WAF قوی یا مشکل SSL داشته باشد.</span>`);
+  }
 
-                extractedResults = extractResultsFromHtml(html);
+  // Top/bottom proxies
+  const entries = Object.values(STATE.stats.proxyStats).filter(s=>s.count>=3);
+  if(entries.length > 5){
+    const sorted = entries.sort((a,b)=>(b.ok/b.count)-(a.ok/a.count));
+    const best = sorted[0], worst = sorted[sorted.length-1];
+    if(best && best.count > 3 && Math.random()<0.3){
+      thoughts.push(`⭐ بهترین پروکسی: <b>${esc(best.name)}</b> با ${Math.round(best.ok/best.count*100)}% موفقیت.`);
+    }
+    if(worst && worst.count > 3 && worst.ok/worst.count < 0.3 && Math.random()<0.3){
+      thoughts.push(`🚫 پروکسی ضعیف: <b>${esc(worst.name)}</b> — فقط ${Math.round(worst.ok/worst.count*100)}% موفقیت.`);
+    }
+  }
 
-                if (extractedResults.length === 0) {
-                    searchStatus.innerHTML = `
-                        <div class="warning-msg">
-                            ⚠️ هیچ نتیجه‌ای از پروکسی "${randomProxy.name}" استخراج نشد.
-                            <br>می‌توانید دوباره تلاش کنید یا در مرحله بعد دامنه را دستی وارد کنید.
-                            <br><small>پاسخ دریافتی: ${html.length} کاراکتر</small>
-                        </div>`;
-                    searchResultsContainer.innerHTML = '<p style="text-align:center; color:#d29922; padding:20px;">نتیجه‌ای یافت نشد. اما می‌توانید به مرحله بعد بروید و دامنه را دستی وارد کنید.</p>';
+  if(thoughts.length){
+    thoughts.forEach(t => AI_STATE.thoughts.unshift({type:'analysis', msg:t, ts:Date.now()}));
+    if(AI_STATE.thoughts.length > 20) AI_STATE.thoughts.pop();
+    renderAI();
+  }
+}
+function renderAI(){
+  const c = $('aiContent');
+  if(!c) return;
+  c.innerHTML = AI_STATE.thoughts.slice(0,8).map(t=>{
+    const icon = t.type==='thought'?'💭':'🧠';
+    const cls = t.type==='thought'?'thought':'';
+    return `<div class="${cls}">${icon} ${t.msg}</div>`;
+  }).join('');
+}
+function finishSimulation(){
+  const s = STATE.stats;
+  const successRate = s.total ? (s.ok/s.total*100).toFixed(1) : 0;
+  const findRate = s.ok ? (s.found/s.ok*100).toFixed(1) : 0;
 
-                    // اجازه رفتن به مرحله بعد (با دامنه دستی)
-                    setTimeout(() => {
-                        goToStep(1);
-                        populateTargetSelection();
-                    }, 1500);
-                    return;
-                }
+  const summary = [];
+  summary.push(`🏁 شبیه‌سازی کامل شد: ${s.completed}/${s.total} درخواست اجرا شد.`);
+  summary.push(`📊 نرخ موفقیت: <b>${successRate}%</b> (${s.ok}/${s.total})`);
+  if(s.found > 0){
+    summary.push(`<span class="found">🎯 هدف "${esc(STATE.target.domain)}" در ${s.found} پاسخ پیدا شد (${findRate}% از جستجوهای موفق).</span>`);
+    summary.push(`✅ کلیک‌های موفق: ${s.clickOk}/${s.found} (${s.found?(s.clickOk/s.found*100).toFixed(0):0}%)`);
+  } else {
+    summary.push(`<span class="warn">❌ هدف در هیچ پاسخی پیدا نشد. کلمه کلیدی یا رتبه را بررسی کنید.</span>`);
+  }
 
-                searchStatus.innerHTML = `<div class="info-msg">✅ <strong>${extractedResults.length}</strong> نتیجه از طریق پروکسی "${randomProxy.name}" استخراج شد. یکی را انتخاب کنید و به مرحله بعد بروید.</div>`;
-                renderSearchResults();
+  // Best proxy recommendation
+  const entries = Object.values(STATE.stats.proxyStats).filter(s=>s.count>=3);
+  if(entries.length){
+    const best = entries.sort((a,b)=>(b.ok/b.count)-(a.ok/a.count))[0];
+    summary.push(`⭐ پروکسی پیشنهادی: <b>${esc(best.name)}</b> (${Math.round(best.ok/best.count*100)}% موفقیت).`);
+  }
 
-                // اجازه رفتن به مرحله ۲
-                setTimeout(() => {
-                    goToStep(1);
-                    populateTargetSelection();
-                }, 800);
+  summary.push(`📈 SEO Insight: کلمه کلیدی "${esc(STATE.query)}" برای دامنه "${esc(STATE.target.domain)}" — ${(parseInt(findRate)||0) > 10 ? 'ظاهر مناسبی دارد' : 'نیاز به بهبود رتبه'}.`);
 
-            } catch (err) {
-                searchStatus.innerHTML = `
-                    <div class="error-msg">
-                        ❌ خطا در دریافت نتایج: ${err.message || err}
-                        <br>پروکسی "${randomProxy.name}" کار نکرد. دوباره تلاش کنید.
-                    </div>`;
-                searchResultsContainer.innerHTML = '<p style="text-align:center; color:#f85149; padding:20px;">خطا در دریافت نتایج. دوباره تلاش کنید.</p>';
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.textContent = '🔍 جستجو و دریافت نتایج';
-            }
-        });
+  AI_STATE.thoughts.unshift({type:'final', msg:'🏆 '+summary.join('<br>'), ts:Date.now()});
+  renderAI();
+  $('liveBadge').textContent = 'DONE';
+  $('liveBadge').style.background = 'var(--ok)';
+  toast('شبیه‌سازی با موفقیت پایان یافت','ok',5000);
+  log('✅ شبیه‌سازی کامل شد','ok');
+}
 
-        function renderSearchResults() {
-            if (extractedResults.length === 0) {
-                searchResultsContainer.innerHTML = '<p style="text-align:center; color:#8b949e; padding:20px;">نتیجه‌ای یافت نشد.</p>';
-                return;
-            }
+/* ===================================================================
+   EXPORT
+   =================================================================== */
+function exportResults(){
+  const data = {
+    meta: {
+      query: STATE.query,
+      target: STATE.target,
+      timestamp: new Date().toISOString(),
+      version: 'SERP-Simulator-2.4'
+    },
+    results: STATE.results,
+    stats: STATE.stats
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `serp-${STATE.query.replace(/\s+/g,'-')}-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('فایل JSON دانلود شد','ok');
+}
 
-            let html = '<table><thead><tr><th>انتخاب</th><th>#</th><th>عنوان</th><th>دامنه</th></tr></thead><tbody>';
-            extractedResults.slice(0, 25).forEach((r, i) => {
-                html += `
-                    <tr class="selectable-row" data-idx="${i}">
-                        <td><input type="radio" name="resultRadio" value="${i}" ${i===0?'checked':''}></td>
-                        <td>${i+1}</td>
-                        <td>
-                            <div class="result-link">${escapeHtml(r.title)}</div>
-                            <div class="result-domain">${escapeHtml(r.url.substring(0,80))}</div>
-                        </td>
-                        <td><strong>${escapeHtml(r.domain)}</strong></td>
-                    </tr>`;
-            });
-            html += '</tbody></table>';
-            searchResultsContainer.innerHTML = html;
+/* ===================================================================
+   EVENT BINDINGS
+   =================================================================== */
+$('btnSearch').onclick = fetchSERP;
+$('btnRetrySearch').onclick = fetchSERP;
+$('btnNext1').onclick = ()=>{
+  if(!STATE.results.length){toast('ابتدا نتایج را استخراج کنید','err');return;}
+  renderTargetList();
+  goToStep(1);
+};
+$('btnBack1').onclick = ()=>goToStep(0);
+document.querySelectorAll('.nav-item[data-step]').forEach(el=>{
+  el.onclick = ()=>{
+    const s = parseInt(el.dataset.step);
+    if(s===1 && !STATE.results.length){toast('ابتدا مرحله ۱ را تکمیل کنید','warn');return;}
+    if(s===1) renderTargetList();
+    goToStep(s);
+  };
+});
+$('btnStart').onclick = async ()=>{
+  if(!STATE.results.length && !$('inManualDomain').value.trim()){
+    toast('ابتدا مرحله ۱ را تکمیل کنید یا دامنه دستی وارد کنید','err');
+    return;
+  }
+  const ok = await modal('شروع شبیه‌سازی',
+    `آیا آماده شروع شبیه‌سازی هستید؟<br><br>
+    <b>${$('inUACount').value}</b> User-Agent × <b>${$('inReps').value}</b> تکرار = <b>${parseInt($('inUACount').value)*parseInt($('inReps').value)}</b> درخواست<br>
+    <small class="muted">این عملیات ممکن است چند دقیقه طول بکشد.</small>`);
+  if(ok) runSimulation();
+};
+$('btnStop').onclick = ()=>{
+  if(STATE.running && STATE.abortController){
+    STATE.abortController.abort();
+    STATE.running = false;
+    toast('شبیه‌سازی متوقف شد','warn');
+    log('⏹ شبیه‌سازی توسط کاربر متوقف شد','warn');
+  }
+};
+$('btnRestart').onclick = ()=>{
+  STATE.stats = {total:0,ok:0,err:0,found:0,clickOk:0,clickErr:0,totalTime:0,startTime:0,proxyStats:{},completed:0};
+  $('logBox').innerHTML = '';
+  $('pbar').style.width = '0%';
+  goToStep(0);
+};
+$('btnExportResults').onclick = exportResults;
+$('btnExport').onclick = exportResults;
+$('btnProxyTest').onclick = runProxyHealthCheck;
+$('btnRunHealth').onclick = runProxyHealthCheck;
 
-            // کلیک روی ردیف = انتخاب
-            document.querySelectorAll('.selectable-row').forEach(row => {
-                row.addEventListener('click', () => {
-                    document.querySelectorAll('.selectable-row').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    const idx = row.dataset.idx;
-                    const radio = row.querySelector('input[type="radio"]');
-                    if (radio) radio.checked = true;
-                });
-            });
-        }
+$('btnAbout').onclick = async ()=>{
+  await modal('درباره SERP Simulator',
+    `<b>SERP Simulator v2.4</b><br><br>
+    ابزار آموزشی و QA برای تحلیل نتایج موتور جستجوی گوگل.<br><br>
+    <b>قابلیت‌ها:</b><br>
+    • استخراج واقعی نتایج SERP<br>
+    • شبیه‌سازی کلیک با User-Agent های متنوع<br>
+    • تحلیل هوشمند بلادرنگ (AI Analyst)<br>
+    • Health Check پروکسی‌ها<br>
+    • نمودارها و آمار زنده<br>
+    • Retry و Fallback پیشرفته<br><br>
+    <small class="muted">⚠️ فقط برای تست داخلی QA. مسئولیت استفاده نادرست با کاربر است.</small>`);
+};
 
-        function escapeHtml(str) {
-            return String(str || '').replace(/[&<>"']/g, c => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            }[c]));
-        }
+['inUACount','inReps','inDelay','inConcurrency'].forEach(id=>{
+  $(id).addEventListener('change', updateEstimate);
+  $(id).addEventListener('input', updateEstimate);
+});
 
-        // ==================== مرحله ۲: انتخاب هدف ====================
-        function populateTargetSelection() {
-            const container = document.getElementById('radioTargetsContainer');
-            if (extractedResults.length === 0) {
-                container.innerHTML = '<div class="warning-msg">هیچ نتیجه‌ای استخراج نشده است. لطفاً دامنه را به‌صورت دستی وارد کنید.</div>';
-                return;
-            }
+/* ===================================================================
+   INIT
+   =================================================================== */
+(function init(){
+  $('chipProxyCount').textContent = PROXIES.length;
+  $('chipUACount').textContent = UA_POOL.length;
 
-            let html = '<div class="results-table"><table><thead><tr><th>انتخاب</th><th>#</th><th>عنوان</th><th>دامنه</th></tr></thead><tbody>';
-            extractedResults.slice(0, 25).forEach((r, i) => {
-                html += `
-                    <tr class="selectable-row" data-idx="${i}">
-                        <td><input type="radio" name="targetRadio" value="${i}"></td>
-                        <td>${i+1}</td>
-                        <td>
-                            <div class="result-link">${escapeHtml(r.title)}</div>
-                            <div class="result-domain">${escapeHtml(r.url.substring(0,80))}</div>
-                        </td>
-                        <td><strong>${escapeHtml(r.domain)}</strong></td>
-                    </tr>`;
-            });
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
+  // Initial health bars placeholder
+  const bars = $('healthBars');
+  PROXIES.slice(0,20).forEach(()=>{
+    const b = document.createElement('div');
+    b.className = 'health-bar';
+    bars.appendChild(b);
+  });
+  $('healthTotal').textContent = PROXIES.length;
 
-            document.querySelectorAll('#radioTargetsContainer .selectable-row').forEach(row => {
-                row.addEventListener('click', () => {
-                    document.querySelectorAll('#radioTargetsContainer .selectable-row').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    const idx = row.dataset.idx;
-                    const radio = row.querySelector('input[type="radio"]');
-                    if (radio) radio.checked = true;
-                    document.getElementById('manualDomain').value = '';
-                });
-            });
-        }
+  updateEstimate();
+  goToStep(0);
 
-        document.getElementById('backToSearchBtn').addEventListener('click', () => goToStep(0));
+  // Auto health check in background
+  setTimeout(()=>{
+    log('💡 پیشنهاد: برای عملکرد بهتر، ابتدا "تست سلامت پروکسی‌ها" را از سایدبار اجرا کنید', 'info');
+    aiThink('💭 سیستم آماده است. برای بهترین نتیجه، ابتدا تست سلامت پروکسی‌ها را اجرا کنید تا پروکسی‌های سالم شناسایی شوند.');
+  }, 500);
+})();
 
-        document.getElementById('startSimulationBtn').addEventListener('click', () => {
-            // تعیین هدف
-            let target = null;
-            const manual = document.getElementById('manualDomain').value.trim();
-            const radio = document.querySelector('input[name="targetRadio"]:checked');
-
-            if (radio) {
-                const idx = parseInt(radio.value);
-                target = extractedResults[idx];
-            } else if (manual) {
-                target = { domain: manual, url: `https://${manual}`, title: manual };
-            } else {
-                alert('❌ لطفاً یک نتیجه را انتخاب کنید یا دامنه را دستی وارد کنید.');
-                return;
-            }
-
-            const repetitions = parseInt(document.getElementById('repetitions').value) || 10;
-            const concurrency = parseInt(document.getElementById('concurrency').value) || 10;
-            const query = searchQueryInput.value.trim();
-
-            selectedTarget = target;
-            goToStep(2);
-            startSimulation(query, target, repetitions, concurrency);
-        });
-
-        // ==================== مرحله ۳: شبیه‌سازی ====================
-        const progressBar = document.getElementById('progressBar');
-        const proxyStatsContainer = document.getElementById('proxyStatsContainer');
-        const summaryDiv = document.getElementById('summary');
-        const simInfo = document.getElementById('simInfo');
-        const logBox = document.getElementById('logBox');
-
-        function addLog(msg, type = 'info') {
-            const line = document.createElement('div');
-            line.className = `log-line ${type}`;
-            const time = new Date().toLocaleTimeString('fa-IR');
-            line.textContent = `[${time}] ${msg}`;
-            logBox.insertBefore(line, logBox.firstChild);
-            if (logBox.children.length > 100) logBox.removeChild(logBox.lastChild);
-        }
-
-        async function startSimulation(query, target, repetitions, concurrency) {
-            proxyStatsContainer.innerHTML = '<p style="text-align:center; color:#8b949e; padding:20px;">در حال آماده‌سازی وظایف...</p>';
-            progressBar.style.width = '0%';
-            progressBar.textContent = '0%';
-            summaryDiv.style.display = 'none';
-            simInfo.innerHTML = `
-                <strong>🎯 شبیه‌سازی:</strong>
-                عبارت جستجو: <code>${escapeHtml(query)}</code> |
-                هدف: <code>${escapeHtml(target.domain)}</code> |
-                تعداد یوزر ایجنت: <code>${userAgents.length}</code> |
-                تکرار: <code>${repetitions}</code> |
-                همزمانی: <code>${concurrency}</code>
-            `;
-
-            addLog(`شروع شبیه‌سازی با ${userAgents.length} یوزر ایجنت × ${repetitions} تکرار = ${userAgents.length * repetitions} وظیفه`, 'info');
-
-            // ساخت آمار پروکسی‌ها
-            const proxyStats = new Map();
-            proxies.forEach(p => proxyStats.set(p.name, {
-                name: p.name,
-                count: 0,
-                searchSuccess: 0,
-                searchFail: 0,
-                found: 0,
-                clickSuccess: 0,
-                clickFail: 0,
-                totalTime: 0
-            }));
-
-            // ساخت صف وظایف
-            const tasks = [];
-            for (let uaIdx = 0; uaIdx < userAgents.length; uaIdx++) {
-                for (let rep = 0; rep < repetitions; rep++) {
-                    const randomProxy = proxies[Math.floor(Math.random() * proxies.length)];
-                    const ua = userAgents[uaIdx];
-                    const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
-                    tasks.push({
-                        proxy: randomProxy,
-                        userAgent: ua,
-                        isMobile,
-                        searchUrl: generateGoogleSearchUrl(query, isMobile),
-                        target
-                    });
-                }
-            }
-
-            const totalTasks = tasks.length;
-            let completed = 0;
-            let totalTimeSum = 0;
-            let foundCount = 0;
-            let clickSuccessCount = 0;
-            let clickFailCount = 0;
-            let searchSuccessTotal = 0;
-
-            function updateProgress() {
-                const percent = Math.round((completed / totalTasks) * 100);
-                progressBar.style.width = percent + '%';
-                progressBar.textContent = `${percent}% (${completed}/${totalTasks})`;
-            }
-
-            function renderProxyStats() {
-                const used = [...proxyStats.values()].filter(s => s.count > 0)
-                    .sort((a,b) => b.count - a.count);
-                if (used.length === 0) {
-                    proxyStatsContainer.innerHTML = '<p style="text-align:center; color:#8b949e; padding:20px;">در حال پردازش...</p>';
-                    return;
-                }
-                let html = `<table>
-                    <thead>
-                        <tr>
-                            <th>پروکسی</th>
-                            <th>درخواست</th>
-                            <th>جستجوی موفق</th>
-                            <th>یافت شد</th>
-                            <th>کلیک موفق</th>
-                            <th>کلیک ناموفق</th>
-                            <th>میانگین (ms)</th>
-                        </tr>
-                    </thead><tbody>`;
-                used.forEach(s => {
-                    const avg = s.count > 0 ? (s.totalTime / s.count).toFixed(1) : 0;
-                    html += `
-                        <tr>
-                            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(s.name)}</td>
-                            <td>${s.count}</td>
-                            <td class="status-success">${s.searchSuccess}</td>
-                            <td class="status-unknown">${s.found}</td>
-                            <td class="status-success">${s.clickSuccess}</td>
-                            <td class="status-fail">${s.clickFail}</td>
-                            <td>${avg}</td>
-                        </tr>`;
-                });
-                html += '</tbody></table>';
-                proxyStatsContainer.innerHTML = html;
-            }
-
-            async function runTask(task) {
-                const startTime = performance.now();
-                const stat = proxyStats.get(task.proxy.name);
-                stat.count++;
-
-                try {
-                    // 1. جستجو از طریق پروکسی
-                    const proxySearchUrl = buildProxyUrl(task.proxy.template, task.searchUrl);
-                    let searchResponse;
-                    try {
-                        searchResponse = await fetchWithTimeout(proxySearchUrl, 12000);
-                    } catch (e) {
-                        stat.searchFail++;
-                        addLog(`خطای جستجو: ${task.proxy.name} - ${e.message || 'timeout'}`, 'error');
-                        return;
-                    }
-
-                    if (!searchResponse.ok) {
-                        stat.searchFail++;
-                        return;
-                    }
-
-                    const searchText = await searchResponse.text();
-                    stat.searchSuccess++;
-                    searchSuccessTotal++;
-
-                    // بررسی وجود دامنه هدف
-                    const targetDomainLower = task.target.domain.toLowerCase();
-                    const searchTextLower = searchText.toLowerCase();
-                    const domainFound = searchTextLower.includes(targetDomainLower);
-
-                    if (domainFound) {
-                        stat.found++;
-                        foundCount++;
-                        addLog(`✅ یافت شد در: ${task.proxy.name}`, 'success');
-
-                        // 2. شبیه‌سازی کلیک
-                        let targetUrl = task.target.url;
-                        if (!targetUrl.startsWith('http')) {
-                            targetUrl = `https://${targetDomainLower}`;
-                        }
-                        const proxyClickUrl = buildProxyUrl(task.proxy.template, targetUrl);
-
-                        try {
-                            const clickResponse = await fetchWithTimeout(proxyClickUrl, 10000);
-                            if (clickResponse.ok) {
-                                stat.clickSuccess++;
-                                clickSuccessCount++;
-                            } else {
-                                stat.clickFail++;
-                                clickFailCount++;
-                            }
-                        } catch (e) {
-                            // تلاش با http اگر https کار نکرد
-                            try {
-                                const httpUrl = buildProxyUrl(task.proxy.template, `http://${targetDomainLower}`);
-                                const httpResp = await fetchWithTimeout(httpUrl, 10000);
-                                if (httpResp.ok) {
-                                    stat.clickSuccess++;
-                                    clickSuccessCount++;
-                                } else {
-                                    stat.clickFail++;
-                                    clickFailCount++;
-                                }
-                            } catch (e2) {
-                                stat.clickFail++;
-                                clickFailCount++;
-                            }
-                        }
-                    }
-                } catch (err) {
-                    stat.searchFail++;
-                } finally {
-                    const endTime = performance.now();
-                    const elapsed = endTime - startTime;
-                    stat.totalTime += elapsed;
-                    totalTimeSum += elapsed;
-                    completed++;
-                    updateProgress();
-                    // به‌روزرسانی آمار هر 5 وظیفه
-                    if (completed % 5 === 0) renderProxyStats();
-                }
-            }
-
-            // مدیریت صف با worker ها
-            const queue = [...tasks];
-            const workers = [];
-            const workerCount = Math.min(concurrency, queue.length);
-
-            async function worker() {
-                while (queue.length > 0) {
-                    const task = queue.shift();
-                    if (task) await runTask(task);
-                }
-            }
-
-            for (let i = 0; i < workerCount; i++) {
-                workers.push(worker());
-            }
-
-            await Promise.all(workers);
-
-            // نمایش نهایی
-            renderProxyStats();
-            document.getElementById('totalReq').textContent = totalTasks;
-            document.getElementById('searchSuccessTotal').textContent = searchSuccessTotal;
-            document.getElementById('foundResults').textContent = foundCount;
-            document.getElementById('clickSuccess').textContent = clickSuccessCount;
-            document.getElementById('clickFail').textContent = clickFailCount;
-            const avgTotal = totalTasks > 0 ? (totalTimeSum / totalTasks).toFixed(1) : 0;
-            document.getElementById('avgTime').textContent = avgTotal;
-            summaryDiv.style.display = 'flex';
-
-            addLog(`✅ شبیه‌سازی کامل شد. ${totalTasks} وظیفه اجرا شد.`, 'success');
-            progressBar.textContent = `✅ کامل شد (${totalTasks}/${totalTasks})`;
-        }
-
-        document.getElementById('restartBtn').addEventListener('click', () => {
-            extractedResults = [];
-            selectedTarget = null;
-            goToStep(0);
-            searchResultsContainer.innerHTML = '<p style="text-align:center; color:#8b949e; padding:20px;">پس از جستجو، نتایج واقعی گوگل در اینجا نمایش داده می‌شود...</p>';
-            searchStatus.innerHTML = '';
-        });
-
-        // شروع با مرحله ۱
-        goToStep(0);
-    </script>
+// Global error handler
+window.addEventListener('error', e=>{
+  log('Global error: '+e.message, 'err');
+});
+window.addEventListener('unhandledrejection', e=>{
+  log('Unhandled promise: '+(e.reason?.message||e.reason||'unknown'), 'err');
+});
+</script>
 </body>
-  </html>
+                                                       </html>
