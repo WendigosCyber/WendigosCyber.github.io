@@ -11,7 +11,6 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       min-height: 100vh;
@@ -20,36 +19,31 @@
       justify-content: center;
       padding: 20px;
     }
-
     .container {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 20px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
       padding: 40px;
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
       text-align: center;
     }
-
     h1 {
       color: #1e3c72;
       margin-bottom: 10px;
       font-size: 2.5rem;
       letter-spacing: 1px;
     }
-
     .subtitle {
       color: #555;
       margin-bottom: 30px;
       font-size: 1rem;
     }
-
     .search-form {
       display: flex;
       gap: 10px;
       margin-bottom: 30px;
     }
-
     .search-input {
       flex: 1;
       padding: 12px 20px;
@@ -59,11 +53,9 @@
       outline: none;
       transition: border-color 0.3s;
     }
-
     .search-input:focus {
       border-color: #1e3c72;
     }
-
     .search-btn {
       padding: 12px 25px;
       background: #1e3c72;
@@ -74,13 +66,13 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
-
     .search-btn:hover {
       background: #2a5298;
       transform: scale(1.05);
     }
-
-    .result-box {
+    .result-box,
+    .preview-box,
+    .info-box {
       background: #f9f9f9;
       border-radius: 12px;
       padding: 20px;
@@ -89,63 +81,217 @@
       border-left: 5px solid #1e3c72;
       word-break: break-word;
     }
-
-    .result-title {
+    .result-title,
+    .preview-title,
+    .info-title {
       font-weight: bold;
       color: #1e3c72;
       margin-bottom: 10px;
     }
-
-    .result-content {
+    .result-content,
+    .preview-content,
+    .info-content {
       color: #333;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
     }
-
     .highlight {
       background: yellow;
       padding: 2px 4px;
       border-radius: 3px;
     }
+    .danger {
+      margin-top: 25px;
+      padding: 15px;
+      background: #fff3cd;
+      color: #856404;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+    code {
+      background: #eee;
+      padding: 2px 5px;
+      border-radius: 4px;
+      direction: ltr;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>جستجوگر</h1>
-    <p class="subtitle">جستجوی امن؟ نه! این صفحه عمداً آسیب‌پذیر است.</p>
+    <h1>جستجوگر XSS</h1>
+
+    <p class="subtitle">
+      این صفحه عمداً برای تست XSS ناامن ساخته شده است.
+    </p>
 
     <form class="search-form" id="searchForm" action="" method="GET">
-      <input type="text" name="q" class="search-input" placeholder="عبارت جستجو..." id="searchInput">
-      <button type="submit" class="search-btn">جستجو</button>
+      <input
+        type="text"
+        name="q"
+        class="search-input"
+        placeholder="عبارت جستجو..."
+        id="searchInput"
+        autocomplete="off"
+      >
+      <button type="submit" class="search-btn">
+        جستجو
+      </button>
     </form>
 
-    <div class="result-box" id="resultBox" style="display: none;">
-      <div class="result-title">نتیجه جستجو برای:</div>
+    <div class="result-box" id="resultBox" style="display:none;">
+      <div class="result-title">
+        نتیجه جستجو برای:
+      </div>
+
       <div class="result-content" id="resultContent"></div>
+    </div>
+
+    <div class="preview-box" id="previewBox" style="display:none;">
+      <div class="preview-title">
+        پیش‌نمایش:
+      </div>
+
+      <div class="preview-content" id="previewContent"></div>
+    </div>
+
+    <div class="info-box" id="infoBox" style="display:none;">
+      <div class="info-title">
+        اطلاعات URL:
+      </div>
+
+      <div class="info-content" id="infoContent"></div>
+    </div>
+
+    <div class="danger">
+      ورودی کاربر عمداً بدون HTML escaping در چند محل DOM قرار داده می‌شود.
     </div>
   </div>
 
   <script>
+    'use strict';
+
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
+
+    function unsafeRender(query) {
+      const resultBox = document.getElementById('resultBox');
+      const previewBox = document.getElementById('previewBox');
+      const infoBox = document.getElementById('infoBox');
+
+      const resultContent = document.getElementById('resultContent');
+      const previewContent = document.getElementById('previewContent');
+      const infoContent = document.getElementById('infoContent');
+
+      if (!query) {
+        resultBox.style.display = 'none';
+        previewBox.style.display = 'none';
+        infoBox.style.display = 'none';
+        return;
+      }
+
+      /*
+       * INTENTIONALLY VULNERABLE SINK #1
+       * User-controlled query is inserted directly into innerHTML.
+       */
+      resultContent.innerHTML =
+        'شما جستجو کردید: <span class="highlight">' +
+        query +
+        '</span>';
+
+      /*
+       * INTENTIONALLY VULNERABLE SINK #2
+       * Same attacker-controlled value is rendered again.
+       */
+      previewContent.innerHTML =
+        '<strong>Query:</strong> ' +
+        query +
+        '<br>' +
+        '<em>Preview:</em> ' +
+        query;
+
+      /*
+       * INTENTIONALLY VULNERABLE SINK #3
+       * Entire URL is inserted as HTML.
+       */
+      infoContent.innerHTML =
+        '<div>URL فعلی:</div>' +
+        '<code>' +
+        window.location.href +
+        '</code>';
+
+      resultBox.style.display = 'block';
+      previewBox.style.display = 'block';
+      infoBox.style.display = 'block';
+
+      /*
+       * INTENTIONALLY VULNERABLE BEHAVIOR #4
+       * Attacker-controlled value reaches document.title.
+       */
+      document.title = 'جستجو: ' + query;
+    }
+
     function displayResult() {
       const query = getQueryParam('q');
-      const resultBox = document.getElementById('resultBox');
-      const resultContent = document.getElementById('resultContent');
-      if (query) {
-        resultContent.innerHTML = 'شما جستجو کردید: <span class="highlight">' + query + '</span>';
-        resultBox.style.display = 'block';
+
+      if (query !== null) {
+        unsafeRender(query);
       } else {
-        resultBox.style.display = 'none';
+        document.getElementById('resultBox').style.display = 'none';
+        document.getElementById('previewBox').style.display = 'none';
+        document.getElementById('infoBox').style.display = 'none';
       }
-    } window.addEventListener('DOMContentLoaded', displayResult); document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('searchInput').value;
-      const newUrl = window.location.pathname + '?q=' + encodeURIComponent(input);
-      window.history.pushState({}, '', newUrl);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
       displayResult();
-    }); window.addEventListener('popstate', displayResult);
+
+      const form = document.getElementById('searchForm');
+      const input = document.getElementById('searchInput');
+
+      /*
+       * Restore attacker-controlled value into the input.
+       * The value property itself is safe from HTML execution,
+       * but it demonstrates the data flow from URL -> DOM.
+       */
+      const existingQuery = getQueryParam('q');
+
+      if (existingQuery !== null) {
+        input.value = existingQuery;
+      }
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const query = input.value;
+
+        /*
+         * URL encoding here does NOT make the later innerHTML sink safe.
+         * The browser decodes the query parameter before getQueryParam()
+         * returns it.
+         */
+        const newUrl =
+          window.location.pathname +
+          '?q=' +
+          encodeURIComponent(query);
+
+        window.history.pushState(
+          {},
+          '',
+          newUrl
+        );
+
+        unsafeRender(query);
+      });
+    });
+
+    /*
+     * Re-render when navigation changes the query parameter.
+     */
+    window.addEventListener('popstate', function() {
+      displayResult();
+    });
   </script>
 </body>
-  </html>
+      </html>
